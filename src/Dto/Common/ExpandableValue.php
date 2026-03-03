@@ -7,6 +7,9 @@ namespace Creem\Dto\Common;
 use function is_array;
 use function is_string;
 
+/**
+ * @deprecated Use ExpandableResource<TResource> for new typed payload mappings.
+ */
 final class ExpandableValue
 {
     private function __construct(
