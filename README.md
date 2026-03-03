@@ -10,6 +10,8 @@ The public contract is a stable `Creem\Client` facade with typed DTOs, typed exc
 composer require antoniadisio/creem-php-sdk
 ```
 
+Requires PHP 8.2 or newer.
+
 ## Validation
 
 For local development, run the repository checks before shipping changes:
@@ -21,7 +23,7 @@ composer stan
 ```
 
 `composer stan` uses the committed `phpstan.neon.dist` project configuration and the repository-defined memory limit, so local analysis and CI run the same PHPStan setup.
-`composer install` and `composer update` also use the committed Composer platform pin (`php: 8.1.0`), which keeps the lockfile aligned with the PHP 8.1 CI target even when dependency updates are run on newer local PHP versions.
+`composer install` and `composer update` also use the committed Composer platform pin (`php: 8.2.0`), which keeps the lockfile aligned with the PHP 8.2 CI target even when dependency updates are run on newer local PHP versions.
 
 ## Quick Start
 

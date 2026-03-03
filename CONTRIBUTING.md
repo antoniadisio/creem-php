@@ -5,7 +5,7 @@ This repository is a public PHP SDK. Keep changes focused on package code and co
 
 ## Local Setup
 - Run `composer install` to install PHP dependencies.
-- Use PHP 8.1+.
+- Use PHP 8.2+.
 - Read `README.md` before changing the public API surface.
 
 ## Development Workflow
