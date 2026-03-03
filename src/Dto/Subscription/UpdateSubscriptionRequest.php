@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Subscription;
 
-use function array_filter;
+use Creem\Enum\SubscriptionUpdateBehavior;
+use Creem\Internal\Serialization\RequestValueNormalizer;
 
 final class UpdateSubscriptionRequest
 {
     /**
-     * @param  list<array<string, mixed>>  $items
+     * @param  list<UpsertSubscriptionItem>  $items
      */
     public function __construct(
         public readonly array $items = [],
-        public readonly ?string $updateBehavior = null,
+        public readonly ?SubscriptionUpdateBehavior $updateBehavior = null,
     ) {}
 
     /**
@@ -21,9 +22,9 @@ final class UpdateSubscriptionRequest
      */
     public function toArray(): array
     {
-        return array_filter([
+        return RequestValueNormalizer::payload([
             'items' => $this->items,
             'update_behavior' => $this->updateBehavior,
-        ], static fn (mixed $value): bool => $value !== null);
+        ]);
     }
 }

@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Creem\Dto\License;
+namespace Creem\Dto\Common;
 
 use Creem\Internal\Serialization\RequestValueNormalizer;
 
-final class DeactivateLicenseRequest
+final class CheckboxFieldConfigInput
 {
     public function __construct(
-        public readonly string $key,
-        public readonly string $instanceId,
+        public readonly ?string $label = null,
     ) {}
 
     /**
@@ -20,8 +19,7 @@ final class DeactivateLicenseRequest
     {
         /** @var array<string, string> */
         return RequestValueNormalizer::payload([
-            'key' => $this->key,
-            'instance_id' => $this->instanceId,
+            'label' => $this->label,
         ]);
     }
 }

@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Product;
 
-use function array_filter;
+use Creem\Dto\Common\CustomFieldInput;
+use Creem\Enum\BillingPeriod;
+use Creem\Enum\BillingType;
+use Creem\Enum\CurrencyCode;
+use Creem\Enum\TaxCategory;
+use Creem\Enum\TaxMode;
+use Creem\Internal\Serialization\RequestValueNormalizer;
 
 final class CreateProductRequest
 {
     /**
-     * @param  list<array<string, mixed>>  $customFields
-     * @param  list<array<string, mixed>>  $customField
+     * @param  list<CustomFieldInput>  $customFields
      */
     public function __construct(
         public readonly string $name,
-        public readonly int|float $price,
-        public readonly string $currency,
-        public readonly string $billingType,
+        public readonly int $price,
+        public readonly CurrencyCode $currency,
+        public readonly BillingType $billingType,
         public readonly ?string $description = null,
         public readonly ?string $imageUrl = null,
-        public readonly ?string $billingPeriod = null,
-        public readonly ?string $taxMode = null,
-        public readonly ?string $taxCategory = null,
+        public readonly ?BillingPeriod $billingPeriod = null,
+        public readonly ?TaxMode $taxMode = null,
+        public readonly ?TaxCategory $taxCategory = null,
         public readonly ?string $defaultSuccessUrl = null,
         public readonly array $customFields = [],
-        public readonly array $customField = [],
         public readonly ?bool $abandonedCartRecoveryEnabled = null,
     ) {}
 
@@ -33,7 +37,7 @@ final class CreateProductRequest
      */
     public function toArray(): array
     {
-        return array_filter([
+        return RequestValueNormalizer::payload([
             'name' => $this->name,
             'description' => $this->description,
             'image_url' => $this->imageUrl,
@@ -45,8 +49,7 @@ final class CreateProductRequest
             'tax_category' => $this->taxCategory,
             'default_success_url' => $this->defaultSuccessUrl,
             'custom_fields' => $this->customFields,
-            'custom_field' => $this->customField,
             'abandoned_cart_recovery_enabled' => $this->abandonedCartRecoveryEnabled,
-        ], static fn (mixed $value): bool => $value !== null);
+        ]);
     }
 }

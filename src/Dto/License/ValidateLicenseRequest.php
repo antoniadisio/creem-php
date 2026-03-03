@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Creem\Dto\License;
 
+use Creem\Internal\Serialization\RequestValueNormalizer;
+
 final class ValidateLicenseRequest
 {
     public function __construct(
@@ -16,9 +18,10 @@ final class ValidateLicenseRequest
      */
     public function toArray(): array
     {
-        return [
+        /** @var array<string, string> */
+        return RequestValueNormalizer::payload([
             'key' => $this->key,
             'instance_id' => $this->instanceId,
-        ];
+        ]);
     }
 }

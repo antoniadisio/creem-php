@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Transaction;
 
-use function array_filter;
+use Creem\Internal\Serialization\RequestValueNormalizer;
 
 final class SearchTransactionsRequest
 {
@@ -12,22 +12,22 @@ final class SearchTransactionsRequest
         public readonly ?string $customerId = null,
         public readonly ?string $orderId = null,
         public readonly ?string $productId = null,
-        public readonly int|float|null $pageNumber = null,
-        public readonly int|float|null $pageSize = null,
+        public readonly ?int $pageNumber = null,
+        public readonly ?int $pageSize = null,
     ) {}
 
     /**
-     * @return array<string, string|int|float>
+     * @return array<string, string|int>
      */
     public function toQuery(): array
     {
-        /** @var array<string, string|int|float> */
-        return array_filter([
+        /** @var array<string, string|int> */
+        return RequestValueNormalizer::query([
             'customer_id' => $this->customerId,
             'order_id' => $this->orderId,
             'product_id' => $this->productId,
             'page_number' => $this->pageNumber,
             'page_size' => $this->pageSize,
-        ], static fn (mixed $value): bool => $value !== null);
+        ]);
     }
 }

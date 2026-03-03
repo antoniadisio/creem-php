@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Discount;
 
-use function array_filter;
+use Creem\Enum\CurrencyCode;
+use Creem\Enum\DiscountDuration;
+use Creem\Enum\DiscountType;
+use Creem\Internal\Serialization\RequestValueNormalizer;
+use DateTimeImmutable;
 
 final class CreateDiscountRequest
 {
@@ -13,16 +17,16 @@ final class CreateDiscountRequest
      */
     public function __construct(
         public readonly string $name,
-        public readonly string $type,
-        public readonly string $duration,
+        public readonly DiscountType $type,
+        public readonly DiscountDuration $duration,
         public readonly array $appliesToProducts,
         public readonly ?string $code = null,
-        public readonly int|float|null $amount = null,
-        public readonly ?string $currency = null,
-        public readonly int|float|null $percentage = null,
-        public readonly ?string $expiryDate = null,
-        public readonly int|float|null $maxRedemptions = null,
-        public readonly int|float|null $durationInMonths = null,
+        public readonly ?int $amount = null,
+        public readonly ?CurrencyCode $currency = null,
+        public readonly ?int $percentage = null,
+        public readonly ?DateTimeImmutable $expiryDate = null,
+        public readonly ?int $maxRedemptions = null,
+        public readonly ?int $durationInMonths = null,
     ) {}
 
     /**
@@ -30,18 +34,18 @@ final class CreateDiscountRequest
      */
     public function toArray(): array
     {
-        return array_filter([
+        return RequestValueNormalizer::payload([
             'name' => $this->name,
             'code' => $this->code,
             'type' => $this->type,
             'amount' => $this->amount,
             'currency' => $this->currency,
             'percentage' => $this->percentage,
-            'expiry_date' => $this->expiryDate,
+            'expiry_date' => RequestValueNormalizer::rfc3339($this->expiryDate),
             'max_redemptions' => $this->maxRedemptions,
             'duration' => $this->duration,
             'duration_in_months' => $this->durationInMonths,
             'applies_to_products' => $this->appliesToProducts,
-        ], static fn (mixed $value): bool => $value !== null);
+        ]);
     }
 }

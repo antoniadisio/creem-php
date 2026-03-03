@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Subscription;
 
-use function array_filter;
+use Creem\Enum\SubscriptionUpdateBehavior;
+use Creem\Internal\Serialization\RequestValueNormalizer;
 
 final class UpgradeSubscriptionRequest
 {
     public function __construct(
         public readonly string $productId,
-        public readonly ?string $updateBehavior = null,
+        public readonly ?SubscriptionUpdateBehavior $updateBehavior = null,
     ) {}
 
     /**
@@ -19,9 +20,9 @@ final class UpgradeSubscriptionRequest
     public function toArray(): array
     {
         /** @var array<string, string> */
-        return array_filter([
+        return RequestValueNormalizer::payload([
             'product_id' => $this->productId,
             'update_behavior' => $this->updateBehavior,
-        ], static fn (mixed $value): bool => $value !== null);
+        ]);
     }
 }

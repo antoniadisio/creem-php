@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Dto\License;
+namespace Creem\Dto\Checkout;
 
 use Creem\Internal\Serialization\RequestValueNormalizer;
 
-final class DeactivateLicenseRequest
+final class CheckoutCustomerInput
 {
     public function __construct(
-        public readonly string $key,
-        public readonly string $instanceId,
+        public readonly ?string $id = null,
+        public readonly ?string $email = null,
     ) {}
 
     /**
@@ -20,8 +20,8 @@ final class DeactivateLicenseRequest
     {
         /** @var array<string, string> */
         return RequestValueNormalizer::payload([
-            'key' => $this->key,
-            'instance_id' => $this->instanceId,
+            'id' => $this->id,
+            'email' => $this->email,
         ]);
     }
 }

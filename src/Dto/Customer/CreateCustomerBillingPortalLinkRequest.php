@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Customer;
 
+use Creem\Internal\Serialization\RequestValueNormalizer;
+
 final class CreateCustomerBillingPortalLinkRequest
 {
     public function __construct(
@@ -15,6 +17,9 @@ final class CreateCustomerBillingPortalLinkRequest
      */
     public function toArray(): array
     {
-        return ['customer_id' => $this->customerId];
+        /** @var array<string, string> */
+        return RequestValueNormalizer::payload([
+            'customer_id' => $this->customerId,
+        ]);
     }
 }

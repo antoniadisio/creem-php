@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Stats;
 
-use function array_filter;
+use Creem\Enum\CurrencyCode;
+use Creem\Enum\StatsInterval;
+use Creem\Internal\Serialization\RequestValueNormalizer;
+use DateTimeImmutable;
 
 final class GetStatsSummaryRequest
 {
     public function __construct(
-        public readonly string $currency,
-        public readonly int|float|null $startDate = null,
-        public readonly int|float|null $endDate = null,
-        public readonly ?string $interval = null,
+        public readonly CurrencyCode $currency,
+        public readonly ?DateTimeImmutable $startDate = null,
+        public readonly ?DateTimeImmutable $endDate = null,
+        public readonly ?StatsInterval $interval = null,
     ) {}
 
     /**
-     * @return array<string, string|int|float>
+     * @return array<string, string|int>
      */
     public function toQuery(): array
     {
-        /** @var array<string, string|int|float> */
-        return array_filter([
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
+        /** @var array<string, string|int> */
+        return RequestValueNormalizer::query([
+            'startDate' => RequestValueNormalizer::unixMilliseconds($this->startDate),
+            'endDate' => RequestValueNormalizer::unixMilliseconds($this->endDate),
             'interval' => $this->interval,
             'currency' => $this->currency,
-        ], static fn (mixed $value): bool => $value !== null);
+        ]);
     }
 }

@@ -21,8 +21,17 @@ use Creem\Dto\Stats\GetStatsSummaryRequest;
 use Creem\Dto\Subscription\CancelSubscriptionRequest;
 use Creem\Dto\Subscription\UpdateSubscriptionRequest;
 use Creem\Dto\Subscription\UpgradeSubscriptionRequest;
+use Creem\Dto\Subscription\UpsertSubscriptionItem;
 use Creem\Dto\Transaction\SearchTransactionsRequest;
 use Creem\Dto\Transaction\Transaction;
+use Creem\Enum\BillingType;
+use Creem\Enum\CurrencyCode;
+use Creem\Enum\DiscountDuration;
+use Creem\Enum\DiscountType;
+use Creem\Enum\StatsInterval;
+use Creem\Enum\SubscriptionCancellationAction;
+use Creem\Enum\SubscriptionCancellationMode;
+use Creem\Enum\SubscriptionUpdateBehavior;
 use Creem\Internal\Http\CreemConnector;
 use Creem\Resource\CheckoutsResource;
 use Creem\Resource\CustomersResource;
@@ -32,6 +41,7 @@ use Creem\Resource\ProductsResource;
 use Creem\Resource\StatsResource;
 use Creem\Resource\SubscriptionsResource;
 use Creem\Resource\TransactionsResource;
+use DateTimeImmutable;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -64,14 +74,14 @@ final class ResourcesTest extends TestCase
         self::assertSame('feat_1', $feature->get('id'));
         $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_123']);
 
-        $created = $resource->create(new CreateProductRequest('Enterprise', 4900, 'usd', 'one_time', description: 'Scale plan'));
+        $created = $resource->create(new CreateProductRequest('Enterprise', 4900, CurrencyCode::USD, BillingType::OneTime, description: 'Scale plan'));
         self::assertSame('prod_456', $created->id);
         $this->assertRequest(
             $mockClient,
             Method::POST,
             '/v1/products',
             [],
-            ['name' => 'Enterprise', 'description' => 'Scale plan', 'price' => 4900, 'currency' => 'usd', 'billing_type' => 'one_time', 'custom_fields' => [], 'custom_field' => []],
+            ['name' => 'Enterprise', 'description' => 'Scale plan', 'price' => 4900, 'currency' => 'USD', 'billing_type' => 'onetime', 'custom_fields' => []],
         );
 
         $page = $resource->search(new SearchProductsRequest(2, 50));
@@ -129,28 +139,34 @@ final class ResourcesTest extends TestCase
         self::assertFalse($subscription->customer?->isExpanded() ?? true);
         $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_123']);
 
-        $canceled = $resource->cancel('sub_123', new CancelSubscriptionRequest('immediately', 'now'));
+        $canceled = $resource->cancel('sub_123', new CancelSubscriptionRequest(SubscriptionCancellationMode::Immediate, SubscriptionCancellationAction::Cancel));
         self::assertSame('canceled', $canceled->status);
-        $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], ['mode' => 'immediately', 'onExecute' => 'now']);
+        $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], ['mode' => 'immediate', 'onExecute' => 'cancel']);
 
-        $updated = $resource->update('sub_123', new UpdateSubscriptionRequest([['product_id' => 'prod_123', 'units' => 4]], 'prorate'));
+        $updated = $resource->update(
+            'sub_123',
+            new UpdateSubscriptionRequest(
+                [new UpsertSubscriptionItem(productId: 'prod_123', units: 4)],
+                SubscriptionUpdateBehavior::ProrationCharge,
+            ),
+        );
         self::assertSame(1, $updated->items->count());
         $this->assertRequest(
             $mockClient,
             Method::POST,
             '/v1/subscriptions/sub_123',
             [],
-            ['items' => [['product_id' => 'prod_123', 'units' => 4]], 'update_behavior' => 'prorate'],
+            ['items' => [['product_id' => 'prod_123', 'units' => 4]], 'update_behavior' => 'proration-charge'],
         );
 
-        $upgraded = $resource->upgrade('sub_123', new UpgradeSubscriptionRequest('prod_999', 'immediate'));
+        $upgraded = $resource->upgrade('sub_123', new UpgradeSubscriptionRequest('prod_999', SubscriptionUpdateBehavior::ProrationChargeImmediately));
         self::assertSame('prod_999', $upgraded->product?->id());
         $this->assertRequest(
             $mockClient,
             Method::POST,
             '/v1/subscriptions/sub_123/upgrade',
             [],
-            ['product_id' => 'prod_999', 'update_behavior' => 'immediate'],
+            ['product_id' => 'prod_999', 'update_behavior' => 'proration-charge-immediately'],
         );
 
         $paused = $resource->pause('sub_123');
@@ -182,7 +198,7 @@ final class ResourcesTest extends TestCase
             Method::POST,
             '/v1/checkouts',
             [],
-            ['request_id' => 'req_1', 'product_id' => 'prod_123', 'units' => 2, 'custom_fields' => [], 'custom_field' => [], 'success_url' => 'https://example.com/success'],
+            ['request_id' => 'req_1', 'product_id' => 'prod_123', 'units' => 2, 'custom_fields' => [], 'success_url' => 'https://example.com/success'],
         );
     }
 
@@ -227,7 +243,7 @@ final class ResourcesTest extends TestCase
         self::assertSame('WELCOME10', $byCode->code);
         $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_code' => 'WELCOME10']);
 
-        $created = $resource->create(new CreateDiscountRequest('Launch', 'fixed', 'once', ['prod_123'], amount: 1000));
+        $created = $resource->create(new CreateDiscountRequest('Launch', DiscountType::Fixed, DiscountDuration::Once, ['prod_123'], amount: 1000));
         self::assertSame('disc_456', $created->id);
         $this->assertRequest(
             $mockClient,
@@ -274,14 +290,21 @@ final class ResourcesTest extends TestCase
         ]);
         $resource = new StatsResource($this->connector($mockClient));
 
-        $summary = $resource->summary(new GetStatsSummaryRequest('usd', 1700000000, 1701000000, 'day'));
+        $summary = $resource->summary(
+            new GetStatsSummaryRequest(
+                CurrencyCode::USD,
+                new DateTimeImmutable('@1700000000'),
+                new DateTimeImmutable('@1701000000'),
+                StatsInterval::Day,
+            ),
+        );
         self::assertSame(2, $summary->totals?->get('totalProducts'));
         self::assertSame(1, $summary->periods->count());
         $this->assertRequest(
             $mockClient,
             Method::GET,
             '/v1/stats/summary',
-            ['startDate' => '1700000000', 'endDate' => '1701000000', 'interval' => 'day', 'currency' => 'usd'],
+            ['startDate' => '1700000000000', 'endDate' => '1701000000000', 'interval' => 'day', 'currency' => 'USD'],
         );
     }
 
