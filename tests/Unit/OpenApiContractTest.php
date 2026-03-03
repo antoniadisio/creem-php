@@ -104,6 +104,40 @@ final class OpenApiContractTest extends TestCase
     }
 
     /**
+     * @throws JsonException
+     */
+    public function test_key_response_fixtures_lock_spec_aligned_typed_shapes(): void
+    {
+        $product = $this->fixture('product.json');
+        self::assertSame('USD', $product['currency'] ?? null);
+        self::assertSame('every-month', $product['billing_period'] ?? null);
+        self::assertSame('licenseKey', $product['features'][0]['type'] ?? null);
+        self::assertSame('2026-01-01T00:00:00Z', $product['created_at'] ?? null);
+
+        $checkout = $this->fixture('checkout.json');
+        self::assertSame('pending', $checkout['status'] ?? null);
+        self::assertIsArray($checkout['product'] ?? null);
+        self::assertIsArray($checkout['order'] ?? null);
+        self::assertSame('paid', $checkout['order']['status'] ?? null);
+        self::assertSame('text', $checkout['custom_fields'][0]['type'] ?? null);
+        self::assertSame('file', $checkout['feature'][0]['type'] ?? null);
+        self::assertSame('sdk-test', $checkout['metadata']['source'] ?? null);
+        self::assertIsInt($checkout['metadata']['attempt'] ?? null);
+
+        $subscription = $this->fixture('subscription.json');
+        self::assertIsArray($subscription['product'] ?? null);
+        self::assertSame('cus_123', $subscription['customer'] ?? null);
+        self::assertSame('charge_automatically', $subscription['collection_method'] ?? null);
+        self::assertSame('paid', $subscription['last_transaction']['status'] ?? null);
+        self::assertSame('2026-01-01T12:00:00Z', $subscription['last_transaction_date'] ?? null);
+
+        $statsSummary = $this->fixture('stats_summary.json');
+        self::assertSame(12000, $statsSummary['totals']['totalRevenue'] ?? null);
+        self::assertIsInt($statsSummary['periods'][0]['timestamp'] ?? null);
+        self::assertSame(11500, $statsSummary['periods'][0]['netRevenue'] ?? null);
+    }
+
+    /**
      * @return array<string, array{method: string, path: string}>
      *
      * @throws JsonException
@@ -367,5 +401,22 @@ final class OpenApiContractTest extends TestCase
     private function fixturesDirectory(): string
     {
         return dirname(__DIR__).'/Fixtures/Responses';
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws JsonException
+     */
+    private function fixture(string $name): array
+    {
+        $contents = file_get_contents($this->fixturesDirectory().'/'.$name);
+
+        self::assertNotFalse($contents, sprintf('Fixture %s could not be read.', $name));
+
+        /** @var array<string, mixed> $fixture */
+        $fixture = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+
+        return $fixture;
     }
 }

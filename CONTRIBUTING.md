@@ -29,7 +29,15 @@ Pull requests should be opened only after `composer test`, `composer cs`, and `c
 - Prefer `final` classes unless extension is part of the design.
 - Keep public DTOs, resources, and exceptions in their existing namespaces and naming patterns.
 
+## Typed API Contract Conventions
+- Treat `spec/creem-openapi.json` as the source of truth for public DTO field types.
+- Use enums for closed-set API fields and keep enum-to-string normalization inside the internal request serialization layer.
+- Use `DateTimeImmutable` for spec-defined `format: date-time` fields and for millisecond timestamps only when the contract explicitly documents that unit.
+- Keep public response DTOs concrete: use nested DTOs, typed lists, and `ExpandableResource<T>` instead of `StructuredObject`, `StructuredList`, `ExpandableValue`, or `int|float` unions.
+- Contract violations on required response fields should fail fast with `Creem\Exception\HydrationException`; do not silently coerce malformed required values to `null`.
+
 ## Commits And Pull Requests
 - Write commit subjects in an imperative, outcome-focused style, 72 characters or fewer, with no trailing period.
 - Keep the tone concise and direct, focused on what changed for the repository or SDK user.
+- Add a `CHANGELOG.md` entry for the next major release when you ship breaking public API changes.
 - In pull requests, describe the user-visible impact, list the validation commands you ran, and link the relevant issue when one exists.

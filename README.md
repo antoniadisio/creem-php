@@ -106,13 +106,16 @@ try {
 
 use Creem\Dto\Product\CreateProductRequest;
 use Creem\Dto\Product\SearchProductsRequest;
+use Creem\Enum\BillingPeriod;
+use Creem\Enum\BillingType;
+use Creem\Enum\CurrencyCode;
 
 $product = $client->products()->create(new CreateProductRequest(
     name: 'Pro Plan',
     price: 4900,
-    currency: 'USD',
-    billingType: 'recurring',
-    billingPeriod: 'month',
+    currency: CurrencyCode::USD,
+    billingType: BillingType::Recurring,
+    billingPeriod: BillingPeriod::EveryMonth,
 ));
 
 $page = $client->products()->search(new SearchProductsRequest(
@@ -296,10 +299,12 @@ Supported methods:
 <?php
 
 use Creem\Dto\Stats\GetStatsSummaryRequest;
+use Creem\Enum\CurrencyCode;
+use Creem\Enum\StatsInterval;
 
 $summary = $client->stats()->summary(new GetStatsSummaryRequest(
-    currency: 'USD',
-    interval: 'day',
+    currency: CurrencyCode::USD,
+    interval: StatsInterval::Day,
 ));
 ```
 
@@ -331,6 +336,8 @@ For future releases driven by spec updates, call out:
 - any public SDK surface changes (new methods, renamed DTO fields, behavior changes)
 - new exception behavior or validation changes
 - required consumer migration steps, if any
+
+Document those notes in `CHANGELOG.md` for the next release, especially when the change is intentionally breaking.
 
 ## Local Development
 

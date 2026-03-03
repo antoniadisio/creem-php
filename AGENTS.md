@@ -27,3 +27,4 @@ After each completed task, review this file and update it when repository workfl
 
 ## Commit & Pull Request Guidelines
 Commits follow the repo template in `.gitmessage.txt`: use an imperative, outcome-focused subject line, keep it at 72 characters or fewer, and do not end it with a period (for example, `Add typed resource operations`). Write subjects in a senior-engineer voice: concise, direct, calm, and focused on the outcome rather than the implementation chatter. Optional commit bodies should explain why the change matters and any tradeoffs. Pull requests should describe user-visible API changes, list validation steps (`composer test`, `composer cs`, `composer stan`), and link the relevant issue when one exists.
+For breaking public API changes targeted at a major release, add a matching `CHANGELOG.md` entry that summarizes the surface change and the required migration steps.
