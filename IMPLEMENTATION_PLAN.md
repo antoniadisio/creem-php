@@ -238,26 +238,26 @@ Implement the reusable cross-cutting SDK foundation before building endpoint cov
 ### Tasks
 
 - [x] Add `saloonphp/saloon` as a runtime dependency
-- [ ] Implement `Creem\Environment` as a backed enum
-- [ ] Implement `Creem\Config` as an immutable configuration object
-- [ ] Implement `Creem\Exception\CreemException`
-- [ ] Implement the full public exception hierarchy
-- [ ] Implement `src/Internal/Http/CreemConnector.php`
-- [ ] Configure default JSON headers
-- [ ] Configure `x-api-key` authentication
-- [ ] Configure environment-specific base URLs with override support
-- [ ] Add stable SDK user-agent construction
-- [ ] Implement a shared response decoder
-- [ ] Implement a shared exception mapper
-- [ ] Implement `Creem\Client` as the stable public facade
-- [ ] Add public resource accessor methods on `Creem\Client`
+- [x] Implement `Creem\Environment` as a backed enum
+- [x] Implement `Creem\Config` as an immutable configuration object
+- [x] Implement `Creem\Exception\CreemException`
+- [x] Implement the full public exception hierarchy
+- [x] Implement `src/Internal/Http/CreemConnector.php`
+- [x] Configure default JSON headers
+- [x] Configure `x-api-key` authentication
+- [x] Configure environment-specific base URLs with override support
+- [x] Add stable SDK user-agent construction
+- [x] Implement a shared response decoder
+- [x] Implement a shared exception mapper
+- [x] Implement `Creem\Client` as the stable public facade
+- [x] Add public resource accessor methods on `Creem\Client`
 
 ### Acceptance Criteria
 
-- [ ] Consumers can instantiate `Creem\Client`
-- [ ] The connector uses the correct base URL and authentication header
-- [ ] HTTP failures map to typed exceptions
-- [ ] Saloon remains internal to the implementation
+- [x] Consumers can instantiate `Creem\Client`
+- [x] The connector uses the correct base URL and authentication header
+- [x] HTTP failures map to typed exceptions
+- [x] Saloon remains internal to the implementation
 
 ## Phase 4 - Implement Resources, Requests, And DTOs
 
@@ -304,13 +304,15 @@ Implement each API domain with a stable public surface and full typed mapping.
 
 Replace the temporary Phase 2 layout smoke test with explicit spec coverage and behavioral tests.
 
+Some low-risk foundation tests were pulled into Phase 3 so the core SDK pieces could be validated as they landed.
+
 ### Tasks
 
 - [ ] Replace the temporary contract-layout smoke test with behavior-focused coverage
-- [ ] Add unit tests for `Environment`
-- [ ] Add unit tests for `Config`
-- [ ] Add unit tests for exception mapping
-- [ ] Add tests for user-agent and auth header behavior
+- [x] Add unit tests for `Environment`
+- [x] Add unit tests for `Config`
+- [x] Add unit tests for exception mapping
+- [x] Add tests for user-agent and auth header behavior
 - [ ] Add request/response tests for each resource method
 - [ ] Add response fixtures under `tests/Fixtures/Responses/`
 - [ ] Add contract tests that parse `spec/creem-openapi.json`
@@ -351,13 +353,13 @@ Document the finished SDK and prepare it for normal package release flow.
 
 These scenarios must be covered before the restart is considered complete:
 
-- [ ] `Environment` resolves production and test URLs correctly
-- [ ] `Config` applies overrides correctly
-- [ ] The connector sends the `x-api-key` header
-- [ ] The connector sends the SDK user agent
+- [x] `Environment` resolves production and test URLs correctly
+- [x] `Config` applies overrides correctly
+- [x] The connector sends the `x-api-key` header
+- [x] The connector sends the SDK user agent
 - [ ] Each resource method builds the correct path, method, query string, and body
-- [ ] `401`, `403`, `404`, `422`, `429`, and `5xx` responses map to the correct exception types
-- [ ] Network and timeout failures map to `TransportException`
+- [x] `401`, `403`, `404`, `422`, `429`, and `5xx` responses map to the correct exception types
+- [x] Network and timeout failures map to `TransportException`
 - [ ] Nullable payload fields hydrate correctly
 - [ ] Pagination payloads hydrate into shared page and pagination DTOs
 - [ ] Union-like nested payloads are normalized into stable DTO representations
