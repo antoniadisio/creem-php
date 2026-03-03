@@ -8,7 +8,8 @@ This repository is being reset around a curated SDK implementation with Saloon u
 
 - baseline package scaffolding is in place
 - Saloon is installed as the runtime transport dependency
-- the OpenAPI contract will be normalized into `spec/` in the next phase
+- the OpenAPI contract lives at `spec/creem-openapi.json`
+- legacy build artifacts have been removed from the active workflow
 - the public client, resources, and DTOs are not implemented yet
 
 ## Planned Architecture

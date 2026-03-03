@@ -1,12 +1,12 @@
 # Creem OpenAPI Spec Audit
 
-This audit captures the current shape of the committed OpenAPI contract and the known issues that matter while the handwritten PHP SDK is being built. The contract file layout will be normalized in the next phase; this document focuses on the API surface and the risks that affect the SDK design.
+This audit captures the current shape of the committed OpenAPI contract at `spec/creem-openapi.json` and the known issues that matter while the handwritten PHP SDK is being built. This document focuses on the API surface and the risks that affect the SDK design.
 
 ## Current Contract Status
 
 - The spec defines both production and test server URLs.
 - API authentication is modeled through the `x-api-key` header.
-- The `servers` entries already distinguish the production and test environments through vendor metadata, and those labels should be preserved when the contract is relocated.
+- The `servers` entries already distinguish the production and test environments through vendor metadata, and those labels should be preserved in the committed contract.
 
 ## Structure That Needs Ongoing Attention
 

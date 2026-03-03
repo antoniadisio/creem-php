@@ -45,9 +45,9 @@ These tasks are already complete and should remain complete after the restart:
 
 These items exist now but are part of the old direction and must be removed or replaced:
 
-- [ ] Fern workspace and derived definition files
-- [ ] Node-based Fern scripts and package manifests
-- [ ] Fern-specific smoke tests
+- [x] Fern workspace and derived definition files
+- [x] Node-based Fern scripts and package manifests
+- [x] Fern-specific smoke tests
 - [x] Fern-first documentation and planning language
 
 ## Public API And Package Defaults
@@ -207,24 +207,25 @@ Keep the OpenAPI file as the source of truth, but remove Fern and Node from the 
 
 ### Tasks
 
-- [ ] Move `fern/definition/openapi/creem-openapi.json` to `spec/creem-openapi.json`
-- [ ] Create the `spec/` directory as the canonical contract location
-- [ ] Rename or rewrite `docs/spec-audit.md` to `docs/openapi-audit.md`
-- [ ] Update the audit document to point at `spec/creem-openapi.json`
-- [ ] Remove `.fern/`
-- [ ] Remove `fern/`
-- [ ] Remove `package.json`
-- [ ] Remove `package-lock.json`
-- [ ] Remove `scripts/run-fern.mjs`
-- [ ] Remove `scripts/check-fern-definition-sync.mjs`
-- [ ] Remove any remaining Fern references from `README.md`, tests, and docs
+- [x] Move `fern/definition/openapi/creem-openapi.json` to `spec/creem-openapi.json`
+- [x] Create the `spec/` directory as the canonical contract location
+- [x] Rename or rewrite `docs/spec-audit.md` to `docs/openapi-audit.md`
+- [x] Update the audit document to point at `spec/creem-openapi.json`
+- [x] Remove `.fern/`
+- [x] Remove `fern/`
+- [x] Remove `package.json`
+- [x] Remove `package-lock.json`
+- [x] Remove `scripts/run-fern.mjs`
+- [x] Remove `scripts/check-fern-definition-sync.mjs`
+- [x] Replace the Fern-specific smoke test with a contract-layout smoke test for the new source of truth
+- [x] Remove any remaining Fern references from `README.md`, tests, and docs
 
 ### Acceptance Criteria
 
-- [ ] The OpenAPI source of truth lives at `spec/creem-openapi.json`
-- [ ] No active build or test workflow depends on Fern
-- [ ] No active build or test workflow depends on Node
-- [ ] The audit document still captures the spec risks that affect the PHP SDK
+- [x] The OpenAPI source of truth lives at `spec/creem-openapi.json`
+- [x] No active build or test workflow depends on Fern
+- [x] No active build or test workflow depends on Node
+- [x] The audit document still captures the spec risks that affect the PHP SDK
 
 ## Phase 3 - Build The Core SDK Foundation
 
@@ -301,11 +302,11 @@ Implement each API domain with a stable public surface and full typed mapping.
 
 ### Goal
 
-Replace generation drift checks with explicit spec coverage and behavioral tests.
+Replace the temporary Phase 2 layout smoke test with explicit spec coverage and behavioral tests.
 
 ### Tasks
 
-- [ ] Remove the existing Fern-specific smoke test
+- [ ] Replace the temporary contract-layout smoke test with behavior-focused coverage
 - [ ] Add unit tests for `Environment`
 - [ ] Add unit tests for `Config`
 - [ ] Add unit tests for exception mapping
