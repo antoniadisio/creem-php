@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3691db948301458f8735b042465a88b9",
+    "content-hash": "bd4fb1a25d573d0c1b70df4f66b01b25",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -537,23 +537,23 @@
         },
         {
             "name": "saloonphp/saloon",
-            "version": "v3.15.0",
+            "version": "v3.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/saloonphp/saloon.git",
-                "reference": "8039c76132ca52d08c887407773a770c15ab04a0"
+                "reference": "c89f890d49dd4d85ba96b377f6c03a86f70d67f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/saloonphp/saloon/zipball/8039c76132ca52d08c887407773a770c15ab04a0",
-                "reference": "8039c76132ca52d08c887407773a770c15ab04a0",
+                "url": "https://api.github.com/repos/saloonphp/saloon/zipball/c89f890d49dd4d85ba96b377f6c03a86f70d67f7",
+                "reference": "c89f890d49dd4d85ba96b377f6c03a86f70d67f7",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.6",
                 "guzzlehttp/promises": "^1.5 || ^2.0",
                 "guzzlehttp/psr7": "^2.0",
-                "php": "^8.2",
+                "php": "^8.1",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.1 || ^2.0"
             },
@@ -563,12 +563,12 @@
             "require-dev": {
                 "ext-simplexml": "*",
                 "friendsofphp/php-cs-fixer": "^3.5",
-                "illuminate/collections": "^10.0 || ^11.0 || ^12.0",
+                "illuminate/collections": "^9.39 || ^10.0",
                 "league/flysystem": "^3.0",
-                "pestphp/pest": "^2.36.0 || ^3.8.2 || ^4.1.4",
+                "pestphp/pest": "^2.36.0 || ^3.8.2",
                 "phpstan/phpstan": "^2.1.13",
                 "saloonphp/xml-wrangler": "^1.1",
-                "spatie/invade": "^2.1",
+                "spatie/ray": "^1.33",
                 "symfony/dom-crawler": "^6.0 || ^7.0",
                 "symfony/var-dumper": "^6.3 || ^7.0"
             },
@@ -606,7 +606,7 @@
             ],
             "support": {
                 "issues": "https://github.com/saloonphp/saloon/issues",
-                "source": "https://github.com/saloonphp/saloon/tree/v3.15.0"
+                "source": "https://github.com/saloonphp/saloon/tree/v3.13.1"
             },
             "funding": [
                 {
@@ -614,7 +614,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-02T22:04:13+00:00"
+            "time": "2025-06-21T11:08:08+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -687,16 +687,16 @@
     "packages-dev": [
         {
             "name": "laravel/pint",
-            "version": "v1.27.1",
+            "version": "v1.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "54cca2de13790570c7b6f0f94f37896bee4abcb5"
+                "reference": "53072e8ea22213a7ed168a8a15b96fbb8b82d44b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/54cca2de13790570c7b6f0f94f37896bee4abcb5",
-                "reference": "54cca2de13790570c7b6f0f94f37896bee4abcb5",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/53072e8ea22213a7ed168a8a15b96fbb8b82d44b",
+                "reference": "53072e8ea22213a7ed168a8a15b96fbb8b82d44b",
                 "shasum": ""
             },
             "require": {
@@ -704,16 +704,16 @@
                 "ext-mbstring": "*",
                 "ext-tokenizer": "*",
                 "ext-xml": "*",
-                "php": "^8.2.0"
+                "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.93.1",
-                "illuminate/view": "^12.51.0",
-                "larastan/larastan": "^3.9.2",
-                "laravel-zero/framework": "^12.0.5",
+                "friendsofphp/php-cs-fixer": "^3.66.0",
+                "illuminate/view": "^10.48.25",
+                "larastan/larastan": "^2.9.12",
+                "laravel-zero/framework": "^10.48.25",
                 "mockery/mockery": "^1.6.12",
-                "nunomaduro/termwind": "^2.3.3",
-                "pestphp/pest": "^3.8.5"
+                "nunomaduro/termwind": "^1.17.0",
+                "pestphp/pest": "^2.36.0"
             },
             "bin": [
                 "builds/pint"
@@ -739,7 +739,6 @@
             "description": "An opinionated code formatter for PHP.",
             "homepage": "https://laravel.com",
             "keywords": [
-                "dev",
                 "format",
                 "formatter",
                 "lint",
@@ -750,7 +749,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2026-02-10T20:00:20+00:00"
+            "time": "2025-01-14T16:20:53+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2484,5 +2483,8 @@
         "php": "^8.1"
     },
     "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.1.0"
+    },
     "plugin-api-version": "2.9.0"
 }

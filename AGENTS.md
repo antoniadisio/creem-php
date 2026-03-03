@@ -14,6 +14,8 @@ Install dependencies with `composer install`. Use the Composer scripts already d
 - `composer cs:fix` applies Pint formatting fixes.
 - `composer stan` runs PHPStan against `src` and `tests` through the committed `phpstan.neon.dist` configuration.
 
+`composer install` and `composer update` resolve against the committed Composer platform pin (`php: 8.1.0`), so dependency changes must stay compatible with the PHP 8.1 support floor and the CI lockfile target.
+
 Run `composer test` and `composer stan` after each completed task and keep fixing until both pass cleanly. Before opening a pull request, also run `composer cs`.
 
 ## Coding Style & Naming Conventions
