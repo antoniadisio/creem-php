@@ -334,7 +334,10 @@ final class Payload
         }
 
         /** @var array<string, mixed> $value */
-        return $mapper($value);
+        /** @var TObject $object */
+        $object = $mapper($value);
+
+        return $object;
     }
 
     /**

@@ -85,7 +85,8 @@ final class ResourcesTest extends TestCase
         self::assertSame(ApiMode::Test, $product->mode);
         self::assertSame(CurrencyCode::USD, $product->currency);
         self::assertSame(BillingPeriod::EveryMonth, $product->billingPeriod);
-        $feature = $product->features[0] ?? null;
+        self::assertArrayHasKey(0, $product->features);
+        $feature = $product->features[0];
         self::assertInstanceOf(ProductFeature::class, $feature);
         self::assertSame(ProductFeatureType::LicenseKey, $feature->type);
         $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_123']);
@@ -163,9 +164,11 @@ final class ResourcesTest extends TestCase
         $resource = new SubscriptionsResource($this->connector($mockClient));
 
         $subscription = $resource->get('sub_123');
-        self::assertSame('prod_123', $subscription->product?->id());
+        self::assertNotNull($subscription->product);
+        self::assertSame('prod_123', $subscription->product->id());
         self::assertTrue($subscription->product->isExpanded());
-        self::assertFalse($subscription->customer?->isExpanded() ?? true);
+        self::assertNotNull($subscription->customer);
+        self::assertFalse($subscription->customer->isExpanded());
         self::assertSame(SubscriptionStatus::Active, $subscription->status);
         $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_123']);
 
@@ -181,7 +184,8 @@ final class ResourcesTest extends TestCase
             ),
         );
         self::assertCount(1, $updated->items);
-        self::assertInstanceOf(SubscriptionItem::class, $updated->items[0] ?? null);
+        self::assertArrayHasKey(0, $updated->items);
+        self::assertInstanceOf(SubscriptionItem::class, $updated->items[0]);
         $this->assertRequest(
             $mockClient,
             Method::POST,
@@ -191,7 +195,8 @@ final class ResourcesTest extends TestCase
         );
 
         $upgraded = $resource->upgrade('sub_123', new UpgradeSubscriptionRequest('prod_999', SubscriptionUpdateBehavior::ProrationChargeImmediately));
-        self::assertSame('prod_999', $upgraded->product?->id());
+        self::assertNotNull($upgraded->product);
+        self::assertSame('prod_999', $upgraded->product->id());
         $this->assertRequest(
             $mockClient,
             Method::POST,
@@ -220,11 +225,15 @@ final class ResourcesTest extends TestCase
         $checkout = $resource->get('chk_123');
         self::assertSame('chk_123', $checkout->id);
         self::assertSame(CheckoutStatus::Pending, $checkout->status);
-        self::assertTrue($checkout->product?->isExpanded());
+        self::assertNotNull($checkout->product);
+        self::assertTrue($checkout->product->isExpanded());
         self::assertInstanceOf(Order::class, $checkout->order);
-        self::assertInstanceOf(CustomField::class, $checkout->customFields[0] ?? null);
-        self::assertInstanceOf(ProductFeature::class, $checkout->feature[0] ?? null);
-        self::assertSame('sdk-test', $checkout->metadata['source'] ?? null);
+        self::assertArrayHasKey(0, $checkout->customFields);
+        self::assertInstanceOf(CustomField::class, $checkout->customFields[0]);
+        self::assertArrayHasKey(0, $checkout->feature);
+        self::assertInstanceOf(ProductFeature::class, $checkout->feature[0]);
+        self::assertIsArray($checkout->metadata);
+        self::assertSame('sdk-test', $checkout->metadata['source']);
         $this->assertRequest($mockClient, Method::GET, '/v1/checkouts', ['checkout_id' => 'chk_123']);
 
         $created = $resource->create(new CreateCheckoutRequest('prod_123', requestId: 'req_1', units: 2, successUrl: 'https://example.com/success'));
@@ -342,10 +351,13 @@ final class ResourcesTest extends TestCase
                 StatsInterval::Day,
             ),
         );
-        self::assertSame(2, $summary->totals?->totalProducts);
+        self::assertNotNull($summary->totals);
+        self::assertSame(2, $summary->totals->totalProducts);
         self::assertCount(1, $summary->periods);
-        self::assertInstanceOf(StatsPeriod::class, $summary->periods[0] ?? null);
-        self::assertSame('2023-11-14T22:13:20+00:00', $summary->periods[0]->timestamp?->format(DATE_ATOM));
+        self::assertArrayHasKey(0, $summary->periods);
+        self::assertInstanceOf(StatsPeriod::class, $summary->periods[0]);
+        self::assertInstanceOf(DateTimeImmutable::class, $summary->periods[0]->timestamp);
+        self::assertSame('2023-11-14T22:13:20+00:00', $summary->periods[0]->timestamp->format(DATE_ATOM));
         $this->assertRequest(
             $mockClient,
             Method::GET,

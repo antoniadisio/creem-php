@@ -10,12 +10,19 @@ namespace Creem\Dto\Common;
 final class ExpandableResource
 {
     /**
+     * @var TResource|null
+     */
+    private readonly ?object $resource;
+
+    /**
      * @param  TResource|null  $resource
      */
     private function __construct(
         private readonly string $id,
-        private readonly ?object $resource,
-    ) {}
+        ?object $resource,
+    ) {
+        $this->resource = $resource;
+    }
 
     /**
      * @return self<TResource>
@@ -52,7 +59,10 @@ final class ExpandableResource
      */
     public function resource(): ?object
     {
-        return $this->resource;
+        /** @var TResource|null $resource */
+        $resource = $this->resource;
+
+        return $resource;
     }
 
     public function isExpanded(): bool
