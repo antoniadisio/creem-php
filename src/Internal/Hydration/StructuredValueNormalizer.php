@@ -22,6 +22,7 @@ final class StructuredValueNormalizer
             return StructuredList::fromArray($value);
         }
 
+        /** @var array<string, mixed> $value */
         return StructuredObject::fromArray($value);
     }
 }

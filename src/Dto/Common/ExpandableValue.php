@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Common;
 
+use function array_is_list;
 use function is_array;
 use function is_string;
 
@@ -23,10 +24,11 @@ final class ExpandableValue
             return new self($value, null);
         }
 
-        if (! is_array($value)) {
+        if (! is_array($value) || array_is_list($value)) {
             return null;
         }
 
+        /** @var array<string, mixed> $value */
         $id = isset($value['id']) && is_string($value['id']) ? $value['id'] : null;
 
         return new self($id, StructuredObject::fromArray($value));

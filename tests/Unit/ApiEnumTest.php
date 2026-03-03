@@ -127,8 +127,13 @@ final class ApiEnumTest extends TestCase
         $node = $this->spec();
 
         foreach (explode('.', $path) as $segment) {
+            self::assertIsArray($node, sprintf('Spec path %s must resolve at every segment.', $path));
+
             $key = ctype_digit($segment) ? (int) $segment : $segment;
-            $node = $node[$key] ?? null;
+
+            self::assertArrayHasKey($key, $node, sprintf('Spec path %s is missing segment %s.', $path, $segment));
+
+            $node = $node[$key];
         }
 
         self::assertIsArray($node, sprintf('Spec path %s must resolve to an enum schema.', $path));

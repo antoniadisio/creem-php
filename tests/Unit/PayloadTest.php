@@ -74,7 +74,16 @@ final class PayloadTest extends TestCase
             $payload,
             'periods',
             'StatsSummary',
-            static fn (mixed $item): string => is_array($item) ? (string) ($item['id'] ?? '') : '',
+            static function (mixed $item): string {
+                self::assertIsArray($item);
+                self::assertArrayHasKey('id', $item);
+
+                $id = $item['id'];
+
+                self::assertIsString($id);
+
+                return $id;
+            },
             true,
         );
         $metadata = Payload::arrayObject($payload, 'metadata', 'Checkout', true);

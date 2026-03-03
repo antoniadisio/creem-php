@@ -16,6 +16,7 @@ use JsonException;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
+use function array_is_list;
 use function array_unique;
 use function array_values;
 use function basename;
@@ -109,32 +110,78 @@ final class OpenApiContractTest extends TestCase
     public function test_key_response_fixtures_lock_spec_aligned_typed_shapes(): void
     {
         $product = $this->fixture('product.json');
-        self::assertSame('USD', $product['currency'] ?? null);
-        self::assertSame('every-month', $product['billing_period'] ?? null);
-        self::assertSame('licenseKey', $product['features'][0]['type'] ?? null);
-        self::assertSame('2026-01-01T00:00:00Z', $product['created_at'] ?? null);
+        self::assertSame('USD', $this->stringValue($product, 'currency', 'product fixture'));
+        self::assertSame('every-month', $this->stringValue($product, 'billing_period', 'product fixture'));
+        self::assertSame(
+            'licenseKey',
+            $this->stringValue(
+                $this->listObjectAt($this->listValue($product, 'features', 'product fixture'), 0, 'product fixture features'),
+                'type',
+                'product fixture features[0]',
+            ),
+        );
+        self::assertSame('2026-01-01T00:00:00Z', $this->stringValue($product, 'created_at', 'product fixture'));
 
         $checkout = $this->fixture('checkout.json');
-        self::assertSame('pending', $checkout['status'] ?? null);
-        self::assertIsArray($checkout['product'] ?? null);
-        self::assertIsArray($checkout['order'] ?? null);
-        self::assertSame('paid', $checkout['order']['status'] ?? null);
-        self::assertSame('text', $checkout['custom_fields'][0]['type'] ?? null);
-        self::assertSame('file', $checkout['feature'][0]['type'] ?? null);
-        self::assertSame('sdk-test', $checkout['metadata']['source'] ?? null);
-        self::assertIsInt($checkout['metadata']['attempt'] ?? null);
+        self::assertSame('pending', $this->stringValue($checkout, 'status', 'checkout fixture'));
+        self::assertIsArray($this->value($checkout, 'product', 'checkout fixture'));
+        self::assertIsArray($this->value($checkout, 'order', 'checkout fixture'));
+        self::assertSame(
+            'paid',
+            $this->stringValue($this->objectValue($checkout, 'order', 'checkout fixture'), 'status', 'checkout order'),
+        );
+        self::assertSame(
+            'text',
+            $this->stringValue(
+                $this->listObjectAt($this->listValue($checkout, 'custom_fields', 'checkout fixture'), 0, 'checkout custom fields'),
+                'type',
+                'checkout custom fields[0]',
+            ),
+        );
+        self::assertSame(
+            'file',
+            $this->stringValue(
+                $this->listObjectAt($this->listValue($checkout, 'feature', 'checkout fixture'), 0, 'checkout features'),
+                'type',
+                'checkout features[0]',
+            ),
+        );
+        $checkoutMetadata = $this->objectValue($checkout, 'metadata', 'checkout fixture');
+        self::assertSame('sdk-test', $this->stringValue($checkoutMetadata, 'source', 'checkout metadata'));
+        self::assertIsInt($this->value($checkoutMetadata, 'attempt', 'checkout metadata'));
 
         $subscription = $this->fixture('subscription.json');
-        self::assertIsArray($subscription['product'] ?? null);
-        self::assertSame('cus_123', $subscription['customer'] ?? null);
-        self::assertSame('charge_automatically', $subscription['collection_method'] ?? null);
-        self::assertSame('paid', $subscription['last_transaction']['status'] ?? null);
-        self::assertSame('2026-01-01T12:00:00Z', $subscription['last_transaction_date'] ?? null);
+        self::assertIsArray($this->value($subscription, 'product', 'subscription fixture'));
+        self::assertSame('cus_123', $this->stringValue($subscription, 'customer', 'subscription fixture'));
+        self::assertSame(
+            'charge_automatically',
+            $this->stringValue($subscription, 'collection_method', 'subscription fixture'),
+        );
+        self::assertSame(
+            'paid',
+            $this->stringValue(
+                $this->objectValue($subscription, 'last_transaction', 'subscription fixture'),
+                'status',
+                'subscription last transaction',
+            ),
+        );
+        self::assertSame(
+            '2026-01-01T12:00:00Z',
+            $this->stringValue($subscription, 'last_transaction_date', 'subscription fixture'),
+        );
 
         $statsSummary = $this->fixture('stats_summary.json');
-        self::assertSame(12000, $statsSummary['totals']['totalRevenue'] ?? null);
-        self::assertIsInt($statsSummary['periods'][0]['timestamp'] ?? null);
-        self::assertSame(11500, $statsSummary['periods'][0]['netRevenue'] ?? null);
+        self::assertSame(
+            12000,
+            $this->value($this->objectValue($statsSummary, 'totals', 'stats summary fixture'), 'totalRevenue', 'stats summary totals'),
+        );
+        $firstStatsPeriod = $this->listObjectAt(
+            $this->listValue($statsSummary, 'periods', 'stats summary fixture'),
+            0,
+            'stats summary periods',
+        );
+        self::assertIsInt($this->value($firstStatsPeriod, 'timestamp', 'stats summary periods[0]'));
+        self::assertSame(11500, $this->value($firstStatsPeriod, 'netRevenue', 'stats summary periods[0]'));
     }
 
     /**
@@ -145,18 +192,21 @@ final class OpenApiContractTest extends TestCase
     private function specOperations(): array
     {
         $spec = $this->spec();
+        $paths = $this->objectValue($spec, 'paths', 'OpenAPI spec');
         $operations = [];
 
-        foreach ($spec['paths'] ?? [] as $path => $methods) {
-            if (! is_array($methods)) {
+        foreach ($paths as $path => $methods) {
+            if (! is_array($methods) || array_is_list($methods)) {
                 continue;
             }
 
+            /** @var array<string, mixed> $methods */
             foreach ($methods as $method => $operation) {
-                if (! is_array($operation)) {
+                if (! is_array($operation) || array_is_list($operation)) {
                     continue;
                 }
 
+                /** @var array<string, mixed> $operation */
                 $operationId = $operation['operationId'] ?? null;
 
                 if (! is_string($operationId)) {
@@ -401,6 +451,75 @@ final class OpenApiContractTest extends TestCase
     private function fixturesDirectory(): string
     {
         return dirname(__DIR__).'/Fixtures/Responses';
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function value(array $payload, string $key, string $context): mixed
+    {
+        self::assertArrayHasKey($key, $payload, sprintf('%s must contain key %s.', $context, $key));
+
+        return $payload[$key];
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function objectValue(array $payload, string $key, string $context): array
+    {
+        $value = $this->value($payload, $key, $context);
+
+        self::assertIsArray($value, sprintf('%s.%s must be an object.', $context, $key));
+        self::assertFalse(array_is_list($value), sprintf('%s.%s must be an object.', $context, $key));
+
+        /** @var array<string, mixed> $value */
+        return $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return list<mixed>
+     */
+    private function listValue(array $payload, string $key, string $context): array
+    {
+        $value = $this->value($payload, $key, $context);
+
+        self::assertIsArray($value, sprintf('%s.%s must be a list.', $context, $key));
+        self::assertTrue(array_is_list($value), sprintf('%s.%s must be a list.', $context, $key));
+
+        /** @var list<mixed> $value */
+        return $value;
+    }
+
+    /**
+     * @param  list<mixed>  $items
+     * @return array<string, mixed>
+     */
+    private function listObjectAt(array $items, int $index, string $context): array
+    {
+        self::assertArrayHasKey($index, $items, sprintf('%s must contain index %d.', $context, $index));
+
+        $value = $items[$index];
+
+        self::assertIsArray($value, sprintf('%s[%d] must be an object.', $context, $index));
+        self::assertFalse(array_is_list($value), sprintf('%s[%d] must be an object.', $context, $index));
+
+        /** @var array<string, mixed> $value */
+        return $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function stringValue(array $payload, string $key, string $context): string
+    {
+        $value = $this->value($payload, $key, $context);
+
+        self::assertIsString($value, sprintf('%s.%s must be a string.', $context, $key));
+
+        return $value;
     }
 
     /**

@@ -122,6 +122,7 @@ final class Payload
             throw HydrationException::invalidField(self::dtoName($dto), $key, 'object', $value);
         }
 
+        /** @var array<string, mixed> $value */
         return StructuredObject::fromArray($value);
     }
 
@@ -332,6 +333,7 @@ final class Payload
             throw HydrationException::invalidField($dto, $key, 'object', $value);
         }
 
+        /** @var array<string, mixed> $value */
         return $mapper($value);
     }
 
@@ -399,6 +401,7 @@ final class Payload
             throw HydrationException::invalidField($dto, $key, 'expandable resource string or object', $value);
         }
 
+        /** @var array<string, mixed> $value */
         $id = self::string($value, 'id', $dto, true);
 
         if ($id === null) {
