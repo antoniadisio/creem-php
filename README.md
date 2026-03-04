@@ -2,7 +2,7 @@
 
 Handwritten PHP SDK for the Creem API.
 
-The public contract is a stable `Creem\Client` facade with typed DTOs, typed exceptions, and resource classes for the currently supported Creem endpoints. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
+The public contract is a stable `Creem\Client` facade for outbound API access plus a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
 
 ## Installation
 
@@ -20,10 +20,30 @@ For local development, run the repository checks before shipping changes:
 composer qa
 ```
 
+The test scripts are split by suite:
+
+```bash
+composer test
+composer test:integration
+composer test:local
+composer test:live
+```
+
+`composer test` runs the fast `Unit` suite only.
+`composer test:integration` runs the deterministic `Integration` suite with Saloon mocks.
+`composer test:local` runs both local suites (`Unit` then `Integration`).
+`composer test:live` runs a small opt-in read-only smoke suite against the Creem test environment and is intentionally excluded from the default QA flow.
+
 `composer qa` runs the fix-first local QA flow in this order: Rector, Pint fixes, PHPStan, then Pest. When you want a non-mutating verification pass (for example before opening a pull request), run `composer qa:check`.
 The committed Rector config applies PHP 8.4, code-quality, and type-declaration refactors across internal code and tests, but it intentionally skips automatic type-declaration inference on `Creem\Client`, `Creem\Config`, and the `Creem\Resource\*` surface so public signatures stay under manual review.
 `composer stan` uses the committed `phpstan.neon.dist` project configuration and the repository-defined memory limit, so local analysis and CI run the same PHPStan setup.
 `composer install` and `composer update` also use the committed Composer platform pin (`php: 8.4.0`), which keeps the lockfile aligned with the PHP 8.4 CI target even when dependency updates are run on newer local PHP versions.
+
+For `composer test:live`, use:
+
+- `CREEM_LIVE_API_KEY` for authenticated live smoke tests
+- `CREEM_LIVE_BASE_URL` to override the test API host when needed
+- `CREEM_LIVE_TIMEOUT` to override the default 10-second live test timeout
 
 ## Quick Start
 
@@ -82,6 +102,9 @@ All SDK exceptions extend `Creem\Exception\CreemException`.
 - `RateLimitException` for `429`
 - `ServerException` for `5xx`
 - `TransportException` for transport, timeout, and decode failures
+- `WebhookException` for inbound webhook verification and parsing failures
+- `InvalidWebhookSignatureException` for invalid or blank `creem-signature` headers
+- `InvalidWebhookPayloadException` for malformed webhook payloads
 
 ```php
 <?php
@@ -99,6 +122,25 @@ try {
 } catch (TransportException $exception) {
     error_log($exception->getMessage());
 }
+```
+
+## Webhooks
+
+`Creem\Webhook` verifies the incoming `creem-signature` header against the raw request body and parses the JSON payload without requiring a `Client` instance.
+
+```php
+<?php
+
+use Creem\Webhook;
+
+$payload = file_get_contents('php://input') ?: '';
+$signature = $_SERVER['HTTP_CREEM_SIGNATURE'] ?? '';
+
+$event = Webhook::constructEvent(
+    $payload,
+    $signature,
+    $_ENV['CREEM_WEBHOOK_SECRET'],
+);
 ```
 
 ## Resources

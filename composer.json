@@ -42,7 +42,14 @@
     "scripts": {
         "rector": "rector process",
         "rector:check": "rector process --dry-run",
-        "test": "pest",
+        "test:unit": "pest --testsuite=Unit",
+        "test:integration": "pest --testsuite=Integration",
+        "test:local": [
+            "@test:unit",
+            "@test:integration"
+        ],
+        "test:live": "pest --testsuite=Live",
+        "test": "@test:unit",
         "cs": "pint --test",
         "cs:fix": "pint",
         "stan": "phpstan analyse --configuration=phpstan.neon.dist --memory-limit=512M",

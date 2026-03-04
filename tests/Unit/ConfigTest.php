@@ -17,19 +17,58 @@ test('config applies overrides and normalizes inputs', function (): void {
         '  integration-suite  ',
     );
 
-    $this->assertSame('sk_test_123', $config->apiKey());
-    $this->assertSame(Environment::Test, $config->environment());
-    $this->assertSame('https://example.test', $config->baseUrl());
-    $this->assertSame('https://example.test', $config->resolveBaseUrl());
-    $this->assertEqualsWithDelta(15.0, $config->timeout(), PHP_FLOAT_EPSILON);
-    $this->assertSame('integration-suite', $config->userAgentSuffix());
-    $this->assertStringStartsWith('creem-php-sdk/', $config->userAgent());
-    $this->assertStringContainsString('php/'.PHP_VERSION, $config->userAgent());
-    $this->assertStringEndsWith('integration-suite', $config->userAgent());
+    expect($config->apiKey())->toBe('sk_test_123')
+        ->and($config->environment())->toBe(Environment::Test)
+        ->and($config->baseUrl())->toBe('https://example.test')
+        ->and($config->resolveBaseUrl())->toBe('https://example.test')
+        ->and($config->timeout())->toBe(15.0)
+        ->and($config->userAgentSuffix())->toBe('integration-suite')
+        ->and($config->userAgent())->toStartWith('creem-php-sdk/')
+        ->and($config->userAgent())->toContain('php/'.PHP_VERSION)
+        ->and($config->userAgent())->toEndWith('integration-suite');
 });
 
-test('config rejects invalid values', function (): void {
-    expect(static function (): void {
-        new Config('');
-    })->toThrow(InvalidArgumentException::class);
+foreach (invalidConfigValues() as $dataset => [$factory, $message]) {
+    test("config rejects invalid values ({$dataset})", function () use ($factory, $message): void {
+        expect($factory)->toThrow(InvalidArgumentException::class, $message);
+    });
+}
+
+test('config normalizes blank user agent suffixes to null', function (): void {
+    $config = new Config('sk_test_123', userAgentSuffix: '   ');
+
+    expect($config->userAgentSuffix())->toBeNull()
+        ->and($config->userAgent())->not->toEndWith(' ');
 });
+
+test('config resolves the default environment base url when no override is provided', function (): void {
+    $config = new Config('sk_test_123', Environment::Test);
+
+    expect($config->baseUrl())->toBeNull()
+        ->and($config->resolveBaseUrl())->toBe(Environment::Test->baseUrl());
+});
+
+/**
+ * @return array<string, array{0: callable(): Config, 1: string}>
+ */
+function invalidConfigValues(): array
+{
+    return [
+        'blank api key' => [
+            static fn (): Config => new Config(''),
+            'The Creem API key cannot be empty.',
+        ],
+        'zero timeout' => [
+            static fn (): Config => new Config('sk_test_123', timeout: 0),
+            'The Creem request timeout must be greater than zero.',
+        ],
+        'negative timeout' => [
+            static fn (): Config => new Config('sk_test_123', timeout: -1),
+            'The Creem request timeout must be greater than zero.',
+        ],
+        'blank base url' => [
+            static fn (): Config => new Config('sk_test_123', baseUrl: '   '),
+            'The Creem base URL override cannot be blank.',
+        ],
+    ];
+}

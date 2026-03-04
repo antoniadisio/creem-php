@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Creem\Tests\Integration;
 
 use Creem\Dto\Checkout\CreateCheckoutRequest;
 use Creem\Dto\Common\CustomField;
+use Creem\Dto\Common\ExpandableResource;
 use Creem\Dto\Common\Order;
+use Creem\Dto\Common\Pagination;
 use Creem\Dto\Common\ProductFeature;
 use Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
 use Creem\Dto\Customer\Customer;
@@ -21,6 +23,7 @@ use Creem\Dto\Product\Product;
 use Creem\Dto\Product\SearchProductsRequest;
 use Creem\Dto\Stats\GetStatsSummaryRequest;
 use Creem\Dto\Stats\StatsPeriod;
+use Creem\Dto\Stats\StatsTotals;
 use Creem\Dto\Subscription\CancelSubscriptionRequest;
 use Creem\Dto\Subscription\SubscriptionItem;
 use Creem\Dto\Subscription\UpdateSubscriptionRequest;
@@ -44,7 +47,6 @@ use Creem\Enum\SubscriptionCancellationMode;
 use Creem\Enum\SubscriptionStatus;
 use Creem\Enum\SubscriptionUpdateBehavior;
 use Creem\Enum\TransactionStatus;
-use Creem\Resource\CheckoutsResource;
 use Creem\Resource\CustomersResource;
 use Creem\Resource\DiscountsResource;
 use Creem\Resource\LicensesResource;
@@ -52,13 +54,15 @@ use Creem\Resource\ProductsResource;
 use Creem\Resource\StatsResource;
 use Creem\Resource\SubscriptionsResource;
 use Creem\Resource\TransactionsResource;
+use Creem\Tests\IntegrationTestCase;
 use Creem\Tests\Support\ResourceBehaviorTestCatalog;
 use DateTimeImmutable;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
-creem_test(ResourceBehaviorTestCatalog::PRODUCTS, function (): void {
+test(ResourceBehaviorTestCatalog::PRODUCTS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('product.json')),
         MockResponse::make($this->responseFixture('product.json', ['id' => 'prod_456', 'name' => 'Enterprise'])),
@@ -67,18 +71,18 @@ creem_test(ResourceBehaviorTestCatalog::PRODUCTS, function (): void {
     $resource = new ProductsResource($this->connector($mockClient));
 
     $product = $resource->get('prod_123');
-    $this->assertSame('prod_123', $product->id);
-    $this->assertSame(ApiMode::Test, $product->mode);
-    $this->assertSame(CurrencyCode::USD, $product->currency);
-    $this->assertSame(BillingPeriod::EveryMonth, $product->billingPeriod);
-    $this->assertArrayHasKey(0, $product->features);
-    $feature = $product->features[0];
-    $this->assertInstanceOf(ProductFeature::class, $feature);
-    $this->assertSame(ProductFeatureType::LicenseKey, $feature->type);
+
+    expect($product->id)->toBe('prod_123')
+        ->and($product->mode)->toBe(ApiMode::Test)
+        ->and($product->currency)->toBe(CurrencyCode::USD)
+        ->and($product->billingPeriod)->toBe(BillingPeriod::EveryMonth)
+        ->and($product->features[0] ?? null)->toBeInstanceOf(ProductFeature::class)
+        ->and($product->features[0]->type)->toBe(ProductFeatureType::LicenseKey);
     $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_123']);
 
     $created = $resource->create(new CreateProductRequest('Enterprise', 4900, CurrencyCode::USD, BillingType::OneTime, description: 'Scale plan'));
-    $this->assertSame('prod_456', $created->id);
+
+    expect($created->id)->toBe('prod_456');
     $this->assertRequest(
         $mockClient,
         Method::POST,
@@ -88,19 +92,33 @@ creem_test(ResourceBehaviorTestCatalog::PRODUCTS, function (): void {
     );
 
     $page = $resource->search(new SearchProductsRequest(2, 50));
-    $this->assertSame(1, $page->count());
-    $pagination = $page->pagination;
-    $this->assertInstanceOf(\Creem\Dto\Common\Pagination::class, $pagination);
-    $this->assertSame(2, $pagination->currentPage);
-    $this->assertNull($pagination->nextPage);
-    $item = $page->get(0);
-    $this->assertInstanceOf(Product::class, $item);
-    $this->assertSame('prod_123', $item->id);
-    $this->assertSame(CurrencyCode::USD, $item->currency);
+
+    expect($page->count())->toBe(1)
+        ->and($page->pagination)->toBeInstanceOf(Pagination::class)
+        ->and($page->pagination?->currentPage)->toBe(2)
+        ->and($page->pagination?->nextPage)->toBeNull()
+        ->and($page->get(0))->toBeInstanceOf(Product::class)
+        ->and($page->get(0)?->id)->toBe('prod_123')
+        ->and($page->get(0)?->currency)->toBe(CurrencyCode::USD);
     $this->assertRequest($mockClient, Method::GET, '/v1/products/search', ['page_number' => '2', 'page_size' => '50']);
 });
 
-creem_test(ResourceBehaviorTestCatalog::CUSTOMERS, function (): void {
+test('products resource applies empty query defaults when search dto is omitted', function (): void {
+    /** @var IntegrationTestCase $this */
+    $mockClient = new MockClient([
+        MockResponse::make($this->responseFixture('product_page.json')),
+    ]);
+    $resource = new ProductsResource($this->connector($mockClient));
+
+    $page = $resource->search();
+
+    expect($page->count())->toBe(1)
+        ->and($page->get(0))->toBeInstanceOf(Product::class);
+    $this->assertRequest($mockClient, Method::GET, '/v1/products/search');
+});
+
+test(ResourceBehaviorTestCatalog::CUSTOMERS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('customer_page.json')),
         MockResponse::make($this->responseFixture('customer.json')),
@@ -110,26 +128,45 @@ creem_test(ResourceBehaviorTestCatalog::CUSTOMERS, function (): void {
     $resource = new CustomersResource($this->connector($mockClient));
 
     $page = $resource->list(new ListCustomersRequest(1, 20));
-    $this->assertSame(1, $page->count());
-    $this->assertInstanceOf(Customer::class, $page->get(0));
+
+    expect($page->count())->toBe(1)
+        ->and($page->get(0))->toBeInstanceOf(Customer::class);
     $this->assertRequest($mockClient, Method::GET, '/v1/customers/list', ['page_number' => '1', 'page_size' => '20']);
 
     $customer = $resource->get('cus_123');
-    $this->assertSame('cus_123', $customer->id);
-    $this->assertSame(ApiMode::Test, $customer->mode);
-    $this->assertInstanceOf(DateTimeImmutable::class, $customer->createdAt);
+
+    expect($customer->id)->toBe('cus_123')
+        ->and($customer->mode)->toBe(ApiMode::Test)
+        ->and($customer->createdAt)->toBeInstanceOf(DateTimeImmutable::class);
     $this->assertRequest($mockClient, Method::GET, '/v1/customers', ['customer_id' => 'cus_123']);
 
     $customerByEmail = $resource->findByEmail('billing@example.com');
-    $this->assertSame('billing@example.com', $customerByEmail->email);
+
+    expect($customerByEmail->email)->toBe('billing@example.com');
     $this->assertRequest($mockClient, Method::GET, '/v1/customers', ['email' => 'billing@example.com']);
 
     $links = $resource->createBillingPortalLink(new CreateCustomerBillingPortalLinkRequest('cus_123'));
-    $this->assertSame('https://billing.creem.io/session', $links->customerPortalLink);
+
+    expect($links->customerPortalLink)->toBe('https://billing.creem.io/session');
     $this->assertRequest($mockClient, Method::POST, '/v1/customers/billing', [], ['customer_id' => 'cus_123']);
 });
 
-creem_test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
+test('customers resource applies empty query defaults when list dto is omitted', function (): void {
+    /** @var IntegrationTestCase $this */
+    $mockClient = new MockClient([
+        MockResponse::make($this->responseFixture('customer_page.json')),
+    ]);
+    $resource = new CustomersResource($this->connector($mockClient));
+
+    $page = $resource->list();
+
+    expect($page->count())->toBe(1)
+        ->and($page->get(0))->toBeInstanceOf(Customer::class);
+    $this->assertRequest($mockClient, Method::GET, '/v1/customers/list');
+});
+
+test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('subscription.json')),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'canceled'])),
@@ -148,16 +185,18 @@ creem_test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
     $resource = new SubscriptionsResource($this->connector($mockClient));
 
     $subscription = $resource->get('sub_123');
-    $this->assertInstanceOf(\Creem\Dto\Common\ExpandableResource::class, $subscription->product);
-    $this->assertSame('prod_123', $subscription->product->id());
-    $this->assertTrue($subscription->product->isExpanded());
-    $this->assertInstanceOf(\Creem\Dto\Common\ExpandableResource::class, $subscription->customer);
-    $this->assertFalse($subscription->customer->isExpanded());
-    $this->assertSame(SubscriptionStatus::Active, $subscription->status);
+
+    expect($subscription->product)->toBeInstanceOf(ExpandableResource::class)
+        ->and($subscription->product?->id())->toBe('prod_123')
+        ->and($subscription->product?->isExpanded())->toBeTrue()
+        ->and($subscription->customer)->toBeInstanceOf(ExpandableResource::class)
+        ->and($subscription->customer?->isExpanded())->toBeFalse()
+        ->and($subscription->status)->toBe(SubscriptionStatus::Active);
     $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_123']);
 
     $canceled = $resource->cancel('sub_123', new CancelSubscriptionRequest(SubscriptionCancellationMode::Immediate, SubscriptionCancellationAction::Cancel));
-    $this->assertSame(SubscriptionStatus::Canceled, $canceled->status);
+
+    expect($canceled->status)->toBe(SubscriptionStatus::Canceled);
     $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], ['mode' => 'immediate', 'onExecute' => 'cancel']);
 
     $updated = $resource->update(
@@ -167,9 +206,9 @@ creem_test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
             SubscriptionUpdateBehavior::ProrationCharge,
         ),
     );
-    $this->assertCount(1, $updated->items);
-    $this->assertArrayHasKey(0, $updated->items);
-    $this->assertInstanceOf(SubscriptionItem::class, $updated->items[0]);
+
+    expect($updated->items)->toHaveCount(1)
+        ->and($updated->items[0])->toBeInstanceOf(SubscriptionItem::class);
     $this->assertRequest(
         $mockClient,
         Method::POST,
@@ -179,8 +218,9 @@ creem_test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
     );
 
     $upgraded = $resource->upgrade('sub_123', new UpgradeSubscriptionRequest('prod_999', SubscriptionUpdateBehavior::ProrationChargeImmediately));
-    $this->assertInstanceOf(\Creem\Dto\Common\ExpandableResource::class, $upgraded->product);
-    $this->assertSame('prod_999', $upgraded->product->id());
+
+    expect($upgraded->product)->toBeInstanceOf(ExpandableResource::class)
+        ->and($upgraded->product?->id())->toBe('prod_999');
     $this->assertRequest(
         $mockClient,
         Method::POST,
@@ -190,37 +230,53 @@ creem_test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
     );
 
     $paused = $resource->pause('sub_123');
-    $this->assertSame(SubscriptionStatus::Paused, $paused->status);
+
+    expect($paused->status)->toBe(SubscriptionStatus::Paused);
     $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/pause');
 
     $resumed = $resource->resume('sub_123');
-    $this->assertSame(SubscriptionStatus::Active, $resumed->status);
+
+    expect($resumed->status)->toBe(SubscriptionStatus::Active);
     $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/resume');
 });
 
-creem_test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
+test('subscriptions resource applies empty payload defaults when cancel dto is omitted', function (): void {
+    /** @var IntegrationTestCase $this */
+    $mockClient = new MockClient([
+        MockResponse::make($this->responseFixture('subscription.json', ['status' => 'canceled'])),
+    ]);
+    $resource = new SubscriptionsResource($this->connector($mockClient));
+
+    $subscription = $resource->cancel('sub_123');
+
+    expect($subscription->status)->toBe(SubscriptionStatus::Canceled);
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], []);
+});
+
+test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('checkout.json')),
         MockResponse::make($this->responseFixture('checkout.json', ['id' => 'chk_456'])),
     ]);
-    $resource = new CheckoutsResource($this->connector($mockClient));
+    $resource = new \Creem\Resource\CheckoutsResource($this->connector($mockClient));
 
     $checkout = $resource->get('chk_123');
-    $this->assertSame('chk_123', $checkout->id);
-    $this->assertSame(CheckoutStatus::Pending, $checkout->status);
-    $this->assertInstanceOf(\Creem\Dto\Common\ExpandableResource::class, $checkout->product);
-    $this->assertTrue($checkout->product->isExpanded());
-    $this->assertInstanceOf(Order::class, $checkout->order);
-    $this->assertArrayHasKey(0, $checkout->customFields);
-    $this->assertInstanceOf(CustomField::class, $checkout->customFields[0]);
-    $this->assertArrayHasKey(0, $checkout->feature);
-    $this->assertInstanceOf(ProductFeature::class, $checkout->feature[0]);
-    $this->assertIsArray($checkout->metadata);
-    $this->assertSame('sdk-test', $checkout->metadata['source']);
+
+    expect($checkout->id)->toBe('chk_123')
+        ->and($checkout->status)->toBe(CheckoutStatus::Pending)
+        ->and($checkout->product)->toBeInstanceOf(ExpandableResource::class)
+        ->and($checkout->product?->isExpanded())->toBeTrue()
+        ->and($checkout->order)->toBeInstanceOf(Order::class)
+        ->and($checkout->customFields[0] ?? null)->toBeInstanceOf(CustomField::class)
+        ->and($checkout->feature[0] ?? null)->toBeInstanceOf(ProductFeature::class)
+        ->and($checkout->metadata)->toBeArray()
+        ->and($checkout->metadata['source'] ?? null)->toBe('sdk-test');
     $this->assertRequest($mockClient, Method::GET, '/v1/checkouts', ['checkout_id' => 'chk_123']);
 
     $created = $resource->create(new CreateCheckoutRequest('prod_123', requestId: 'req_1', units: 2, successUrl: 'https://example.com/success'));
-    $this->assertSame('chk_456', $created->id);
+
+    expect($created->id)->toBe('chk_456');
     $this->assertRequest(
         $mockClient,
         Method::POST,
@@ -230,7 +286,8 @@ creem_test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
     );
 });
 
-creem_test(ResourceBehaviorTestCatalog::LICENSES, function (): void {
+test(ResourceBehaviorTestCatalog::LICENSES, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('license.json')),
         MockResponse::make($this->responseFixture('license.json', ['status' => 'inactive'])),
@@ -239,22 +296,26 @@ creem_test(ResourceBehaviorTestCatalog::LICENSES, function (): void {
     $resource = new LicensesResource($this->connector($mockClient));
 
     $activated = $resource->activate(new ActivateLicenseRequest('lic_key', 'macbook'));
-    $this->assertSame('lic_123', $activated->id);
-    $this->assertSame(LicenseStatus::Active, $activated->status);
-    $this->assertInstanceOf(LicenseInstance::class, $activated->instance);
-    $this->assertSame('ins_123', $activated->instance->id);
+
+    expect($activated->id)->toBe('lic_123')
+        ->and($activated->status)->toBe(LicenseStatus::Active)
+        ->and($activated->instance)->toBeInstanceOf(LicenseInstance::class)
+        ->and($activated->instance?->id)->toBe('ins_123');
     $this->assertRequest($mockClient, Method::POST, '/v1/licenses/activate', [], ['key' => 'lic_key', 'instance_name' => 'macbook']);
 
     $deactivated = $resource->deactivate(new DeactivateLicenseRequest('lic_key', 'ins_123'));
-    $this->assertSame(LicenseStatus::Inactive, $deactivated->status);
+
+    expect($deactivated->status)->toBe(LicenseStatus::Inactive);
     $this->assertRequest($mockClient, Method::POST, '/v1/licenses/deactivate', [], ['key' => 'lic_key', 'instance_id' => 'ins_123']);
 
     $validated = $resource->validate(new ValidateLicenseRequest('lic_key', 'ins_123'));
-    $this->assertSame(1, $validated->activation);
+
+    expect($validated->activation)->toBe(1);
     $this->assertRequest($mockClient, Method::POST, '/v1/licenses/validate', [], ['key' => 'lic_key', 'instance_id' => 'ins_123']);
 });
 
-creem_test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
+test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('discount.json')),
         MockResponse::make($this->responseFixture('discount.json', ['code' => 'WELCOME10'])),
@@ -264,16 +325,19 @@ creem_test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
     $resource = new DiscountsResource($this->connector($mockClient));
 
     $discount = $resource->get('disc_123');
-    $this->assertSame('disc_123', $discount->id);
-    $this->assertSame(DiscountStatus::Active, $discount->status);
+
+    expect($discount->id)->toBe('disc_123')
+        ->and($discount->status)->toBe(DiscountStatus::Active);
     $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_id' => 'disc_123']);
 
     $byCode = $resource->getByCode('WELCOME10');
-    $this->assertSame('WELCOME10', $byCode->code);
+
+    expect($byCode->code)->toBe('WELCOME10');
     $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_code' => 'WELCOME10']);
 
     $created = $resource->create(new CreateDiscountRequest('Launch', DiscountType::Fixed, DiscountDuration::Once, ['prod_123'], amount: 1000));
-    $this->assertSame('disc_456', $created->id);
+
+    expect($created->id)->toBe('disc_456');
     $this->assertRequest(
         $mockClient,
         Method::POST,
@@ -283,11 +347,13 @@ creem_test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
     );
 
     $deleted = $resource->delete('disc_123');
-    $this->assertSame(DiscountStatus::Expired, $deleted->status);
+
+    expect($deleted->status)->toBe(DiscountStatus::Expired);
     $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_123/delete');
 });
 
-creem_test(ResourceBehaviorTestCatalog::TRANSACTIONS, function (): void {
+test(ResourceBehaviorTestCatalog::TRANSACTIONS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('transaction.json')),
         MockResponse::make($this->responseFixture('transaction_page.json')),
@@ -295,19 +361,20 @@ creem_test(ResourceBehaviorTestCatalog::TRANSACTIONS, function (): void {
     $resource = new TransactionsResource($this->connector($mockClient));
 
     $transaction = $resource->get('txn_123');
-    $this->assertSame('txn_123', $transaction->id);
-    $this->assertSame(CurrencyCode::USD, $transaction->currency);
-    $this->assertSame(TransactionStatus::Paid, $transaction->status);
+
+    expect($transaction->id)->toBe('txn_123')
+        ->and($transaction->currency)->toBe(CurrencyCode::USD)
+        ->and($transaction->status)->toBe(TransactionStatus::Paid);
     $this->assertRequest($mockClient, Method::GET, '/v1/transactions', ['transaction_id' => 'txn_123']);
 
     $page = $resource->search(new SearchTransactionsRequest(customerId: 'cus_123', pageNumber: 3, pageSize: 25));
-    $this->assertSame(1, $page->count());
-    $pagination = $page->pagination;
-    $this->assertInstanceOf(\Creem\Dto\Common\Pagination::class, $pagination);
-    $this->assertSame(3, $pagination->currentPage);
-    $this->assertNull($pagination->nextPage);
-    $this->assertInstanceOf(Transaction::class, $page->get(0));
-    $this->assertSame(TransactionStatus::Paid, $page->get(0)->status);
+
+    expect($page->count())->toBe(1)
+        ->and($page->pagination)->toBeInstanceOf(Pagination::class)
+        ->and($page->pagination?->currentPage)->toBe(3)
+        ->and($page->pagination?->nextPage)->toBeNull()
+        ->and($page->get(0))->toBeInstanceOf(Transaction::class)
+        ->and($page->get(0)?->status)->toBe(TransactionStatus::Paid);
     $this->assertRequest(
         $mockClient,
         Method::GET,
@@ -316,7 +383,22 @@ creem_test(ResourceBehaviorTestCatalog::TRANSACTIONS, function (): void {
     );
 });
 
-creem_test(ResourceBehaviorTestCatalog::STATS, function (): void {
+test('transactions resource applies empty query defaults when search dto is omitted', function (): void {
+    /** @var IntegrationTestCase $this */
+    $mockClient = new MockClient([
+        MockResponse::make($this->responseFixture('transaction_page.json')),
+    ]);
+    $resource = new TransactionsResource($this->connector($mockClient));
+
+    $page = $resource->search();
+
+    expect($page->count())->toBe(1)
+        ->and($page->get(0))->toBeInstanceOf(Transaction::class);
+    $this->assertRequest($mockClient, Method::GET, '/v1/transactions/search');
+});
+
+test(ResourceBehaviorTestCatalog::STATS, function (): void {
+    /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('stats_summary.json')),
     ]);
@@ -330,13 +412,19 @@ creem_test(ResourceBehaviorTestCatalog::STATS, function (): void {
             StatsInterval::Day,
         ),
     );
-    $this->assertInstanceOf(\Creem\Dto\Stats\StatsTotals::class, $summary->totals);
-    $this->assertSame(2, $summary->totals->totalProducts);
-    $this->assertCount(1, $summary->periods);
-    $this->assertArrayHasKey(0, $summary->periods);
-    $this->assertInstanceOf(StatsPeriod::class, $summary->periods[0]);
-    $this->assertInstanceOf(DateTimeImmutable::class, $summary->periods[0]->timestamp);
-    $this->assertSame('2023-11-14T22:13:20+00:00', $summary->periods[0]->timestamp->format(DATE_ATOM));
+
+    expect($summary->totals)->toBeInstanceOf(StatsTotals::class)
+        ->and($summary->periods)->toHaveCount(1)
+        ->and($summary->periods[0] ?? null)->toBeInstanceOf(StatsPeriod::class);
+
+    if ($summary->totals instanceof StatsTotals) {
+        expect($summary->totals->totalProducts)->toBe(2);
+    }
+
+    if (($summary->periods[0] ?? null) instanceof StatsPeriod) {
+        expect($summary->periods[0]->timestamp)->toBeInstanceOf(DateTimeImmutable::class)
+            ->and($summary->periods[0]->timestamp?->format(DATE_ATOM))->toBe('2023-11-14T22:13:20+00:00');
+    }
     $this->assertRequest(
         $mockClient,
         Method::GET,

@@ -18,20 +18,20 @@ use Creem\Resource\TransactionsResource;
 test('client exposes stable resource accessors', function (): void {
     $client = new Client(new Config('sk_test_123'));
 
-    $this->assertInstanceOf(ProductsResource::class, $client->products());
-    $this->assertInstanceOf(CustomersResource::class, $client->customers());
-    $this->assertInstanceOf(SubscriptionsResource::class, $client->subscriptions());
-    $this->assertInstanceOf(CheckoutsResource::class, $client->checkouts());
-    $this->assertInstanceOf(LicensesResource::class, $client->licenses());
-    $this->assertInstanceOf(DiscountsResource::class, $client->discounts());
-    $this->assertInstanceOf(TransactionsResource::class, $client->transactions());
-    $this->assertInstanceOf(StatsResource::class, $client->stats());
-    $this->assertSame($client->products(), $client->products());
+    expect($client->products())->toBeInstanceOf(ProductsResource::class)
+        ->and($client->customers())->toBeInstanceOf(CustomersResource::class)
+        ->and($client->subscriptions())->toBeInstanceOf(SubscriptionsResource::class)
+        ->and($client->checkouts())->toBeInstanceOf(CheckoutsResource::class)
+        ->and($client->licenses())->toBeInstanceOf(LicensesResource::class)
+        ->and($client->discounts())->toBeInstanceOf(DiscountsResource::class)
+        ->and($client->transactions())->toBeInstanceOf(TransactionsResource::class)
+        ->and($client->stats())->toBeInstanceOf(StatsResource::class)
+        ->and($client->products())->toBe($client->products());
 });
 
 test('client retains the supplied config', function (): void {
     $config = new Config('sk_test_123');
     $client = new Client($config);
 
-    $this->assertSame($config, $client->config());
+    expect($client->config())->toBe($config);
 });

@@ -30,14 +30,18 @@ use Creem\Enum\TaxCategory;
 use Creem\Enum\TaxMode;
 use Creem\Enum\TransactionStatus;
 use Creem\Enum\TransactionType;
+use Creem\Tests\TestCase;
 
 use function array_map;
 use function sort;
 use function sprintf;
 
-creem_test('spec enums used by the sdk have matching php enums', function (): void {
+test('spec enums used by the sdk have matching php enums', function (): void {
+    /** @var TestCase $testCase */
+    $testCase = $this;
+
     foreach (apiEnumSpecMap() as $path => $enumClass) {
-        $expected = $this->specEnumValuesAtPath($path);
+        $expected = $testCase->specEnumValuesAtPath($path);
         $actual = apiEnumCasesFor($enumClass);
 
         sort($expected);

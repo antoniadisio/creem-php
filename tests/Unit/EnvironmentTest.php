@@ -7,6 +7,6 @@ namespace Creem\Tests\Unit;
 use Creem\Environment;
 
 test('environment resolves base urls', function (): void {
-    $this->assertSame('https://api.creem.io', Environment::Production->baseUrl());
-    $this->assertSame('https://test-api.creem.io', Environment::Test->baseUrl());
+    expect(Environment::Production->baseUrl())->toBe('https://api.creem.io')
+        ->and(Environment::Test->baseUrl())->toBe('https://test-api.creem.io');
 });

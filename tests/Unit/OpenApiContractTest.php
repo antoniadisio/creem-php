@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Creem\Tests\Unit;
 
 use Creem\Tests\Support\ResourceBehaviorTestCatalog;
+use Creem\Tests\TestCase;
 use ReflectionMethod;
 
 use function array_map;
@@ -16,7 +17,8 @@ use function glob;
 use function sort;
 use function sprintf;
 
-creem_test('openapi spec operations match the explicit sdk coverage manifest', function (): void {
+test('openapi spec operations match the explicit sdk coverage manifest', function (): void {
+    /** @var TestCase $this */
     $manifest = [];
 
     foreach ($this->coverageManifest() as $operationId => $coverage) {
@@ -31,7 +33,8 @@ creem_test('openapi spec operations match the explicit sdk coverage manifest', f
     $this->assertSame($manifest, $this->specOperations());
 });
 
-creem_test('every spec operation maps to a real resource method and behavior test', function (): void {
+test('every spec operation maps to a real resource method and behavior test', function (): void {
+    /** @var TestCase $this */
     $availableBehaviorTests = ResourceBehaviorTestCatalog::all();
 
     foreach ($this->coverageManifest() as $operationId => $coverage) {
@@ -47,7 +50,8 @@ creem_test('every spec operation maps to a real resource method and behavior tes
     }
 });
 
-creem_test('response fixtures are complete for the coverage manifest', function (): void {
+test('response fixtures are complete for the coverage manifest', function (): void {
+    /** @var TestCase $this */
     $expectedFixtures = [];
 
     foreach ($this->coverageManifest() as $coverage) {
@@ -76,7 +80,8 @@ creem_test('response fixtures are complete for the coverage manifest', function 
     }
 });
 
-creem_test('key response fixtures lock spec aligned typed shapes', function (): void {
+test('key response fixtures lock spec aligned typed shapes', function (): void {
+    /** @var TestCase $this */
     $product = $this->fixture('product.json');
     $this->assertSame('USD', $this->stringValue($product, 'currency', 'product fixture'));
     $this->assertSame('every-month', $this->stringValue($product, 'billing_period', 'product fixture'));
