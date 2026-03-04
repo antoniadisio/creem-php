@@ -50,6 +50,15 @@ test('it throws for blank webhook signatures', function (): void {
         ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature header is missing or blank.');
 });
 
+test('it throws for missing webhook signatures', function (): void {
+    $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
+
+    expect(static function () use ($payload): void {
+        Webhook::verifySignature($payload, '', 'whsec_test_secret');
+    })
+        ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature header is missing or blank.');
+});
+
 test('it parses documented webhook envelopes into a typed wrapper', function (): void {
     $payload = '{"id":"evt_123","eventType":"license.created","created_at":"2026-03-04T12:34:56+00:00","object":{"id":"lic_123","active":true}}';
 
@@ -122,6 +131,14 @@ test('it preserves the hydration exception when webhook envelope fields are malf
 test('it verifies the signature before parsing webhook events', function (): void {
     expect(static fn (): WebhookEvent => Webhook::constructEvent('{"id":', 'invalid', 'whsec_test_secret'))
         ->toThrow(InvalidWebhookSignatureException::class);
+});
+
+test('it throws a payload exception when a verified webhook payload is malformed', function (): void {
+    $payload = '{"id":';
+    $signature = '667c295a87419f1e027eb917853e6e7126b0c4271e7860b230534e12a0733819';
+
+    expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
+        ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload is not valid JSON.');
 });
 
 test('it constructs a verified webhook event without a client instance', function (): void {

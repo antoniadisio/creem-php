@@ -147,6 +147,45 @@ if ($event->eventType() === 'license.created') {
 }
 ```
 
+Always verify the exact raw request body. Do not `json_decode()`, re-encode, trim, or otherwise mutate the payload before calling `Webhook::verifySignature()` or `Webhook::constructEvent()`, or the HMAC check will fail.
+
+For Laravel-style controllers, use the raw request content instead of decoded request input:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Creem\Exception\InvalidWebhookPayloadException;
+use Creem\Exception\InvalidWebhookSignatureException;
+use Creem\Webhook;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+final class CreemWebhookController
+{
+    public function __invoke(Request $request): Response
+    {
+        $payload = $request->getContent();
+        $signature = (string) $request->header('creem-signature', '');
+
+        try {
+            $event = Webhook::constructEvent(
+                $payload,
+                $signature,
+                config('services.creem.webhook_secret'),
+            );
+        } catch (InvalidWebhookSignatureException|InvalidWebhookPayloadException) {
+            return response(status: 400);
+        }
+
+        // Dispatch your application logic here.
+
+        return response(status: 204);
+    }
+}
+```
+
 The returned `WebhookEvent` exposes `id()`, `eventType()`, `createdAt()`, `object()`, `payload()`, and `toArray()`. `object()` returns a `StructuredObject`, so consumers can read nested webhook data without decoding JSON again.
 
 ## Resources
