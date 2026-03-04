@@ -18,7 +18,8 @@ use function trim;
 
 abstract class LiveTestCase extends TestCase
 {
-    public function liveClient(?string $apiKey = null): Client
+    public function liveClient(#[\SensitiveParameter]
+        ?string $apiKey = null): Client
     {
         return new Client(new Config(
             $apiKey ?? $this->requireLiveApiKey(),

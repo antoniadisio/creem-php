@@ -6,8 +6,15 @@ namespace Creem\Exception;
 
 use Throwable;
 
+use function sprintf;
+
 final class InvalidWebhookPayloadException extends WebhookException
 {
+    public static function payloadTooLarge(int $maxBytes): self
+    {
+        return new self(sprintf('The Creem webhook payload exceeds the %d byte limit.', $maxBytes));
+    }
+
     public static function invalidJson(Throwable $previous): self
     {
         return new self('The Creem webhook payload is not valid JSON.', null, [], $previous);

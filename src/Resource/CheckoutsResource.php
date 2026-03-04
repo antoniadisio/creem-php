@@ -16,8 +16,8 @@ final class CheckoutsResource extends Resource
         return Checkout::fromPayload($this->send(new RetrieveCheckoutRequest($id)));
     }
 
-    public function create(CreateCheckoutRequest $request): Checkout
+    public function create(CreateCheckoutRequest $request, ?string $idempotencyKey = null): Checkout
     {
-        return Checkout::fromPayload($this->send(new CreateCheckoutOperation($request->toArray())));
+        return Checkout::fromPayload($this->send(new CreateCheckoutOperation($request->toArray(), $idempotencyKey)));
     }
 }

@@ -22,30 +22,30 @@ final class SubscriptionsResource extends Resource
         return Subscription::fromPayload($this->send(new RetrieveSubscriptionRequest($id)));
     }
 
-    public function cancel(string $id, ?CancelSubscriptionRequest $request = null): Subscription
+    public function cancel(string $id, ?CancelSubscriptionRequest $request = null, ?string $idempotencyKey = null): Subscription
     {
         $request ??= new CancelSubscriptionRequest;
 
-        return Subscription::fromPayload($this->send(new CancelSubscriptionOperation($id, $request->toArray())));
+        return Subscription::fromPayload($this->send(new CancelSubscriptionOperation($id, $request->toArray(), $idempotencyKey)));
     }
 
-    public function update(string $id, UpdateSubscriptionRequest $request): Subscription
+    public function update(string $id, UpdateSubscriptionRequest $request, ?string $idempotencyKey = null): Subscription
     {
-        return Subscription::fromPayload($this->send(new UpdateSubscriptionOperation($id, $request->toArray())));
+        return Subscription::fromPayload($this->send(new UpdateSubscriptionOperation($id, $request->toArray(), $idempotencyKey)));
     }
 
-    public function upgrade(string $id, UpgradeSubscriptionRequest $request): Subscription
+    public function upgrade(string $id, UpgradeSubscriptionRequest $request, ?string $idempotencyKey = null): Subscription
     {
-        return Subscription::fromPayload($this->send(new UpgradeSubscriptionOperation($id, $request->toArray())));
+        return Subscription::fromPayload($this->send(new UpgradeSubscriptionOperation($id, $request->toArray(), $idempotencyKey)));
     }
 
-    public function pause(string $id): Subscription
+    public function pause(string $id, ?string $idempotencyKey = null): Subscription
     {
-        return Subscription::fromPayload($this->send(new PauseSubscriptionRequest($id)));
+        return Subscription::fromPayload($this->send(new PauseSubscriptionRequest($id, $idempotencyKey)));
     }
 
-    public function resume(string $id): Subscription
+    public function resume(string $id, ?string $idempotencyKey = null): Subscription
     {
-        return Subscription::fromPayload($this->send(new ResumeSubscriptionRequest($id)));
+        return Subscription::fromPayload($this->send(new ResumeSubscriptionRequest($id, $idempotencyKey)));
     }
 }

@@ -22,13 +22,13 @@ final class DiscountsResource extends Resource
         return Discount::fromPayload($this->send(new RetrieveDiscountRequest(null, $code)));
     }
 
-    public function create(CreateDiscountRequest $request): Discount
+    public function create(CreateDiscountRequest $request, ?string $idempotencyKey = null): Discount
     {
-        return Discount::fromPayload($this->send(new CreateDiscountOperation($request->toArray())));
+        return Discount::fromPayload($this->send(new CreateDiscountOperation($request->toArray(), $idempotencyKey)));
     }
 
-    public function delete(string $id): Discount
+    public function delete(string $id, ?string $idempotencyKey = null): Discount
     {
-        return Discount::fromPayload($this->send(new DeleteDiscountRequest($id)));
+        return Discount::fromPayload($this->send(new DeleteDiscountRequest($id, $idempotencyKey)));
     }
 }

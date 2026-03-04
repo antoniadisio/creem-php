@@ -4,11 +4,32 @@ declare(strict_types=1);
 
 namespace Creem;
 
+use const FILTER_VALIDATE_URL;
+use const PHP_URL_SCHEME;
+
 use Creem\Internal\Http\UserAgent;
 use InvalidArgumentException;
+use LogicException;
 
-final readonly class Config
+use function filter_var;
+use function is_string;
+use function parse_url;
+use function preg_match;
+use function preg_replace;
+use function rtrim;
+use function sprintf;
+use function str_starts_with;
+use function strlen;
+use function strtolower;
+use function substr;
+use function trim;
+
+final readonly class Config implements \Stringable
 {
+    public const float DEFAULT_TIMEOUT_SECONDS = 30.0;
+
+    private const string API_KEY_PATTERN = '/^(?:sk|creem)_[A-Za-z0-9][A-Za-z0-9._-]*$/';
+
     private string $apiKey;
 
     private ?string $baseUrl;
@@ -18,6 +39,7 @@ final readonly class Config
     private ?string $userAgentSuffix;
 
     public function __construct(
+        #[\SensitiveParameter]
         string $apiKey,
         private Environment $environment = Environment::Production,
         ?string $baseUrl = null,
@@ -30,6 +52,10 @@ final readonly class Config
             throw new InvalidArgumentException('The Creem API key cannot be empty.');
         }
 
+        if (! preg_match(self::API_KEY_PATTERN, $apiKey)) {
+            throw new InvalidArgumentException('The Creem API key must start with "sk_" or "creem_".');
+        }
+
         if ($timeout !== null && $timeout <= 0) {
             throw new InvalidArgumentException('The Creem request timeout must be greater than zero.');
         }
@@ -40,7 +66,22 @@ final readonly class Config
             throw new InvalidArgumentException('The Creem base URL override cannot be blank.');
         }
 
-        $normalizedSuffix = $userAgentSuffix === null ? null : trim($userAgentSuffix);
+        $baseUrlScheme = $normalizedBaseUrl === null ? null : parse_url($normalizedBaseUrl, PHP_URL_SCHEME);
+
+        if (
+            $normalizedBaseUrl !== null
+            && (
+                filter_var($normalizedBaseUrl, FILTER_VALIDATE_URL) === false
+                || ! is_string($baseUrlScheme)
+                || strtolower($baseUrlScheme) !== 'https'
+            )
+        ) {
+            throw new InvalidArgumentException('The Creem base URL override must be a valid HTTPS URL.');
+        }
+
+        $normalizedSuffix = $userAgentSuffix === null
+            ? null
+            : trim((string) (preg_replace('/[\x00-\x1F\x7F]+/', '', $userAgentSuffix) ?? ''));
 
         if ($normalizedSuffix === '') {
             $normalizedSuffix = null;
@@ -85,5 +126,72 @@ final readonly class Config
     public function userAgent(): string
     {
         return UserAgent::forConfig($this);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function __debugInfo(): array
+    {
+        return $this->safeRepresentation();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return $this->safeRepresentation();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function __unserialize(array $data): void
+    {
+        throw new LogicException('Unserializing Creem\\Config is not supported.');
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            'Creem\\Config(apiKey=%s, environment=%s, baseUrl=%s, timeout=%s, userAgentSuffix=%s)',
+            $this->redactedApiKey(),
+            $this->environment->value,
+            $this->baseUrl ?? 'null',
+            (string) $this->effectiveTimeout(),
+            $this->userAgentSuffix ?? 'null',
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function safeRepresentation(): array
+    {
+        return [
+            'apiKey' => $this->redactedApiKey(),
+            'environment' => $this->environment->value,
+            'baseUrl' => $this->baseUrl,
+            'configuredTimeout' => $this->timeout,
+            'effectiveTimeout' => $this->effectiveTimeout(),
+            'userAgentSuffix' => $this->userAgentSuffix,
+        ];
+    }
+
+    private function effectiveTimeout(): float
+    {
+        return $this->timeout ?? self::DEFAULT_TIMEOUT_SECONDS;
+    }
+
+    private function redactedApiKey(): string
+    {
+        $visibleSuffix = strlen($this->apiKey) > 7 ? substr($this->apiKey, -4) : '';
+
+        if (str_starts_with($this->apiKey, 'creem_')) {
+            return 'creem_****'.$visibleSuffix;
+        }
+
+        return 'sk_****'.$visibleSuffix;
     }
 }

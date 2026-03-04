@@ -70,10 +70,10 @@ $product = $client->products()->get('prod_123');
 
 `Creem\Config` is immutable and accepts:
 
-- `apiKey` (required)
+- `apiKey` (required, must start with `sk_` or `creem_`)
 - `environment` (`Creem\Environment::Production` by default)
-- `baseUrl` (optional override)
-- `timeout` (optional request timeout in seconds)
+- `baseUrl` (optional override, must be a valid `https://` URL)
+- `timeout` (optional request timeout in seconds, defaults to `30`)
 - `userAgentSuffix` (optional suffix appended to the SDK user agent)
 
 ```php
@@ -96,7 +96,7 @@ Environments resolve to:
 - `Environment::Production` -> `https://api.creem.io`
 - `Environment::Test` -> `https://test-api.creem.io`
 
-Use `baseUrl` only when you need to override the default API host for local proxying or similar non-standard setups.
+Use `baseUrl` only when you need to override the default API host for local proxying or similar non-standard setups. `Config` also redacts the API key in debug output, string casts, and serialization.
 
 ## Error Handling
 
@@ -105,7 +105,7 @@ All SDK exceptions extend `Creem\Exception\CreemException`.
 - `AuthenticationException` for `401` and `403`
 - `ValidationException` for `422` and validation-style client payloads
 - `NotFoundException` for `404`
-- `RateLimitException` for `429`
+- `RateLimitException` for `429` (`retryAfterSeconds()` exposes the parsed `Retry-After` delay when the API sends one)
 - `ServerException` for `5xx`
 - `TransportException` for transport, timeout, and decode failures
 - `WebhookException` for inbound webhook verification and parsing failures
@@ -133,6 +133,7 @@ try {
 ## Webhooks
 
 `Creem\Webhook` verifies the incoming `creem-signature` header against the raw request body and parses the JSON payload without requiring a `Client` instance.
+The signature header must include a Unix timestamp and signature pair such as `t=1700000000,v1=...`. The SDK signs `timestamp.payload` and rejects timestamps outside a 5-minute tolerance window to block replay attacks.
 
 ```php
 <?php
@@ -153,7 +154,7 @@ if ($event->eventType() === 'license.created') {
 }
 ```
 
-Always verify the exact raw request body. Do not `json_decode()`, re-encode, trim, or otherwise mutate the payload before calling `Webhook::verifySignature()` or `Webhook::constructEvent()`, or the HMAC check will fail.
+Always verify the exact raw request body. Do not `json_decode()`, re-encode, trim, or otherwise mutate the payload before calling `Webhook::verifySignature()` or `Webhook::constructEvent()`, or the HMAC check will fail. The SDK also rejects webhook payloads larger than 1 MiB before decoding.
 
 For Laravel-style controllers, use the raw request content instead of decoded request input:
 
@@ -206,6 +207,8 @@ The returned `WebhookEvent` exposes `id()`, `eventType()`, `createdAt()`, `objec
 - `discounts()`
 - `transactions()`
 - `stats()`
+
+All mutating resource methods accept an optional final `?string $idempotencyKey = null` argument. Pass a stable key on retries to prevent duplicate checkout, subscription, discount, or license side effects.
 
 ### Products
 

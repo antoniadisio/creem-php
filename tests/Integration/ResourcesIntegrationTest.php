@@ -80,7 +80,10 @@ test(ResourceBehaviorTestCatalog::PRODUCTS, function (): void {
         ->and($product->features[0]->type)->toBe(ProductFeatureType::LicenseKey);
     $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_123']);
 
-    $created = $resource->create(new CreateProductRequest('Enterprise', 4900, CurrencyCode::USD, BillingType::OneTime, description: 'Scale plan'));
+    $created = $resource->create(
+        new CreateProductRequest('Enterprise', 4900, CurrencyCode::USD, BillingType::OneTime, description: 'Scale plan'),
+        'idem-product-create',
+    );
 
     expect($created->id)->toBe('prod_456');
     $this->assertRequest(
@@ -89,6 +92,7 @@ test(ResourceBehaviorTestCatalog::PRODUCTS, function (): void {
         '/v1/products',
         [],
         ['name' => 'Enterprise', 'description' => 'Scale plan', 'price' => 4900, 'currency' => 'USD', 'billing_type' => 'onetime', 'custom_fields' => []],
+        ['Idempotency-Key' => 'idem-product-create'],
     );
 
     $page = $resource->search(new SearchProductsRequest(2, 50));
@@ -145,10 +149,17 @@ test(ResourceBehaviorTestCatalog::CUSTOMERS, function (): void {
     expect($customerByEmail->email)->toBe('billing@example.com');
     $this->assertRequest($mockClient, Method::GET, '/v1/customers', ['email' => 'billing@example.com']);
 
-    $links = $resource->createBillingPortalLink(new CreateCustomerBillingPortalLinkRequest('cus_123'));
+    $links = $resource->createBillingPortalLink(new CreateCustomerBillingPortalLinkRequest('cus_123'), 'idem-customer-links');
 
     expect($links->customerPortalLink)->toBe('https://billing.creem.io/session');
-    $this->assertRequest($mockClient, Method::POST, '/v1/customers/billing', [], ['customer_id' => 'cus_123']);
+    $this->assertRequest(
+        $mockClient,
+        Method::POST,
+        '/v1/customers/billing',
+        [],
+        ['customer_id' => 'cus_123'],
+        ['Idempotency-Key' => 'idem-customer-links'],
+    );
 });
 
 test('customers resource applies empty query defaults when list dto is omitted', function (): void {
@@ -194,10 +205,21 @@ test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
         ->and($subscription->status)->toBe(SubscriptionStatus::Active);
     $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_123']);
 
-    $canceled = $resource->cancel('sub_123', new CancelSubscriptionRequest(SubscriptionCancellationMode::Immediate, SubscriptionCancellationAction::Cancel));
+    $canceled = $resource->cancel(
+        'sub_123',
+        new CancelSubscriptionRequest(SubscriptionCancellationMode::Immediate, SubscriptionCancellationAction::Cancel),
+        'idem-subscription-cancel',
+    );
 
     expect($canceled->status)->toBe(SubscriptionStatus::Canceled);
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], ['mode' => 'immediate', 'onExecute' => 'cancel']);
+    $this->assertRequest(
+        $mockClient,
+        Method::POST,
+        '/v1/subscriptions/sub_123/cancel',
+        [],
+        ['mode' => 'immediate', 'onExecute' => 'cancel'],
+        ['Idempotency-Key' => 'idem-subscription-cancel'],
+    );
 
     $updated = $resource->update(
         'sub_123',
@@ -205,6 +227,7 @@ test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
             [new UpsertSubscriptionItem(productId: 'prod_123', units: 4)],
             SubscriptionUpdateBehavior::ProrationCharge,
         ),
+        'idem-subscription-update',
     );
 
     expect($updated->items)->toHaveCount(1)
@@ -215,9 +238,14 @@ test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
         '/v1/subscriptions/sub_123',
         [],
         ['items' => [['product_id' => 'prod_123', 'units' => 4]], 'update_behavior' => 'proration-charge'],
+        ['Idempotency-Key' => 'idem-subscription-update'],
     );
 
-    $upgraded = $resource->upgrade('sub_123', new UpgradeSubscriptionRequest('prod_999', SubscriptionUpdateBehavior::ProrationChargeImmediately));
+    $upgraded = $resource->upgrade(
+        'sub_123',
+        new UpgradeSubscriptionRequest('prod_999', SubscriptionUpdateBehavior::ProrationChargeImmediately),
+        'idem-subscription-upgrade',
+    );
 
     expect($upgraded->product)->toBeInstanceOf(ExpandableResource::class)
         ->and($upgraded->product?->id())->toBe('prod_999');
@@ -227,17 +255,18 @@ test(ResourceBehaviorTestCatalog::SUBSCRIPTIONS, function (): void {
         '/v1/subscriptions/sub_123/upgrade',
         [],
         ['product_id' => 'prod_999', 'update_behavior' => 'proration-charge-immediately'],
+        ['Idempotency-Key' => 'idem-subscription-upgrade'],
     );
 
-    $paused = $resource->pause('sub_123');
+    $paused = $resource->pause('sub_123', 'idem-subscription-pause');
 
     expect($paused->status)->toBe(SubscriptionStatus::Paused);
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/pause');
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/pause', [], null, ['Idempotency-Key' => 'idem-subscription-pause']);
 
-    $resumed = $resource->resume('sub_123');
+    $resumed = $resource->resume('sub_123', 'idem-subscription-resume');
 
     expect($resumed->status)->toBe(SubscriptionStatus::Active);
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/resume');
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/resume', [], null, ['Idempotency-Key' => 'idem-subscription-resume']);
 });
 
 test('subscriptions resource applies empty payload defaults when cancel dto is omitted', function (): void {
@@ -247,10 +276,17 @@ test('subscriptions resource applies empty payload defaults when cancel dto is o
     ]);
     $resource = new SubscriptionsResource($this->connector($mockClient));
 
-    $subscription = $resource->cancel('sub_123');
+    $subscription = $resource->cancel('sub_123', idempotencyKey: 'idem-subscription-cancel-default');
 
     expect($subscription->status)->toBe(SubscriptionStatus::Canceled);
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], []);
+    $this->assertRequest(
+        $mockClient,
+        Method::POST,
+        '/v1/subscriptions/sub_123/cancel',
+        [],
+        [],
+        ['Idempotency-Key' => 'idem-subscription-cancel-default'],
+    );
 });
 
 test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
@@ -274,7 +310,10 @@ test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
         ->and($checkout->metadata['source'] ?? null)->toBe('sdk-test');
     $this->assertRequest($mockClient, Method::GET, '/v1/checkouts', ['checkout_id' => 'chk_123']);
 
-    $created = $resource->create(new CreateCheckoutRequest('prod_123', requestId: 'req_1', units: 2, successUrl: 'https://example.com/success'));
+    $created = $resource->create(
+        new CreateCheckoutRequest('prod_123', requestId: 'req_1', units: 2, successUrl: 'https://example.com/success'),
+        'idem-checkout-create',
+    );
 
     expect($created->id)->toBe('chk_456');
     $this->assertRequest(
@@ -283,6 +322,7 @@ test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
         '/v1/checkouts',
         [],
         ['request_id' => 'req_1', 'product_id' => 'prod_123', 'units' => 2, 'custom_fields' => [], 'success_url' => 'https://example.com/success'],
+        ['Idempotency-Key' => 'idem-checkout-create'],
     );
 });
 
@@ -295,23 +335,44 @@ test(ResourceBehaviorTestCatalog::LICENSES, function (): void {
     ]);
     $resource = new LicensesResource($this->connector($mockClient));
 
-    $activated = $resource->activate(new ActivateLicenseRequest('lic_key', 'macbook'));
+    $activated = $resource->activate(new ActivateLicenseRequest('lic_key', 'macbook'), 'idem-license-activate');
 
     expect($activated->id)->toBe('lic_123')
         ->and($activated->status)->toBe(LicenseStatus::Active)
         ->and($activated->instance)->toBeInstanceOf(LicenseInstance::class)
         ->and($activated->instance?->id)->toBe('ins_123');
-    $this->assertRequest($mockClient, Method::POST, '/v1/licenses/activate', [], ['key' => 'lic_key', 'instance_name' => 'macbook']);
+    $this->assertRequest(
+        $mockClient,
+        Method::POST,
+        '/v1/licenses/activate',
+        [],
+        ['key' => 'lic_key', 'instance_name' => 'macbook'],
+        ['Idempotency-Key' => 'idem-license-activate'],
+    );
 
-    $deactivated = $resource->deactivate(new DeactivateLicenseRequest('lic_key', 'ins_123'));
+    $deactivated = $resource->deactivate(new DeactivateLicenseRequest('lic_key', 'ins_123'), 'idem-license-deactivate');
 
     expect($deactivated->status)->toBe(LicenseStatus::Inactive);
-    $this->assertRequest($mockClient, Method::POST, '/v1/licenses/deactivate', [], ['key' => 'lic_key', 'instance_id' => 'ins_123']);
+    $this->assertRequest(
+        $mockClient,
+        Method::POST,
+        '/v1/licenses/deactivate',
+        [],
+        ['key' => 'lic_key', 'instance_id' => 'ins_123'],
+        ['Idempotency-Key' => 'idem-license-deactivate'],
+    );
 
-    $validated = $resource->validate(new ValidateLicenseRequest('lic_key', 'ins_123'));
+    $validated = $resource->validate(new ValidateLicenseRequest('lic_key', 'ins_123'), 'idem-license-validate');
 
     expect($validated->activation)->toBe(1);
-    $this->assertRequest($mockClient, Method::POST, '/v1/licenses/validate', [], ['key' => 'lic_key', 'instance_id' => 'ins_123']);
+    $this->assertRequest(
+        $mockClient,
+        Method::POST,
+        '/v1/licenses/validate',
+        [],
+        ['key' => 'lic_key', 'instance_id' => 'ins_123'],
+        ['Idempotency-Key' => 'idem-license-validate'],
+    );
 });
 
 test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
@@ -335,7 +396,10 @@ test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
     expect($byCode->code)->toBe('WELCOME10');
     $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_code' => 'WELCOME10']);
 
-    $created = $resource->create(new CreateDiscountRequest('Launch', DiscountType::Fixed, DiscountDuration::Once, ['prod_123'], amount: 1000));
+    $created = $resource->create(
+        new CreateDiscountRequest('Launch', DiscountType::Fixed, DiscountDuration::Once, ['prod_123'], amount: 1000),
+        'idem-discount-create',
+    );
 
     expect($created->id)->toBe('disc_456');
     $this->assertRequest(
@@ -344,12 +408,13 @@ test(ResourceBehaviorTestCatalog::DISCOUNTS, function (): void {
         '/v1/discounts',
         [],
         ['name' => 'Launch', 'type' => 'fixed', 'amount' => 1000, 'duration' => 'once', 'applies_to_products' => ['prod_123']],
+        ['Idempotency-Key' => 'idem-discount-create'],
     );
 
-    $deleted = $resource->delete('disc_123');
+    $deleted = $resource->delete('disc_123', 'idem-discount-delete');
 
     expect($deleted->status)->toBe(DiscountStatus::Expired);
-    $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_123/delete');
+    $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_123/delete', [], null, ['Idempotency-Key' => 'idem-discount-delete']);
 });
 
 test(ResourceBehaviorTestCatalog::TRANSACTIONS, function (): void {

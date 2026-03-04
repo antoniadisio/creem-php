@@ -14,18 +14,18 @@ use Creem\Internal\Http\Requests\Licenses\ValidateLicenseRequest as ValidateLice
 
 final class LicensesResource extends Resource
 {
-    public function activate(ActivateLicenseRequest $request): License
+    public function activate(ActivateLicenseRequest $request, ?string $idempotencyKey = null): License
     {
-        return License::fromPayload($this->send(new ActivateLicenseOperation($request->toArray())));
+        return License::fromPayload($this->send(new ActivateLicenseOperation($request->toArray(), $idempotencyKey)));
     }
 
-    public function deactivate(DeactivateLicenseRequest $request): License
+    public function deactivate(DeactivateLicenseRequest $request, ?string $idempotencyKey = null): License
     {
-        return License::fromPayload($this->send(new DeactivateLicenseOperation($request->toArray())));
+        return License::fromPayload($this->send(new DeactivateLicenseOperation($request->toArray(), $idempotencyKey)));
     }
 
-    public function validate(ValidateLicenseRequest $request): License
+    public function validate(ValidateLicenseRequest $request, ?string $idempotencyKey = null): License
     {
-        return License::fromPayload($this->send(new ValidateLicenseOperation($request->toArray())));
+        return License::fromPayload($this->send(new ValidateLicenseOperation($request->toArray(), $idempotencyKey)));
     }
 }

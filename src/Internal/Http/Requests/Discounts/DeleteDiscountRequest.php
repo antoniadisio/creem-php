@@ -15,8 +15,9 @@ final class DeleteDiscountRequest extends QueryRequest
 
     public function __construct(
         private readonly string $discountId,
+        ?string $idempotencyKey = null,
     ) {
-        parent::__construct();
+        parent::__construct(idempotencyKey: $idempotencyKey);
     }
 
     public function resolveEndpoint(): string

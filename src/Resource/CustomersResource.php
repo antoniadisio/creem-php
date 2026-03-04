@@ -39,8 +39,8 @@ final class CustomersResource extends Resource
         return Customer::fromPayload($this->send(new RetrieveCustomerRequest(null, $email)));
     }
 
-    public function createBillingPortalLink(CreateCustomerBillingPortalLinkRequest $request): CustomerLinks
+    public function createBillingPortalLink(CreateCustomerBillingPortalLinkRequest $request, ?string $idempotencyKey = null): CustomerLinks
     {
-        return CustomerLinks::fromPayload($this->send(new GenerateCustomerLinksRequest($request->toArray())));
+        return CustomerLinks::fromPayload($this->send(new GenerateCustomerLinksRequest($request->toArray(), $idempotencyKey)));
     }
 }

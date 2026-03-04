@@ -15,8 +15,9 @@ final class PauseSubscriptionRequest extends JsonRequest
 
     public function __construct(
         private readonly string $subscriptionId,
+        ?string $idempotencyKey = null,
     ) {
-        parent::__construct();
+        parent::__construct(idempotencyKey: $idempotencyKey);
     }
 
     public function resolveEndpoint(): string

@@ -10,11 +10,16 @@ use Creem\Exception\HydrationException;
 use Creem\Exception\InvalidWebhookPayloadException;
 use Creem\Exception\InvalidWebhookSignatureException;
 use Creem\Exception\TransportException;
+use Creem\Internal\Webhook\Signature;
 use Creem\Webhook;
+
+use function sprintf;
+use function str_repeat;
+use function time;
 
 test('it verifies a known webhook signature after trimming outer header whitespace', function (): void {
     $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
-    $signature = '234b1721e159f683264bc88dd1ec763de794e02f8c8f99762154a68d728e85e1';
+    $signature = timestampedSignatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, "  {$signature} \n", 'whsec_test_secret');
@@ -24,16 +29,17 @@ test('it verifies a known webhook signature after trimming outer header whitespa
 
 test('it throws for invalid webhook signatures', function (): void {
     $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
+    $signature = timestampedSignatureHeader($payload, signature: 'not-a-valid-signature');
 
-    expect(static function () use ($payload): void {
-        Webhook::verifySignature($payload, 'not-a-valid-signature', 'whsec_test_secret');
+    expect(static function () use ($payload, $signature): void {
+        Webhook::verifySignature($payload, $signature, 'whsec_test_secret');
     })
         ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature is invalid.');
 });
 
 test('it throws when the webhook secret does not match the signature', function (): void {
     $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
-    $signature = '234b1721e159f683264bc88dd1ec763de794e02f8c8f99762154a68d728e85e1';
+    $signature = timestampedSignatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, $signature, 'whsec_wrong_secret');
@@ -57,6 +63,35 @@ test('it throws for missing webhook signatures', function (): void {
         Webhook::verifySignature($payload, '', 'whsec_test_secret');
     })
         ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature header is missing or blank.');
+});
+
+test('it rejects webhook signatures without a timestamp', function (): void {
+    $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
+    $signature = Signature::compute($payload, 'whsec_test_secret');
+
+    expect(static function () use ($payload, $signature): void {
+        Webhook::verifySignature($payload, $signature, 'whsec_test_secret');
+    })
+        ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature timestamp is missing.');
+});
+
+test('it rejects webhook signatures with invalid timestamps', function (): void {
+    $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
+
+    expect(static function () use ($payload): void {
+        Webhook::verifySignature($payload, 't=invalid,v1=abc123', 'whsec_test_secret');
+    })
+        ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature timestamp is invalid.');
+});
+
+test('it rejects webhook signatures outside the allowed timestamp tolerance', function (): void {
+    $payload = '{"id":"evt_123","eventType":"license.created","object":{"id":"lic_123"}}';
+    $signature = timestampedSignatureHeader($payload, timestamp: time() - 301);
+
+    expect(static function () use ($payload, $signature): void {
+        Webhook::verifySignature($payload, $signature, 'whsec_test_secret');
+    })
+        ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature timestamp is outside the allowed tolerance.');
 });
 
 test('it parses documented webhook envelopes into a typed wrapper', function (): void {
@@ -101,6 +136,13 @@ test('it throws webhook payload exceptions for malformed json instead of transpo
     expect($thrown->getMessage())->toBe('The Creem webhook payload is not valid JSON.');
 });
 
+test('it rejects webhook payloads that exceed the size limit before decoding', function (): void {
+    $payload = str_repeat('a', 1_048_577);
+
+    expect(static fn (): WebhookEvent => Webhook::parseEvent($payload))
+        ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload exceeds the 1048576 byte limit.');
+});
+
 test('it throws when required webhook event envelope fields are missing', function (): void {
     expect(static fn (): WebhookEvent => Webhook::parseEvent(
         '{"id":"evt_123","created_at":"2026-03-04T12:34:56+00:00","object":{"id":"lic_123"}}'
@@ -129,13 +171,16 @@ test('it preserves the hydration exception when webhook envelope fields are malf
 });
 
 test('it verifies the signature before parsing webhook events', function (): void {
-    expect(static fn (): WebhookEvent => Webhook::constructEvent('{"id":', 'invalid', 'whsec_test_secret'))
+    $payload = '{"id":';
+    $signature = timestampedSignatureHeader($payload, signature: 'invalid');
+
+    expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
         ->toThrow(InvalidWebhookSignatureException::class);
 });
 
 test('it throws a payload exception when a verified webhook payload is malformed', function (): void {
     $payload = '{"id":';
-    $signature = '667c295a87419f1e027eb917853e6e7126b0c4271e7860b230534e12a0733819';
+    $signature = timestampedSignatureHeader($payload);
 
     expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
         ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload is not valid JSON.');
@@ -143,7 +188,7 @@ test('it throws a payload exception when a verified webhook payload is malformed
 
 test('it constructs a verified webhook event without a client instance', function (): void {
     $payload = '{"id":"evt_123","eventType":"license.created","created_at":"2026-03-04T12:34:56+00:00","object":{"id":"lic_123"}}';
-    $signature = 'f417217679e5cdb3410f542619c550e34d8d744ce58cd849a67e0e1072697a87';
+    $signature = timestampedSignatureHeader($payload);
 
     $event = Webhook::constructEvent($payload, $signature, 'whsec_test_secret');
 
@@ -151,3 +196,16 @@ test('it constructs a verified webhook event without a client instance', functio
         ->and($event->id())->toBe('evt_123')
         ->and($event->object()->get('id'))->toBe('lic_123');
 });
+
+function timestampedSignatureHeader(
+    string $payload,
+    #[\SensitiveParameter]
+    string $secret = 'whsec_test_secret',
+    ?int $timestamp = null,
+    ?string $signature = null,
+): string {
+    $timestamp ??= time();
+    $signature ??= Signature::compute($payload, $secret, $timestamp);
+
+    return sprintf('t=%d,v1=%s', $timestamp, $signature);
+}

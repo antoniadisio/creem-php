@@ -11,6 +11,21 @@ final class InvalidWebhookSignatureException extends WebhookException
         return new self('The Creem webhook signature header is missing or blank.');
     }
 
+    public static function missingTimestamp(): self
+    {
+        return new self('The Creem webhook signature timestamp is missing.');
+    }
+
+    public static function invalidTimestamp(): self
+    {
+        return new self('The Creem webhook signature timestamp is invalid.');
+    }
+
+    public static function expiredTimestamp(): self
+    {
+        return new self('The Creem webhook signature timestamp is outside the allowed tolerance.');
+    }
+
     public static function invalidSignature(): self
     {
         return new self('The Creem webhook signature is invalid.');

@@ -14,7 +14,9 @@ use Creem\Exception\ServerException;
 use Creem\Exception\TransportException;
 use Creem\Exception\ValidationException;
 use Creem\Internal\Http\CreemConnector;
+use Creem\Internal\Http\Requests\Products\CreateProductRequest as CreateProductOperation;
 use Creem\Internal\Http\ResponseDecoder;
+use InvalidArgumentException;
 use RuntimeException;
 use Saloon\Enums\Method;
 use Saloon\Exceptions\Request\FatalRequestException;
@@ -36,6 +38,18 @@ test('connector builds expected headers and request configuration', function ():
         ->and($psrRequest->getHeaderLine('User-Agent'))->toStartWith('creem-php-sdk/')
         ->and($psrRequest->getHeaderLine('User-Agent'))->toContain('integration-suite')
         ->and($pendingRequest->config()->all()['timeout'])->toBe(12.5);
+});
+
+test('connector applies the default timeout when none is configured', function (): void {
+    $connector = new CreemConnector(new Config('sk_test_123'));
+    $pendingRequest = $connector->createPendingRequest(creemConnectorTestRequest());
+
+    expect($pendingRequest->config()->all()['timeout'])->toBe(Config::DEFAULT_TIMEOUT_SECONDS);
+});
+
+test('mutating requests reject invalid idempotency keys', function (): void {
+    expect(static fn (): CreateProductOperation => new CreateProductOperation([], " \r\n "))
+        ->toThrow(InvalidArgumentException::class, 'The Creem idempotency key cannot be blank.');
 });
 
 foreach (blankResponseBodies() as $dataset => [$body]) {
@@ -108,6 +122,10 @@ foreach (creemConnectorResponseFailureMappings() as $dataset => [$response, $exp
         if ($exception instanceof ValidationException && array_key_exists('errors', $expectedContext)) {
             expect($exception->errors())->toBe($expectedContext['errors']);
         }
+
+        if ($exception instanceof RateLimitException) {
+            expect($exception->retryAfterSeconds())->toBe($expectedContext['retry_after_seconds'] ?? null);
+        }
     });
 }
 
@@ -159,6 +177,61 @@ test('nested validation errors resolve useful messages', function (): void {
     if ($exception instanceof ValidationException) {
         expect($exception->errors())->toBe($errors);
     }
+});
+
+test('deeply nested validation errors stop traversing after the recursion guard', function (): void {
+    $connector = new CreemConnector(new Config('sk_test_123'));
+    $errors = ['level_1' => ['level_2' => ['level_3' => ['level_4' => ['level_5' => ['level_6' => ['detail' => 'Too deep']]]]]]];
+    $exception = captureCreemException(
+        static fn (): Response => $connector->send(
+            creemConnectorTestRequest(),
+            new MockClient([
+                MockResponse::make(['errors' => $errors], 400),
+            ]),
+        ),
+    );
+
+    expect($exception)->toBeInstanceOf(ValidationException::class)
+        ->and($exception?->getMessage())->toBe('The Creem API request failed with status 400.')
+        ->and($exception?->context())->toBe([
+            'errors' => [
+                'level_1' => [
+                    'level_2' => [
+                        'level_3' => [
+                            'level_4' => '[truncated]',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+});
+
+test('error contexts are sanitized before they are attached to exceptions', function (): void {
+    $connector = new CreemConnector(new Config('sk_test_123'));
+    $exception = captureCreemException(
+        static fn (): Response => $connector->send(
+            creemConnectorTestRequest(),
+            new MockClient([
+                MockResponse::make([
+                    'message' => 'Invalid customer data',
+                    'email' => 'customer@example.com',
+                    'errors' => [
+                        'email' => ['Email is invalid.'],
+                        'submitted_value' => 'customer@example.com',
+                    ],
+                ], 422),
+            ]),
+        ),
+    );
+
+    expect($exception)->toBeInstanceOf(ValidationException::class)
+        ->and($exception?->context())->toBe([
+            'message' => 'Invalid customer data',
+            'errors' => [
+                'email' => ['Email is invalid.'],
+                'submitted_value' => '[redacted]',
+            ],
+        ]);
 });
 
 function creemConnectorTestRequest(): Request
@@ -244,11 +317,11 @@ function creemConnectorResponseFailureMappings(): array
             ['errors' => ['name' => ['Name is required.']]],
         ],
         'rate_limit' => [
-            MockResponse::make(['message' => 'Slow down'], 429),
+            MockResponse::make(['message' => 'Slow down'], 429, ['Retry-After' => '7']),
             RateLimitException::class,
             'Slow down',
             429,
-            ['message' => 'Slow down'],
+            ['message' => 'Slow down', 'retry_after_seconds' => 7],
         ],
         'server_error' => [
             MockResponse::make('Internal server error', 500),

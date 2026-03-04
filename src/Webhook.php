@@ -18,7 +18,8 @@ final class Webhook
 {
     private function __construct() {}
 
-    public static function verifySignature(string $payload, string $signatureHeader, string $secret): void
+    public static function verifySignature(string $payload, string $signatureHeader, #[\SensitiveParameter]
+        string $secret): void
     {
         $normalizedSignature = trim($signatureHeader);
 
@@ -26,9 +27,13 @@ final class Webhook
             throw InvalidWebhookSignatureException::missingSignature();
         }
 
-        $expectedSignature = Signature::compute($payload, $secret);
+        $verifiedHeader = Signature::parseHeader($normalizedSignature);
 
-        if (! SecureComparer::equals($expectedSignature, $normalizedSignature)) {
+        Signature::validateTimestamp($verifiedHeader['timestamp']);
+
+        $expectedSignature = Signature::compute($payload, $secret, $verifiedHeader['timestamp']);
+
+        if (! SecureComparer::equals($expectedSignature, $verifiedHeader['signature'])) {
             throw InvalidWebhookSignatureException::invalidSignature();
         }
     }
@@ -42,7 +47,8 @@ final class Webhook
         }
     }
 
-    public static function constructEvent(string $payload, string $signatureHeader, string $secret): WebhookEvent
+    public static function constructEvent(string $payload, string $signatureHeader, #[\SensitiveParameter]
+        string $secret): WebhookEvent
     {
         self::verifySignature($payload, $signatureHeader, $secret);
 

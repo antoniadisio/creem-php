@@ -45,11 +45,7 @@ final class CreemConnector extends Connector
      */
     protected function defaultConfig(): array
     {
-        if ($this->sdkConfig->timeout() === null) {
-            return [];
-        }
-
-        return ['timeout' => $this->sdkConfig->timeout()];
+        return ['timeout' => $this->sdkConfig->timeout() ?? Config::DEFAULT_TIMEOUT_SECONDS];
     }
 
     public function getRequestException(Response $response, ?Throwable $senderException): Throwable

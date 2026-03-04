@@ -8,6 +8,9 @@
 - Request DTOs use spec-backed enums and typed date objects for closed-set and temporal fields.
 - Response DTOs expose enums, `DateTimeImmutable`, typed nested DTOs, typed lists, and `ExpandableResource<T>` instead of generic structured containers and loose numeric unions.
 - Response hydration fails fast with `Creem\Exception\HydrationException` when required payload fields are missing or malformed.
+- Webhook verification now requires timestamped signatures, rejects replay windows beyond 5 minutes, and enforces a 1 MiB payload cap before decoding.
+- `Creem\Config` now enforces key shape and HTTPS-only base URL overrides, defaults outbound requests to a 30-second timeout, and redacts secrets in debug output and serialization.
+- Mutating resource methods now accept an optional idempotency key, and `RateLimitException` exposes parsed `Retry-After` delays.
 - Contributor tooling uses Pest 4, split deterministic `Unit` and `Integration` suites, and a default QA gate that runs both local suites.
 
 ### Compatibility Notes

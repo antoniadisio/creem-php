@@ -16,8 +16,9 @@ final class UpdateSubscriptionRequest extends JsonRequest
     public function __construct(
         private readonly string $subscriptionId,
         array $payload = [],
+        ?string $idempotencyKey = null,
     ) {
-        parent::__construct($payload);
+        parent::__construct($payload, $idempotencyKey);
     }
 
     public function resolveEndpoint(): string

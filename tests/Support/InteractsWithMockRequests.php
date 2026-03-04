@@ -26,6 +26,7 @@ trait InteractsWithMockRequests
     /**
      * @param  array<string, string>  $expectedQuery
      * @param  array<string, mixed>|null  $expectedJson
+     * @param  array<string, string>  $expectedHeaders
      */
     public function assertRequest(
         MockClient $mockClient,
@@ -33,6 +34,7 @@ trait InteractsWithMockRequests
         string $expectedPath,
         array $expectedQuery = [],
         ?array $expectedJson = null,
+        array $expectedHeaders = [],
     ): void {
         $pendingRequest = $mockClient->getLastPendingRequest();
 
@@ -43,6 +45,10 @@ trait InteractsWithMockRequests
 
         $this->assertSame($expectedPath, $this->path($psrRequest));
         $this->assertSame($expectedQuery, $this->query($psrRequest));
+
+        foreach ($expectedHeaders as $header => $value) {
+            $this->assertSame($value, $psrRequest->getHeaderLine($header));
+        }
 
         if ($expectedJson === null) {
             return;

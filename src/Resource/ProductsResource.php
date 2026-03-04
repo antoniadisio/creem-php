@@ -20,9 +20,9 @@ final class ProductsResource extends Resource
         return Product::fromPayload($this->send(new RetrieveProductRequest($id)));
     }
 
-    public function create(CreateProductRequest $request): Product
+    public function create(CreateProductRequest $request, ?string $idempotencyKey = null): Product
     {
-        return Product::fromPayload($this->send(new CreateProductOperation($request->toArray())));
+        return Product::fromPayload($this->send(new CreateProductOperation($request->toArray(), $idempotencyKey)));
     }
 
     /**
