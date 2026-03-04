@@ -16,41 +16,6 @@ Requires PHP 8.4 or newer.
 
 The current public line is a `0.x` preview release. Follow normal semver expectations for install constraints, but expect the SDK surface to keep evolving until `1.0`.
 
-## Validation
-
-Most local work should use:
-
-```bash
-composer qa
-```
-
-Before opening a pull request or cutting a release, use:
-
-```bash
-composer qa:check
-```
-
-Command guide:
-
-- `composer qa` runs the fix-first local QA flow: Rector, Pint fixes, PHPStan, then the local Pest suites (`Unit` then `Integration`).
-- `composer qa:check` runs the same flow without changing files.
-- `composer test` runs the fast `Unit` suite only.
-- `composer test:integration` runs the deterministic `Integration` suite with Saloon mocks.
-- `composer test:local` runs `Unit` then `Integration`.
-- `composer test:live` runs the opt-in read-only smoke suite against the Creem test environment and is intentionally excluded from the default QA flow.
-
-Notes:
-
-- The committed Rector config intentionally skips automatic type-declaration inference on `Creem\Client`, `Creem\Config`, and `Creem\Resource\*` so public signatures stay under manual review.
-- `composer stan` uses the committed `phpstan.neon.dist` configuration and the repository-defined memory limit.
-- `composer install` and `composer update` use the committed Composer platform pin (`php: 8.4.0`) so the lockfile stays aligned with the PHP 8.4 CI target.
-
-For `composer test:live`, use:
-
-- `CREEM_LIVE_API_KEY` for authenticated live smoke tests
-- `CREEM_LIVE_BASE_URL` to override the test API host when needed
-- `CREEM_LIVE_TIMEOUT` to override the default 10-second live test timeout
-
 ## Quick Start
 
 ```php
@@ -58,13 +23,17 @@ For `composer test:live`, use:
 
 use Creem\Client;
 use Creem\Config;
+use Creem\Environment;
 
 $client = new Client(new Config(
     apiKey: $_ENV['CREEM_API_KEY'],
+    environment: Environment::Test,
 ));
 
 $product = $client->products()->get('prod_123');
 ```
+
+`Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly.
 
 ## Configuration
 
@@ -436,15 +405,38 @@ Collection-style endpoints return `Creem\Dto\Common\Page`, with pagination metad
 
 Closed-set response fields are hydrated to `Creem\Enum\*` cases, spec-defined date-time fields are hydrated to `DateTimeImmutable`, and malformed required payloads now raise `Creem\Exception\HydrationException` instead of being silently coerced.
 
+## Development
+
+If you are contributing to the SDK itself:
+
+```bash
+composer qa
+```
+
+Before opening a pull request or cutting a release:
+
+```bash
+composer qa:check
+```
+
+Command guide:
+
+- `composer qa` runs the fix-first local QA flow: Rector, Pint fixes, PHPStan, then the local Pest suites (`Unit` then `Integration`).
+- `composer qa:check` runs the same flow without changing files.
+- `composer test` runs the fast `Unit` suite only.
+- `composer test:integration` runs the deterministic `Integration` suite with Saloon mocks.
+- `composer test:local` runs `Unit` then `Integration`.
+- `composer test:live` runs the opt-in read-only smoke suite against the Creem test environment and is intentionally excluded from the default QA flow.
+
+Notes:
+
+- The committed Rector config intentionally skips automatic type-declaration inference on `Creem\Client`, `Creem\Config`, and `Creem\Resource\*` so public signatures stay under manual review.
+- `composer stan` uses the committed `phpstan.neon.dist` configuration and the repository-defined memory limit.
+- `composer install` and `composer update` use the committed Composer platform pin (`php: 8.4.0`) so the lockfile stays aligned with the PHP 8.4 CI target.
+- For `composer test:live`, use `CREEM_LIVE_API_KEY`, and optionally `CREEM_LIVE_BASE_URL` and `CREEM_LIVE_TIMEOUT`.
+
 ## Contributing
 
 Contributor workflows, OpenAPI contract fixture maintenance, and release steps live in `CONTRIBUTING.md`.
-
-## Local Development
-
-```bash
-composer validate --strict
-composer qa:check
-```
 
 The package metadata in `composer.json` is suitable for Packagist publication: it includes package name, description, license, keywords, support links, and PSR-4 autoload configuration.
