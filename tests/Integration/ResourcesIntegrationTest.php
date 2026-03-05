@@ -362,6 +362,36 @@ test('subscriptions resource rejects route manipulation identifiers on mutating 
             InvalidArgumentException::class,
             'The subscription ID contains unsupported characters. Allowed characters are letters, numbers, ".", "_", and "-".',
         );
+
+    expect(static fn (): \Creem\Dto\Subscription\Subscription => $resource->cancel('.', $cancelRequest))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The subscription ID cannot be "." or "..".',
+        );
+
+    expect(static fn (): \Creem\Dto\Subscription\Subscription => $resource->update('..', $updateRequest))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The subscription ID cannot be "." or "..".',
+        );
+
+    expect(static fn (): \Creem\Dto\Subscription\Subscription => $resource->upgrade('.', $upgradeRequest))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The subscription ID cannot be "." or "..".',
+        );
+
+    expect(static fn (): \Creem\Dto\Subscription\Subscription => $resource->pause('..'))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The subscription ID cannot be "." or "..".',
+        );
+
+    expect(static fn (): \Creem\Dto\Subscription\Subscription => $resource->resume('.'))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The subscription ID cannot be "." or "..".',
+        );
 });
 
 test(ResourceBehaviorTestCatalog::CHECKOUTS, function (): void {
@@ -520,6 +550,18 @@ test('discounts resource normalizes delete identifiers and rejects route manipul
         ->toThrow(
             InvalidArgumentException::class,
             'The discount ID cannot contain reserved URI characters or control characters.',
+        );
+
+    expect(static fn (): \Creem\Dto\Discount\Discount => $resource->delete('.'))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The discount ID cannot be "." or "..".',
+        );
+
+    expect(static fn (): \Creem\Dto\Discount\Discount => $resource->delete('..'))
+        ->toThrow(
+            InvalidArgumentException::class,
+            'The discount ID cannot be "." or "..".',
         );
 });
 

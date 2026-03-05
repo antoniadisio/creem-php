@@ -212,7 +212,7 @@ All mutating resource methods accept an optional final `?string $idempotencyKey 
 
 Mutation request DTOs now fail fast with `InvalidArgumentException` when required identifiers are blank after trimming, numeric bounds are invalid (for example `price <= 0` or `units <= 0`), discount payload fields are incoherent (`fixed` vs `percentage`), or list elements are malformed at runtime. Existing integrations that relied on sending empty/invalid payload values should update those call sites before upgrading.
 
-Mutating resource methods that interpolate IDs into path segments (`subscriptions()->cancel/update/upgrade/pause/resume` and `discounts()->delete`) now normalize IDs and reject unsafe input. IDs are trimmed, must be non-blank, and may only contain `[A-Za-z0-9._-]`; reserved URI/control characters (`/`, `\\`, `?`, `#`, `%`, ASCII controls) are rejected to prevent route manipulation.
+Mutating resource methods that interpolate IDs into path segments (`subscriptions()->cancel/update/upgrade/pause/resume` and `discounts()->delete`) now normalize IDs and reject unsafe input. IDs are trimmed, must be non-blank, may not be dot segments (`.` or `..`), and may only contain `[A-Za-z0-9._-]`; reserved URI/control characters (`/`, `\\`, `?`, `#`, `%`, ASCII controls) are rejected to prevent route manipulation.
 
 ### Products
 

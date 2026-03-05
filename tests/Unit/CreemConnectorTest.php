@@ -477,9 +477,37 @@ function invalidMutatingPathIdentifierFactories(): array
             static fn (): CancelSubscriptionRequest => new CancelSubscriptionRequest('  '),
             'The subscription ID cannot be blank.',
         ],
+        'subscription single dot segment (cancel)' => [
+            static fn (): CancelSubscriptionRequest => new CancelSubscriptionRequest('.'),
+            'The subscription ID cannot be "." or "..".',
+        ],
+        'subscription double dot segment (update)' => [
+            static fn (): UpdateSubscriptionRequest => new UpdateSubscriptionRequest('..'),
+            'The subscription ID cannot be "." or "..".',
+        ],
+        'subscription single dot segment (upgrade)' => [
+            static fn (): UpgradeSubscriptionRequest => new UpgradeSubscriptionRequest('.'),
+            'The subscription ID cannot be "." or "..".',
+        ],
+        'subscription double dot segment (pause)' => [
+            static fn (): PauseSubscriptionRequest => new PauseSubscriptionRequest('..'),
+            'The subscription ID cannot be "." or "..".',
+        ],
+        'subscription single dot segment (resume)' => [
+            static fn (): ResumeSubscriptionRequest => new ResumeSubscriptionRequest('.'),
+            'The subscription ID cannot be "." or "..".',
+        ],
         'blank discount id' => [
             static fn (): DeleteDiscountRequest => new DeleteDiscountRequest('  '),
             'The discount ID cannot be blank.',
+        ],
+        'discount single dot segment' => [
+            static fn (): DeleteDiscountRequest => new DeleteDiscountRequest('.'),
+            'The discount ID cannot be "." or "..".',
+        ],
+        'discount double dot segment' => [
+            static fn (): DeleteDiscountRequest => new DeleteDiscountRequest('..'),
+            'The discount ID cannot be "." or "..".',
         ],
     ];
 }

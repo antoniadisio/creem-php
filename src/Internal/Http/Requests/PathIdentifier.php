@@ -6,6 +6,7 @@ namespace Creem\Internal\Http\Requests;
 
 use InvalidArgumentException;
 
+use function in_array;
 use function preg_match;
 use function sprintf;
 use function trim;
@@ -22,6 +23,10 @@ final class PathIdentifier
 
         if ($value === '') {
             throw new InvalidArgumentException(sprintf('The %s cannot be blank.', $label));
+        }
+
+        if (in_array($value, ['.', '..'], true)) {
+            throw new InvalidArgumentException(sprintf('The %s cannot be "." or "..".', $label));
         }
 
         if (preg_match(self::RESERVED_OR_CONTROL_PATTERN, $value) === 1) {
