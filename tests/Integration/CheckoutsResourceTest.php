@@ -23,13 +23,13 @@ test('checkouts resource gets and creates checkouts', function (): void {
     /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('checkout.json')),
-        MockResponse::make($this->responseFixture('checkout.json', ['id' => 'chk_456'])),
+        MockResponse::make($this->responseFixture('checkout.json', ['id' => 'chk_fixture_created'])),
     ]);
     $resource = new CheckoutsResource($this->connector($mockClient));
 
-    $checkout = $resource->get('chk_123');
+    $checkout = $resource->get('chk_fixture_pending');
 
-    expect($checkout->id)->toBe('chk_123')
+    expect($checkout->id)->toBe('chk_fixture_pending')
         ->and($checkout->status)->toBe(CheckoutStatus::Pending)
         ->and($checkout->product)->toBeInstanceOf(ExpandableResource::class)
         ->and($checkout->product?->isExpanded())->toBeTrue()
@@ -40,22 +40,22 @@ test('checkouts resource gets and creates checkouts', function (): void {
         ->and($checkout->feature[0] ?? null)->toBeInstanceOf(ProductFeature::class)
         ->and($checkout->feature[0]->type ?? null)->toBe(ProductFeatureType::File)
         ->and($checkout->metadata)->toBeArray()
-        ->and($checkout->metadata['source'] ?? null)->toBe('sdk-test')
+        ->and($checkout->metadata['source'] ?? null)->toBe('sdk-fixture')
         ->and($checkout->metadata['attempt'] ?? null)->toBeInt();
-    $this->assertRequest($mockClient, Method::GET, '/v1/checkouts', ['checkout_id' => 'chk_123']);
+    $this->assertRequest($mockClient, Method::GET, '/v1/checkouts', ['checkout_id' => 'chk_fixture_pending']);
 
     $created = $resource->create(
-        new CreateCheckoutRequest('prod_123', requestId: 'req_1', units: 2, successUrl: 'https://example.com/success'),
+        new CreateCheckoutRequest('prod_fixture_starter', requestId: 'req_fixture_checkout_create', units: 2, successUrl: 'https://merchant.example/checkout/success'),
         'idem-checkout-create',
     );
 
-    expect($created->id)->toBe('chk_456');
+    expect($created->id)->toBe('chk_fixture_created');
     $this->assertRequest(
         $mockClient,
         Method::POST,
         '/v1/checkouts',
         [],
-        ['request_id' => 'req_1', 'product_id' => 'prod_123', 'units' => 2, 'custom_fields' => [], 'success_url' => 'https://example.com/success'],
+        ['request_id' => 'req_fixture_checkout_create', 'product_id' => 'prod_fixture_starter', 'units' => 2, 'custom_fields' => [], 'success_url' => 'https://merchant.example/checkout/success'],
         ['Idempotency-Key' => 'idem-checkout-create'],
     );
 });

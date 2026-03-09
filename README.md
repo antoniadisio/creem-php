@@ -44,6 +44,7 @@ Run `composer test:smoke` for the opt-in network smoke suite against `Environmen
 - The smoke suite is read-only and does not create or persist local state.
 - Automated smoke coverage is limited to invalid-auth handling plus typed checks for stats summary, products search, customers list, and transactions search.
 - Smoke tests are tagged with the Pest groups `smoke` and `network`, and page assertions stay stable when the API legitimately returns zero items.
+- Destructive verification against `Environment::Test` is intentionally manual and documented in [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md).
 
 Automated test layers used in this repository:
 
@@ -496,6 +497,7 @@ Notes:
 - `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional smoke overrides.
 - `composer test:smoke` runs Pest in verbose mode (`-v`) so skip, warning, and error lines stay readable.
 - The smoke suite is intentionally limited to independent read-only checks for invalid auth, stats summary, products search, customers list, and transactions search.
+- Destructive test-environment verification follows the maintainer runbook in [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md).
 
 ## Test Policy
 
@@ -510,6 +512,6 @@ Migration note:
 
 ## Contributing
 
-Contributor workflows, OpenAPI contract fixture maintenance, and release steps live in `CONTRIBUTING.md`.
+Contributor workflows, fixture maintenance rules, and release steps live in `CONTRIBUTING.md`. The maintainer runbook for destructive test-environment verification lives in [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md).
 
 The package metadata in `composer.json` is suitable for Packagist publication: it includes package name, description, license, keywords, support links, and PSR-4 autoload configuration.

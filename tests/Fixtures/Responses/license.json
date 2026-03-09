@@ -1,19 +1,19 @@
 {
-    "id": "lic_123",
+    "id": "lic_fixture_primary",
     "mode": "test",
     "object": "license",
     "status": "active",
-    "key": "lic_key",
+    "key": "license_fixture_key_primary",
     "activation": 2,
     "activation_limit": 3,
-    "expires_at": "2027-01-01T00:00:00Z",
-    "created_at": "2026-01-01T00:00:00Z",
+    "expires_at": "2026-01-15T10:00:00Z",
+    "created_at": "2025-01-15T10:00:00Z",
     "instance": {
-        "id": "ins_123",
+        "id": "ins_fixture_macbook",
         "mode": "test",
         "object": "license-instance",
-        "name": "macbook",
+        "name": "macbook-fixture",
         "status": "active",
-        "created_at": "2026-01-01T00:00:00Z"
+        "created_at": "2025-01-15T10:00:00Z"
     }
 }

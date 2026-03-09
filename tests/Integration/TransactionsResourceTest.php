@@ -23,14 +23,14 @@ test('transactions resource gets and searches transactions', function (): void {
     ]);
     $resource = new TransactionsResource($this->connector($mockClient));
 
-    $transaction = $resource->get('txn_123');
+    $transaction = $resource->get('txn_fixture_paid');
 
-    expect($transaction->id)->toBe('txn_123')
+    expect($transaction->id)->toBe('txn_fixture_paid')
         ->and($transaction->currency)->toBe(CurrencyCode::USD)
         ->and($transaction->status)->toBe(TransactionStatus::Paid);
-    $this->assertRequest($mockClient, Method::GET, '/v1/transactions', ['transaction_id' => 'txn_123']);
+    $this->assertRequest($mockClient, Method::GET, '/v1/transactions', ['transaction_id' => 'txn_fixture_paid']);
 
-    $page = $resource->search(new SearchTransactionsRequest(customerId: 'cus_123', pageNumber: 3, pageSize: 25));
+    $page = $resource->search(new SearchTransactionsRequest(customerId: 'cus_fixture_taylor', pageNumber: 3, pageSize: 25));
 
     expect($page->count())->toBe(1)
         ->and($page->pagination)->toBeInstanceOf(Pagination::class)
@@ -42,7 +42,7 @@ test('transactions resource gets and searches transactions', function (): void {
         $mockClient,
         Method::GET,
         '/v1/transactions/search',
-        ['customer_id' => 'cus_123', 'page_number' => '3', 'page_size' => '25'],
+        ['customer_id' => 'cus_fixture_taylor', 'page_number' => '3', 'page_size' => '25'],
     );
 });
 

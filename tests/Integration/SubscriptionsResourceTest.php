@@ -32,31 +32,31 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
             'id' => 'item_2',
             'mode' => 'test',
             'object' => 'subscription-item',
-            'product_id' => 'prod_123',
-            'price_id' => 'price_123',
+            'product_id' => 'prod_fixture_starter',
+            'price_id' => 'price_fixture_monthly',
             'units' => 4,
         ]]])),
-        MockResponse::make($this->responseFixture('subscription.json', ['status' => 'active', 'product' => 'prod_999'])),
+        MockResponse::make($this->responseFixture('subscription.json', ['status' => 'active', 'product' => 'prod_fixture_growth'])),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'paused'])),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'active'])),
     ]);
     $resource = new SubscriptionsResource($this->connector($mockClient));
 
-    $subscription = $resource->get('sub_123');
+    $subscription = $resource->get('sub_fixture_active');
 
     expect($subscription->product)->toBeInstanceOf(ExpandableResource::class)
-        ->and($subscription->product?->id())->toBe('prod_123')
+        ->and($subscription->product?->id())->toBe('prod_fixture_starter')
         ->and($subscription->product?->isExpanded())->toBeTrue()
         ->and($subscription->customer)->toBeInstanceOf(ExpandableResource::class)
         ->and($subscription->customer?->isExpanded())->toBeFalse()
         ->and($subscription->collectionMethod)->toBe(SubscriptionCollectionMethod::ChargeAutomatically)
         ->and($subscription->lastTransaction?->status)->toBe(TransactionStatus::Paid)
-        ->and($subscription->lastTransactionDate?->format(DATE_ATOM))->toBe('2026-01-01T12:00:00+00:00')
+        ->and($subscription->lastTransactionDate?->format(DATE_ATOM))->toBe('2025-01-15T12:00:00+00:00')
         ->and($subscription->status)->toBe(SubscriptionStatus::Active);
-    $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_123']);
+    $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_fixture_active']);
 
     $canceled = $resource->cancel(
-        'sub_123',
+        'sub_fixture_active',
         new CancelSubscriptionRequest(SubscriptionCancellationMode::Immediate, SubscriptionCancellationAction::Cancel),
         'idem-subscription-cancel',
     );
@@ -65,16 +65,16 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
     $this->assertRequest(
         $mockClient,
         Method::POST,
-        '/v1/subscriptions/sub_123/cancel',
+        '/v1/subscriptions/sub_fixture_active/cancel',
         [],
         ['mode' => 'immediate', 'onExecute' => 'cancel'],
         ['Idempotency-Key' => 'idem-subscription-cancel'],
     );
 
     $updated = $resource->update(
-        'sub_123',
+        'sub_fixture_active',
         new UpdateSubscriptionRequest(
-            [new UpsertSubscriptionItem(productId: 'prod_123', units: 4)],
+            [new UpsertSubscriptionItem(productId: 'prod_fixture_starter', units: 4)],
             SubscriptionUpdateBehavior::ProrationCharge,
         ),
         'idem-subscription-update',
@@ -85,38 +85,38 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
     $this->assertRequest(
         $mockClient,
         Method::POST,
-        '/v1/subscriptions/sub_123',
+        '/v1/subscriptions/sub_fixture_active',
         [],
-        ['items' => [['product_id' => 'prod_123', 'units' => 4]], 'update_behavior' => 'proration-charge'],
+        ['items' => [['product_id' => 'prod_fixture_starter', 'units' => 4]], 'update_behavior' => 'proration-charge'],
         ['Idempotency-Key' => 'idem-subscription-update'],
     );
 
     $upgraded = $resource->upgrade(
-        'sub_123',
-        new UpgradeSubscriptionRequest('prod_999', SubscriptionUpdateBehavior::ProrationChargeImmediately),
+        'sub_fixture_active',
+        new UpgradeSubscriptionRequest('prod_fixture_growth', SubscriptionUpdateBehavior::ProrationChargeImmediately),
         'idem-subscription-upgrade',
     );
 
     expect($upgraded->product)->toBeInstanceOf(ExpandableResource::class)
-        ->and($upgraded->product?->id())->toBe('prod_999');
+        ->and($upgraded->product?->id())->toBe('prod_fixture_growth');
     $this->assertRequest(
         $mockClient,
         Method::POST,
-        '/v1/subscriptions/sub_123/upgrade',
+        '/v1/subscriptions/sub_fixture_active/upgrade',
         [],
-        ['product_id' => 'prod_999', 'update_behavior' => 'proration-charge-immediately'],
+        ['product_id' => 'prod_fixture_growth', 'update_behavior' => 'proration-charge-immediately'],
         ['Idempotency-Key' => 'idem-subscription-upgrade'],
     );
 
-    $paused = $resource->pause('sub_123', 'idem-subscription-pause');
+    $paused = $resource->pause('sub_fixture_active', 'idem-subscription-pause');
 
     expect($paused->status)->toBe(SubscriptionStatus::Paused);
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/pause', [], null, ['Idempotency-Key' => 'idem-subscription-pause']);
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/pause', [], null, ['Idempotency-Key' => 'idem-subscription-pause']);
 
-    $resumed = $resource->resume('sub_123', 'idem-subscription-resume');
+    $resumed = $resource->resume('sub_fixture_active', 'idem-subscription-resume');
 
     expect($resumed->status)->toBe(SubscriptionStatus::Active);
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/resume', [], null, ['Idempotency-Key' => 'idem-subscription-resume']);
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/resume', [], null, ['Idempotency-Key' => 'idem-subscription-resume']);
 });
 
 test('subscriptions resource sends an empty payload when cancel request is omitted', function (): void {
@@ -126,13 +126,13 @@ test('subscriptions resource sends an empty payload when cancel request is omitt
     ]);
     $resource = new SubscriptionsResource($this->connector($mockClient));
 
-    $subscription = $resource->cancel('sub_123', idempotencyKey: 'idem-subscription-cancel-default');
+    $subscription = $resource->cancel('sub_fixture_active', idempotencyKey: 'idem-subscription-cancel-default');
 
     expect($subscription->status)->toBe(SubscriptionStatus::Canceled);
     $this->assertRequest(
         $mockClient,
         Method::POST,
-        '/v1/subscriptions/sub_123/cancel',
+        '/v1/subscriptions/sub_fixture_active/cancel',
         [],
         [],
         ['Idempotency-Key' => 'idem-subscription-cancel-default'],
@@ -151,25 +151,25 @@ test('subscriptions resource normalizes mutating identifiers before endpoint res
     $resource = new SubscriptionsResource($this->connector($mockClient));
 
     $resource->cancel(
-        '  sub_123  ',
+        '  sub_fixture_active  ',
         new CancelSubscriptionRequest(SubscriptionCancellationMode::Immediate, SubscriptionCancellationAction::Cancel),
     );
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/cancel', [], ['mode' => 'immediate', 'onExecute' => 'cancel']);
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/cancel', [], ['mode' => 'immediate', 'onExecute' => 'cancel']);
 
     $resource->update(
-        '  sub_123  ',
-        new UpdateSubscriptionRequest([new UpsertSubscriptionItem(productId: 'prod_123', units: 1)]),
+        '  sub_fixture_active  ',
+        new UpdateSubscriptionRequest([new UpsertSubscriptionItem(productId: 'prod_fixture_starter', units: 1)]),
     );
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123', [], ['items' => [['product_id' => 'prod_123', 'units' => 1]]]);
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active', [], ['items' => [['product_id' => 'prod_fixture_starter', 'units' => 1]]]);
 
-    $resource->upgrade('  sub_123  ', new UpgradeSubscriptionRequest('prod_999'));
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/upgrade', [], ['product_id' => 'prod_999']);
+    $resource->upgrade('  sub_fixture_active  ', new UpgradeSubscriptionRequest('prod_fixture_growth'));
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/upgrade', [], ['product_id' => 'prod_fixture_growth']);
 
-    $resource->pause('  sub_123  ');
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/pause');
+    $resource->pause('  sub_fixture_active  ');
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/pause');
 
-    $resource->resume('  sub_123  ');
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_123/resume');
+    $resource->resume('  sub_fixture_active  ');
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/resume');
 });
 
 foreach (invalidSubscriptionMutatingIdentifiers() as $dataset => [$method, $identifier, $arguments, $message]) {

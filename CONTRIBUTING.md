@@ -11,8 +11,10 @@ This repository is a public PHP SDK. Keep changes focused on package code and co
 ## Development Workflow
 - Keep source changes under `src/` and add matching deterministic tests under `tests/Unit/` and `tests/Integration/` as needed.
 - Update response fixtures in `tests/Fixtures/Responses/` when payload shapes change.
+- Keep committed response fixtures sanitized: use placeholder IDs, reserved-domain URLs, `@example.test` emails, and the canonical timestamp set already used by the fixture corpus.
 - Keep OpenAPI contract work aligned with `tests/Fixtures/OpenApi/creem-openapi.json`.
 - Do not commit local-only planning files or machine-specific files such as `.env`, `plan/`, `PROJECT_DESCRIPTION.md`, personal local workflow files, `vendor/`, or IDE settings.
+- Keep destructive test-environment verification out of Pest and follow [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md) when a change must be checked against mutating live behavior.
 
 ## Validation
 Run these commands locally:
@@ -26,6 +28,8 @@ Run these commands locally:
 - `composer cs` to verify formatting.
 - `composer cs:fix` to apply formatting fixes.
 - `composer stan` to run static analysis on `src` and `tests`.
+
+Destructive verification belongs in the manual maintainer runbook, not in automated tests or default contributor workflows.
 
 Pull requests should be opened only after `composer qa:check` is green.
 

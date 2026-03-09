@@ -1,10 +1,10 @@
 {
-    "id": "cus_123",
+    "id": "cus_fixture_taylor",
     "mode": "test",
     "object": "customer",
-    "email": "hello@example.com",
-    "name": "Taylor",
+    "email": "taylor.fixture@example.test",
+    "name": "Taylor Fixture",
     "country": "US",
-    "created_at": "2026-01-01T00:00:00Z",
-    "updated_at": "2026-01-02T00:00:00Z"
+    "created_at": "2025-01-15T10:00:00Z",
+    "updated_at": "2025-01-15T10:05:00Z"
 }

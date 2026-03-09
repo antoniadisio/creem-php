@@ -24,28 +24,28 @@ test('products resource gets creates and searches products', function (): void {
     /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('product.json')),
-        MockResponse::make($this->responseFixture('product.json', ['id' => 'prod_456', 'name' => 'Enterprise'])),
+        MockResponse::make($this->responseFixture('product.json', ['id' => 'prod_fixture_enterprise', 'name' => 'Enterprise Fixture'])),
         MockResponse::make($this->responseFixture('product_page.json')),
     ]);
     $resource = new ProductsResource($this->connector($mockClient));
 
-    $product = $resource->get('prod_123');
+    $product = $resource->get('prod_fixture_starter');
 
-    expect($product->id)->toBe('prod_123')
+    expect($product->id)->toBe('prod_fixture_starter')
         ->and($product->mode)->toBe(ApiMode::Test)
         ->and($product->currency)->toBe(CurrencyCode::USD)
         ->and($product->billingPeriod)->toBe(BillingPeriod::EveryMonth)
-        ->and($product->createdAt?->format(DATE_ATOM))->toBe('2026-01-01T00:00:00+00:00')
+        ->and($product->createdAt?->format(DATE_ATOM))->toBe('2025-01-15T10:00:00+00:00')
         ->and($product->features[0] ?? null)->toBeInstanceOf(ProductFeature::class)
         ->and($product->features[0]->type)->toBe(ProductFeatureType::LicenseKey);
-    $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_123']);
+    $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_fixture_starter']);
 
     $created = $resource->create(
         new CreateProductRequest('Enterprise', 4900, CurrencyCode::USD, BillingType::OneTime, description: 'Scale plan'),
         'idem-product-create',
     );
 
-    expect($created->id)->toBe('prod_456');
+    expect($created->id)->toBe('prod_fixture_enterprise');
     $this->assertRequest(
         $mockClient,
         Method::POST,
@@ -62,7 +62,7 @@ test('products resource gets creates and searches products', function (): void {
         ->and($page->pagination?->currentPage)->toBe(2)
         ->and($page->pagination?->nextPage)->toBeNull()
         ->and($page->get(0))->toBeInstanceOf(Product::class)
-        ->and($page->get(0)?->id)->toBe('prod_123')
+        ->and($page->get(0)?->id)->toBe('prod_fixture_starter')
         ->and($page->get(0)?->currency)->toBe(CurrencyCode::USD);
     $this->assertRequest($mockClient, Method::GET, '/v1/products/search', ['page_number' => '2', 'page_size' => '50']);
 });

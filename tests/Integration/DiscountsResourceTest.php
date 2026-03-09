@@ -21,56 +21,56 @@ test('discounts resource retrieves creates and deletes discounts', function (): 
     /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('discount.json')),
-        MockResponse::make($this->responseFixture('discount.json', ['code' => 'WELCOME10'])),
-        MockResponse::make($this->responseFixture('discount.json', ['id' => 'disc_456'])),
+        MockResponse::make($this->responseFixture('discount.json', ['code' => 'WELCOME10_FIXTURE'])),
+        MockResponse::make($this->responseFixture('discount.json', ['id' => 'disc_fixture_welcome'])),
         MockResponse::make($this->responseFixture('discount.json', ['status' => 'expired'])),
     ]);
     $resource = new DiscountsResource($this->connector($mockClient));
 
-    $discount = $resource->get('disc_123');
+    $discount = $resource->get('disc_fixture_launch');
 
-    expect($discount->id)->toBe('disc_123')
+    expect($discount->id)->toBe('disc_fixture_launch')
         ->and($discount->status)->toBe(DiscountStatus::Active);
-    $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_id' => 'disc_123']);
+    $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_id' => 'disc_fixture_launch']);
 
-    $byCode = $resource->getByCode('WELCOME10');
+    $byCode = $resource->getByCode('WELCOME10_FIXTURE');
 
-    expect($byCode->code)->toBe('WELCOME10');
-    $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_code' => 'WELCOME10']);
+    expect($byCode->code)->toBe('WELCOME10_FIXTURE');
+    $this->assertRequest($mockClient, Method::GET, '/v1/discounts', ['discount_code' => 'WELCOME10_FIXTURE']);
 
     $created = $resource->create(
         new CreateDiscountRequest(
-            'Launch',
+            'Launch Fixture',
             DiscountType::Fixed,
             DiscountDuration::Once,
-            ['prod_123'],
+            ['prod_fixture_starter'],
             amount: 1000,
             currency: CurrencyCode::USD,
         ),
         'idem-discount-create',
     );
 
-    expect($created->id)->toBe('disc_456');
+    expect($created->id)->toBe('disc_fixture_welcome');
     $this->assertRequest(
         $mockClient,
         Method::POST,
         '/v1/discounts',
         [],
         [
-            'name' => 'Launch',
+            'name' => 'Launch Fixture',
             'type' => 'fixed',
             'amount' => 1000,
             'currency' => 'USD',
             'duration' => 'once',
-            'applies_to_products' => ['prod_123'],
+            'applies_to_products' => ['prod_fixture_starter'],
         ],
         ['Idempotency-Key' => 'idem-discount-create'],
     );
 
-    $deleted = $resource->delete('disc_123', 'idem-discount-delete');
+    $deleted = $resource->delete('disc_fixture_launch', 'idem-discount-delete');
 
     expect($deleted->status)->toBe(DiscountStatus::Expired);
-    $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_123/delete', [], null, ['Idempotency-Key' => 'idem-discount-delete']);
+    $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_fixture_launch/delete', [], null, ['Idempotency-Key' => 'idem-discount-delete']);
 });
 
 test('discounts resource normalizes delete identifiers before endpoint resolution', function (): void {
@@ -80,8 +80,8 @@ test('discounts resource normalizes delete identifiers before endpoint resolutio
     ]);
     $resource = new DiscountsResource($this->connector($mockClient));
 
-    $resource->delete('  disc_123  ');
-    $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_123/delete');
+    $resource->delete('  disc_fixture_launch  ');
+    $this->assertRequest($mockClient, Method::DELETE, '/v1/discounts/disc_fixture_launch/delete');
 });
 
 foreach (invalidDiscountDeleteIdentifiers() as $dataset => [$identifier, $message]) {

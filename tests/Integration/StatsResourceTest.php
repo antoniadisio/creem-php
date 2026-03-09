@@ -26,8 +26,8 @@ test('stats resource returns typed summary data', function (): void {
     $summary = $resource->summary(
         new GetStatsSummaryRequest(
             CurrencyCode::USD,
-            new DateTimeImmutable('@1700000000'),
-            new DateTimeImmutable('@1701000000'),
+            new DateTimeImmutable('@1736935200'),
+            new DateTimeImmutable('@1739613600'),
             StatsInterval::Day,
         ),
     );
@@ -37,12 +37,12 @@ test('stats resource returns typed summary data', function (): void {
         ->and($summary->periods)->toHaveCount(1)
         ->and($summary->periods[0] ?? null)->toBeInstanceOf(StatsPeriod::class)
         ->and($summary->periods[0]->timestamp ?? null)->toBeInstanceOf(DateTimeImmutable::class)
-        ->and($summary->periods[0]->timestamp?->format(DATE_ATOM))->toBe('2023-11-14T22:13:20+00:00')
+        ->and($summary->periods[0]->timestamp?->format(DATE_ATOM))->toBe('2025-01-15T10:00:00+00:00')
         ->and($summary->periods[0]->netRevenue ?? null)->toBe(11500);
     $this->assertRequest(
         $mockClient,
         Method::GET,
         '/v1/stats/summary',
-        ['startDate' => '1700000000000', 'endDate' => '1701000000000', 'interval' => 'day', 'currency' => 'USD'],
+        ['startDate' => '1736935200000', 'endDate' => '1739613600000', 'interval' => 'day', 'currency' => 'USD'],
     );
 });
