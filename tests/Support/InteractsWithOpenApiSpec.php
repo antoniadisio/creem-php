@@ -15,6 +15,7 @@ use Creem\Resource\TransactionsResource;
 use JsonException;
 
 use function array_is_list;
+use function basename;
 use function ctype_digit;
 use function dirname;
 use function explode;
@@ -106,7 +107,6 @@ trait InteractsWithOpenApiSpec
      *     path: string,
      *     resource: class-string,
      *     sdk_methods: list<string>,
-     *     coverage_test: string,
      *     fixtures: list<string>
      * }>
      */
@@ -118,7 +118,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/licenses/activate',
                 'resource' => LicensesResource::class,
                 'sdk_methods' => ['activate'],
-                'coverage_test' => ResourceBehaviorTestCatalog::LICENSES,
                 'fixtures' => ['license.json'],
             ],
             'cancelSubscription' => [
@@ -126,7 +125,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/subscriptions/{id}/cancel',
                 'resource' => SubscriptionsResource::class,
                 'sdk_methods' => ['cancel'],
-                'coverage_test' => ResourceBehaviorTestCatalog::SUBSCRIPTIONS,
                 'fixtures' => ['subscription.json'],
             ],
             'createCheckout' => [
@@ -134,7 +132,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/checkouts',
                 'resource' => CheckoutsResource::class,
                 'sdk_methods' => ['create'],
-                'coverage_test' => ResourceBehaviorTestCatalog::CHECKOUTS,
                 'fixtures' => ['checkout.json'],
             ],
             'createDiscount' => [
@@ -142,7 +139,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/discounts',
                 'resource' => DiscountsResource::class,
                 'sdk_methods' => ['create'],
-                'coverage_test' => ResourceBehaviorTestCatalog::DISCOUNTS,
                 'fixtures' => ['discount.json'],
             ],
             'createProduct' => [
@@ -150,7 +146,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/products',
                 'resource' => ProductsResource::class,
                 'sdk_methods' => ['create'],
-                'coverage_test' => ResourceBehaviorTestCatalog::PRODUCTS,
                 'fixtures' => ['product.json'],
             ],
             'deactivateLicense' => [
@@ -158,7 +153,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/licenses/deactivate',
                 'resource' => LicensesResource::class,
                 'sdk_methods' => ['deactivate'],
-                'coverage_test' => ResourceBehaviorTestCatalog::LICENSES,
                 'fixtures' => ['license.json'],
             ],
             'deleteDiscount' => [
@@ -166,7 +160,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/discounts/{id}/delete',
                 'resource' => DiscountsResource::class,
                 'sdk_methods' => ['delete'],
-                'coverage_test' => ResourceBehaviorTestCatalog::DISCOUNTS,
                 'fixtures' => ['discount.json'],
             ],
             'generateCustomerLinks' => [
@@ -174,7 +167,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/customers/billing',
                 'resource' => CustomersResource::class,
                 'sdk_methods' => ['createBillingPortalLink'],
-                'coverage_test' => ResourceBehaviorTestCatalog::CUSTOMERS,
                 'fixtures' => ['customer_links.json'],
             ],
             'getMetricsSummary' => [
@@ -182,7 +174,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/stats/summary',
                 'resource' => StatsResource::class,
                 'sdk_methods' => ['summary'],
-                'coverage_test' => ResourceBehaviorTestCatalog::STATS,
                 'fixtures' => ['stats_summary.json'],
             ],
             'getTransactionById' => [
@@ -190,7 +181,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/transactions',
                 'resource' => TransactionsResource::class,
                 'sdk_methods' => ['get'],
-                'coverage_test' => ResourceBehaviorTestCatalog::TRANSACTIONS,
                 'fixtures' => ['transaction.json'],
             ],
             'listCustomers' => [
@@ -198,7 +188,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/customers/list',
                 'resource' => CustomersResource::class,
                 'sdk_methods' => ['list'],
-                'coverage_test' => ResourceBehaviorTestCatalog::CUSTOMERS,
                 'fixtures' => ['customer_page.json'],
             ],
             'pauseSubscription' => [
@@ -206,7 +195,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/subscriptions/{id}/pause',
                 'resource' => SubscriptionsResource::class,
                 'sdk_methods' => ['pause'],
-                'coverage_test' => ResourceBehaviorTestCatalog::SUBSCRIPTIONS,
                 'fixtures' => ['subscription.json'],
             ],
             'resumeSubscription' => [
@@ -214,7 +202,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/subscriptions/{id}/resume',
                 'resource' => SubscriptionsResource::class,
                 'sdk_methods' => ['resume'],
-                'coverage_test' => ResourceBehaviorTestCatalog::SUBSCRIPTIONS,
                 'fixtures' => ['subscription.json'],
             ],
             'retrieveCheckout' => [
@@ -222,7 +209,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/checkouts',
                 'resource' => CheckoutsResource::class,
                 'sdk_methods' => ['get'],
-                'coverage_test' => ResourceBehaviorTestCatalog::CHECKOUTS,
                 'fixtures' => ['checkout.json'],
             ],
             'retrieveCustomer' => [
@@ -230,7 +216,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/customers',
                 'resource' => CustomersResource::class,
                 'sdk_methods' => ['get', 'findByEmail'],
-                'coverage_test' => ResourceBehaviorTestCatalog::CUSTOMERS,
                 'fixtures' => ['customer.json'],
             ],
             'retrieveDiscount' => [
@@ -238,7 +223,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/discounts',
                 'resource' => DiscountsResource::class,
                 'sdk_methods' => ['get', 'getByCode'],
-                'coverage_test' => ResourceBehaviorTestCatalog::DISCOUNTS,
                 'fixtures' => ['discount.json'],
             ],
             'retrieveProduct' => [
@@ -246,7 +230,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/products',
                 'resource' => ProductsResource::class,
                 'sdk_methods' => ['get'],
-                'coverage_test' => ResourceBehaviorTestCatalog::PRODUCTS,
                 'fixtures' => ['product.json'],
             ],
             'retrieveSubscription' => [
@@ -254,7 +237,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/subscriptions',
                 'resource' => SubscriptionsResource::class,
                 'sdk_methods' => ['get'],
-                'coverage_test' => ResourceBehaviorTestCatalog::SUBSCRIPTIONS,
                 'fixtures' => ['subscription.json'],
             ],
             'searchProducts' => [
@@ -262,7 +244,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/products/search',
                 'resource' => ProductsResource::class,
                 'sdk_methods' => ['search'],
-                'coverage_test' => ResourceBehaviorTestCatalog::PRODUCTS,
                 'fixtures' => ['product_page.json'],
             ],
             'searchTransactions' => [
@@ -270,7 +251,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/transactions/search',
                 'resource' => TransactionsResource::class,
                 'sdk_methods' => ['search'],
-                'coverage_test' => ResourceBehaviorTestCatalog::TRANSACTIONS,
                 'fixtures' => ['transaction_page.json'],
             ],
             'updateSubscription' => [
@@ -278,7 +258,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/subscriptions/{id}',
                 'resource' => SubscriptionsResource::class,
                 'sdk_methods' => ['update'],
-                'coverage_test' => ResourceBehaviorTestCatalog::SUBSCRIPTIONS,
                 'fixtures' => ['subscription.json'],
             ],
             'upgradeSubscription' => [
@@ -286,7 +265,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/subscriptions/{id}/upgrade',
                 'resource' => SubscriptionsResource::class,
                 'sdk_methods' => ['upgrade'],
-                'coverage_test' => ResourceBehaviorTestCatalog::SUBSCRIPTIONS,
                 'fixtures' => ['subscription.json'],
             ],
             'validateLicense' => [
@@ -294,7 +272,6 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/licenses/validate',
                 'resource' => LicensesResource::class,
                 'sdk_methods' => ['validate'],
-                'coverage_test' => ResourceBehaviorTestCatalog::LICENSES,
                 'fixtures' => ['license.json'],
             ],
         ];
@@ -302,6 +279,13 @@ trait InteractsWithOpenApiSpec
         ksort($coverage);
 
         return $coverage;
+    }
+
+    public function integrationTestFileForResource(string $resource): string
+    {
+        $shortName = basename(str_replace('\\', '/', $resource));
+
+        return dirname(__DIR__, 2).'/tests/Integration/'.$shortName.'Test.php';
     }
 
     /**

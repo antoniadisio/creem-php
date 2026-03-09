@@ -51,6 +51,8 @@ Automated test layers used in this repository:
 - `Integration`: deterministic mocked transport checks with no network access.
 - `Smoke`: opt-in read-only checks against `https://test-api.creem.io`.
 
+Local deterministic coverage is organized around resource-owned integration files and subsystem-focused unit files so contract changes stay easy to trace.
+
 ## Configuration
 
 `Creem\Config` is immutable and accepts:
