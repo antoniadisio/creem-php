@@ -42,6 +42,8 @@ Run `composer test:smoke` for the opt-in network smoke suite against `Environmen
 - `CREEM_TEST_API_KEY` is required.
 - `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional overrides for smoke runs.
 - The smoke suite is read-only and does not create or persist local state.
+- Automated smoke coverage is limited to invalid-auth handling plus typed checks for stats summary, products search, customers list, and transactions search.
+- Smoke tests are tagged with the Pest groups `smoke` and `network`, and page assertions stay stable when the API legitimately returns zero items.
 
 Automated test layers used in this repository:
 
@@ -491,6 +493,7 @@ Notes:
 - `composer test:smoke` requires `CREEM_TEST_API_KEY`.
 - `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional smoke overrides.
 - `composer test:smoke` runs Pest in verbose mode (`-v`) so skip, warning, and error lines stay readable.
+- The smoke suite is intentionally limited to independent read-only checks for invalid auth, stats summary, products search, customers list, and transactions search.
 
 ## Test Policy
 

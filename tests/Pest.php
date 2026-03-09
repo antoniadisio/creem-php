@@ -8,4 +8,4 @@ use Creem\Tests\TestCase;
 
 pest()->extend(TestCase::class)->in('Unit');
 pest()->extend(IntegrationTestCase::class)->in('Integration');
-pest()->extend(SmokeTestCase::class)->in('Smoke');
+pest()->extend(SmokeTestCase::class)->group('smoke', 'network')->in('Smoke');
