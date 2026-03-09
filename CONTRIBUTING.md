@@ -21,6 +21,8 @@ Run these commands locally:
 - `composer qa:check` before opening a pull request.
 - `composer test` when you only need the fast `Unit` suite during iteration.
 - `composer test:integration` when you need deterministic mocked transport coverage only.
+- `composer test:local` when you need all deterministic suites (`Unit` then `Integration`).
+- `composer test:smoke` for opt-in read-only smoke checks against `Environment::Test` (requires `CREEM_TEST_API_KEY`; `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional overrides; runs in verbose mode for readable skipped/warning/error lines).
 - `composer cs` to verify formatting.
 - `composer cs:fix` to apply formatting fixes.
 - `composer stan` to run static analysis on `src` and `tests`.

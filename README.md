@@ -23,7 +23,7 @@ The current public line is a `0.x` preview release. Follow normal semver expecta
 
 use Creem\Client;
 use Creem\Config;
-use Creem\Environment;
+use Creem\Enum\Environment;
 
 $client = new Client(new Config(
     apiKey: $_ENV['CREEM_API_KEY'],
@@ -35,12 +35,26 @@ $product = $client->products()->get('prod_123');
 
 `Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly.
 
+## Smoke Suite
+
+Run `composer test:smoke` for the opt-in network smoke suite against `Environment::Test`.
+
+- `CREEM_TEST_API_KEY` is required.
+- `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional overrides for smoke runs.
+- The smoke suite is read-only and does not create or persist local state.
+
+Automated test layers used in this repository:
+
+- `Unit`: fast deterministic checks with no network access.
+- `Integration`: deterministic mocked transport checks with no network access.
+- `Smoke`: opt-in read-only checks against `https://test-api.creem.io`.
+
 ## Configuration
 
 `Creem\Config` is immutable and accepts:
 
 - `apiKey` (required, must start with `sk_` or `creem_`)
-- `environment` (`Creem\Environment::Production` by default)
+- `environment` (`Creem\Enum\Environment::Production` by default)
 - `baseUrl` (optional override, must be a valid `https://` URL)
 - `timeout` (optional request timeout in seconds, defaults to `30`)
 - `userAgentSuffix` (optional suffix appended to the SDK user agent)
@@ -51,7 +65,7 @@ $product = $client->products()->get('prod_123');
 
 use Creem\Client;
 use Creem\Config;
-use Creem\Environment;
+use Creem\Enum\Environment;
 
 $client = new Client(new Config(
     apiKey: $_ENV['CREEM_API_KEY'],
@@ -461,14 +475,27 @@ Command guide:
 - `composer test` runs the fast `Unit` suite only.
 - `composer test:integration` runs the deterministic `Integration` suite with Saloon mocks.
 - `composer test:local` runs `Unit` then `Integration`.
-- `composer test:live` runs the opt-in read-only smoke suite against the Creem test environment and is intentionally excluded from the default QA flow.
+- `composer test:smoke` runs the opt-in read-only `Smoke` suite against the Creem test environment and is intentionally excluded from the default QA flow.
 
 Notes:
 
 - The committed Rector config intentionally skips automatic type-declaration inference on `Creem\Client`, `Creem\Config`, and `Creem\Resource\*` so public signatures stay under manual review.
 - `composer stan` uses the committed `phpstan.neon.dist` configuration and the repository-defined memory limit.
 - `composer install` and `composer update` use the committed Composer platform pin (`php: 8.4.0`) so the lockfile stays aligned with the PHP 8.4 CI target.
-- For `composer test:live`, use `CREEM_LIVE_API_KEY`, and optionally `CREEM_LIVE_BASE_URL` and `CREEM_LIVE_TIMEOUT`.
+- `composer test:smoke` requires `CREEM_TEST_API_KEY`.
+- `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional smoke overrides.
+- `composer test:smoke` runs Pest in verbose mode (`-v`) so skip, warning, and error lines stay readable.
+
+## Test Policy
+
+- Deterministic SDK contract checks run in normal QA (`composer qa` and `composer qa:check`) with no network access.
+- The `Smoke` suite runs opt-in through `composer test:smoke` and targets `Environment::Test` only.
+- Destructive verification is intentionally outside the automated Pest suites.
+- Production environment execution is never part of automated tests.
+
+Migration note:
+
+- Repository terminology now uses `Unit`, `Integration`, and `Smoke` as the only automated suite names.
 
 ## Contributing
 

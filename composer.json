@@ -51,7 +51,7 @@
             "@test:unit",
             "@test:integration"
         ],
-        "test:live": "pest --testsuite=Live",
+        "test:smoke": "pest --testsuite=Smoke -v",
         "test": "@test:unit",
         "cs": "pint --test",
         "cs:fix": "pint",
