@@ -9,9 +9,7 @@ use const PHP_URL_HOST;
 
 use Creem\Tests\TestCase;
 
-use function basename;
 use function filter_var;
-use function glob;
 use function is_array;
 use function is_int;
 use function is_string;
@@ -26,12 +24,12 @@ test('response fixtures use sanitized placeholder values', function (): void {
     /** @var TestCase $testCase */
     $testCase = $this;
 
-    foreach (glob($testCase->fixturesDirectory().'/*.json') ?: [] as $path) {
+    foreach ($testCase->responseFixtureCatalog()->names() as $fixture) {
         assertSanitizedFixtureValue(
             $testCase,
-            basename($path),
-            $testCase->fixture(basename($path)),
-            basename($path),
+            $fixture,
+            $testCase->fixture($fixture),
+            $fixture,
         );
     }
 });

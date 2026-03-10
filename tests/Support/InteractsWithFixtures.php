@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Creem\Tests\Support;
 
+use Creem\Tests\Support\Contract\ResponseFixtureCatalog;
 use JsonException;
 
 use function array_replace;
-use function dirname;
 use function file_get_contents;
 use function json_decode;
 use function sprintf;
@@ -16,7 +16,7 @@ trait InteractsWithFixtures
 {
     public function fixturesDirectory(): string
     {
-        return dirname(__DIR__).'/Fixtures/Responses';
+        return new ResponseFixtureCatalog()->directory();
     }
 
     /**

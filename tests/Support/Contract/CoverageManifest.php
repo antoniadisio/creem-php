@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support;
+namespace Creem\Tests\Support\Contract;
 
 use Creem\Resource\CheckoutsResource;
 use Creem\Resource\CustomersResource;
@@ -12,95 +12,17 @@ use Creem\Resource\ProductsResource;
 use Creem\Resource\StatsResource;
 use Creem\Resource\SubscriptionsResource;
 use Creem\Resource\TransactionsResource;
-use JsonException;
 
-use function array_is_list;
+use function array_unique;
+use function array_values;
 use function basename;
-use function ctype_digit;
 use function dirname;
-use function explode;
-use function file_get_contents;
-use function is_array;
-use function is_string;
-use function json_decode;
 use function ksort;
-use function sprintf;
-use function strtoupper;
+use function sort;
+use function str_replace;
 
-trait InteractsWithOpenApiSpec
+final class CoverageManifest
 {
-    /**
-     * @return list<int|string>
-     *
-     * @throws JsonException
-     */
-    public function specEnumValuesAtPath(string $path): array
-    {
-        $node = $this->spec();
-
-        foreach (explode('.', $path) as $segment) {
-            $this->assertIsArray($node, sprintf('Spec path %s must resolve at every segment.', $path));
-
-            $key = ctype_digit($segment) ? (int) $segment : $segment;
-
-            $this->assertArrayHasKey($key, $node, sprintf('Spec path %s is missing segment %s.', $path, $segment));
-
-            $node = $node[$key];
-        }
-
-        $this->assertIsArray($node, sprintf('Spec path %s must resolve to an enum schema.', $path));
-        $this->assertArrayHasKey('enum', $node, sprintf('Spec path %s must expose an enum.', $path));
-        $this->assertIsArray($node['enum'], sprintf('Spec path %s must expose enum values.', $path));
-
-        /** @var list<int|string> $enum */
-        $enum = $node['enum'];
-
-        return $enum;
-    }
-
-    /**
-     * @return array<string, array{method: string, path: string}>
-     *
-     * @throws JsonException
-     */
-    public function specOperations(): array
-    {
-        $spec = $this->spec();
-        $paths = $this->objectValue($spec, 'paths', 'OpenAPI spec');
-        $operations = [];
-
-        foreach ($paths as $path => $methods) {
-            if (! is_array($methods) || array_is_list($methods)) {
-                continue;
-            }
-
-            /** @var array<string, mixed> $methods */
-            foreach ($methods as $method => $operation) {
-                if (! is_array($operation) || array_is_list($operation)) {
-                    continue;
-                }
-
-                /** @var array<string, mixed> $operation */
-                $operationId = $operation['operationId'] ?? null;
-
-                if (! is_string($operationId)) {
-                    continue;
-                }
-
-                $this->assertArrayNotHasKey($operationId, $operations, 'OpenAPI operation IDs must be unique.');
-
-                $operations[$operationId] = [
-                    'method' => strtoupper($method),
-                    'path' => $path,
-                ];
-            }
-        }
-
-        ksort($operations);
-
-        return $operations;
-    }
-
     /**
      * @return array<string, array{
      *     method: string,
@@ -110,7 +32,7 @@ trait InteractsWithOpenApiSpec
      *     fixtures: list<string>
      * }>
      */
-    public function coverageManifest(): array
+    public function entries(): array
     {
         $coverage = [
             'activateLicense' => [
@@ -281,96 +203,44 @@ trait InteractsWithOpenApiSpec
         return $coverage;
     }
 
+    /**
+     * @return array<string, array{method: string, path: string}>
+     */
+    public function specOperations(): array
+    {
+        $operations = [];
+
+        foreach ($this->entries() as $operationId => $coverage) {
+            $operations[$operationId] = [
+                'method' => $coverage['method'],
+                'path' => $coverage['path'],
+            ];
+        }
+
+        return $operations;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function fixtureNames(): array
+    {
+        $fixtures = [];
+
+        foreach ($this->entries() as $coverage) {
+            $fixtures = [...$fixtures, ...$coverage['fixtures']];
+        }
+
+        $fixtures = array_values(array_unique($fixtures));
+        sort($fixtures);
+
+        return $fixtures;
+    }
+
     public function integrationTestFileForResource(string $resource): string
     {
         $shortName = basename(str_replace('\\', '/', $resource));
 
-        return dirname(__DIR__, 2).'/tests/Integration/'.$shortName.'Test.php';
-    }
-
-    /**
-     * @return array<string, mixed>
-     *
-     * @throws JsonException
-     */
-    public function spec(): array
-    {
-        $contents = file_get_contents(dirname(__DIR__, 2).'/tests/Fixtures/OpenApi/creem-openapi.json');
-
-        $this->assertNotFalse($contents, 'OpenAPI spec could not be read.');
-
-        /** @var array<string, mixed> $spec */
-        $spec = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
-
-        return $spec;
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     */
-    public function value(array $payload, string $key, string $context): mixed
-    {
-        $this->assertArrayHasKey($key, $payload, sprintf('%s must contain key %s.', $context, $key));
-
-        return $payload[$key];
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     * @return array<string, mixed>
-     */
-    public function objectValue(array $payload, string $key, string $context): array
-    {
-        $value = $this->value($payload, $key, $context);
-
-        $this->assertIsArray($value, sprintf('%s.%s must be an object.', $context, $key));
-        $this->assertFalse(array_is_list($value), sprintf('%s.%s must be an object.', $context, $key));
-
-        /** @var array<string, mixed> $value */
-        return $value;
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     * @return list<mixed>
-     */
-    public function listValue(array $payload, string $key, string $context): array
-    {
-        $value = $this->value($payload, $key, $context);
-
-        $this->assertIsArray($value, sprintf('%s.%s must be a list.', $context, $key));
-        $this->assertTrue(array_is_list($value), sprintf('%s.%s must be a list.', $context, $key));
-
-        /** @var list<mixed> $value */
-        return $value;
-    }
-
-    /**
-     * @param  list<mixed>  $items
-     * @return array<string, mixed>
-     */
-    public function listObjectAt(array $items, int $index, string $context): array
-    {
-        $this->assertArrayHasKey($index, $items, sprintf('%s must contain index %d.', $context, $index));
-
-        $value = $items[$index];
-
-        $this->assertIsArray($value, sprintf('%s[%d] must be an object.', $context, $index));
-        $this->assertFalse(array_is_list($value), sprintf('%s[%d] must be an object.', $context, $index));
-
-        /** @var array<string, mixed> $value */
-        return $value;
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     */
-    public function stringValue(array $payload, string $key, string $context): string
-    {
-        $value = $this->value($payload, $key, $context);
-
-        $this->assertIsString($value, sprintf('%s.%s must be a string.', $context, $key));
-
-        return $value;
+        return dirname(__DIR__, 2).'/Integration/'.$shortName.'Test.php';
     }
 }

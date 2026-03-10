@@ -41,7 +41,7 @@ test('spec enums used by the sdk have matching php enums', function (): void {
     $testCase = $this;
 
     foreach (apiEnumSpecMap() as $path => $enumClass) {
-        $expected = $testCase->specEnumValuesAtPath($path);
+        $expected = $testCase->openApiSpec()->enumValuesAtPath($path);
         $actual = apiEnumCasesFor($enumClass);
 
         sort($expected);

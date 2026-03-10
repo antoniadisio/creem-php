@@ -17,25 +17,14 @@ use function sprintf;
 
 test('openapi spec operations match the explicit sdk coverage manifest', function (): void {
     /** @var TestCase $this */
-    $manifest = [];
-
-    foreach ($this->coverageManifest() as $operationId => $coverage) {
-        $manifest[$operationId] = [
-            'method' => $coverage['method'],
-            'path' => $coverage['path'],
-        ];
-    }
-
-    ksort($manifest);
-
-    $this->assertSame($manifest, $this->specOperations());
+    $this->assertSame($this->coverageManifest()->specOperations(), $this->openApiSpec()->operations());
 });
 
 test('every spec operation maps to public sdk methods and a resource-owned integration test file', function (): void {
     /** @var TestCase $this */
     $expectedIntegrationFiles = [];
 
-    foreach ($this->coverageManifest() as $operationId => $coverage) {
+    foreach ($this->coverageManifest()->entries() as $operationId => $coverage) {
         foreach ($coverage['sdk_methods'] as $sdkMethod) {
             $this->assertTrue(method_exists($coverage['resource'], $sdkMethod), sprintf('Operation %s must map to an existing SDK method.', $operationId));
 
@@ -44,9 +33,9 @@ test('every spec operation maps to public sdk methods and a resource-owned integ
             $this->assertTrue($resourceMethod->isPublic(), sprintf('Operation %s must map to a public SDK method.', $operationId));
         }
 
-        $expectedIntegrationFiles[] = basename($this->integrationTestFileForResource($coverage['resource']));
+        $expectedIntegrationFiles[] = basename($this->coverageManifest()->integrationTestFileForResource($coverage['resource']));
         $this->assertFileExists(
-            $this->integrationTestFileForResource($coverage['resource']),
+            $this->coverageManifest()->integrationTestFileForResource($coverage['resource']),
             sprintf('Operation %s must be owned by a resource integration test file.', $operationId),
         );
     }
