@@ -2944,6 +2944,7 @@
             "description": "The status of the discount (e.g., active, inactive).",
             "enum": [
               "active",
+              "deleted",
               "draft",
               "expired",
               "scheduled"

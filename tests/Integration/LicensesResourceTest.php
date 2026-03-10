@@ -8,6 +8,7 @@ use Creem\Dto\License\ActivateLicenseRequest;
 use Creem\Dto\License\DeactivateLicenseRequest;
 use Creem\Dto\License\LicenseInstance;
 use Creem\Dto\License\ValidateLicenseRequest;
+use Creem\Enum\LicenseInstanceStatus;
 use Creem\Enum\LicenseStatus;
 use Creem\Resource\LicensesResource;
 use Creem\Tests\IntegrationTestCase;
@@ -19,39 +20,53 @@ test('licenses resource activates deactivates and validates licenses', function 
     /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('license.json')),
-        MockResponse::make($this->responseFixture('license.json', ['status' => 'inactive'])),
+        MockResponse::make($this->responseFixture('license.json', [
+            'status' => 'inactive',
+            'activation' => 0,
+            'instance' => [
+                'id' => 'lki_fixture_active',
+                'mode' => 'test',
+                'object' => 'license-instance',
+                'name' => 'sdk-live-capture-instance',
+                'status' => 'deactivated',
+                'created_at' => '2026-03-10T08:43:11.285Z',
+            ],
+        ])),
         MockResponse::make($this->responseFixture('license.json', ['activation' => 1])),
     ]);
     $resource = new LicensesResource($this->connector($mockClient));
 
-    $activated = $resource->activate(new ActivateLicenseRequest('license_fixture_key_primary', 'macbook-fixture'), 'idem-license-activate');
+    $activated = $resource->activate(new ActivateLicenseRequest('LICENSE-FIXTURE-PRIMARY', 'sdk-live-capture-instance'), 'idem-license-activate');
 
-    expect($activated->id)->toBe('lic_fixture_primary')
+    expect($activated->id)->toBe('lk_fixture_primary')
         ->and($activated->status)->toBe(LicenseStatus::Active)
         ->and($activated->instance)->toBeInstanceOf(LicenseInstance::class)
-        ->and($activated->instance?->id)->toBe('ins_fixture_macbook');
+        ->and($activated->instance?->id)->toBe('lki_fixture_active')
+        ->and($activated->expiresAt)->toBeNull();
     $this->assertRequest(
         $mockClient,
         Method::POST,
         '/v1/licenses/activate',
         [],
-        ['key' => 'license_fixture_key_primary', 'instance_name' => 'macbook-fixture'],
+        ['key' => 'LICENSE-FIXTURE-PRIMARY', 'instance_name' => 'sdk-live-capture-instance'],
         ['Idempotency-Key' => 'idem-license-activate'],
     );
 
-    $deactivated = $resource->deactivate(new DeactivateLicenseRequest('license_fixture_key_primary', 'ins_fixture_macbook'), 'idem-license-deactivate');
+    $deactivated = $resource->deactivate(new DeactivateLicenseRequest('LICENSE-FIXTURE-PRIMARY', 'lki_fixture_active'), 'idem-license-deactivate');
 
-    expect($deactivated->status)->toBe(LicenseStatus::Inactive);
+    expect($deactivated->status)->toBe(LicenseStatus::Inactive)
+        ->and($deactivated->activation)->toBe(0)
+        ->and($deactivated->instance?->status)->toBe(LicenseInstanceStatus::Deactivated);
     $this->assertRequest(
         $mockClient,
         Method::POST,
         '/v1/licenses/deactivate',
         [],
-        ['key' => 'license_fixture_key_primary', 'instance_id' => 'ins_fixture_macbook'],
+        ['key' => 'LICENSE-FIXTURE-PRIMARY', 'instance_id' => 'lki_fixture_active'],
         ['Idempotency-Key' => 'idem-license-deactivate'],
     );
 
-    $validated = $resource->validate(new ValidateLicenseRequest('license_fixture_key_primary', 'ins_fixture_macbook'), 'idem-license-validate');
+    $validated = $resource->validate(new ValidateLicenseRequest('LICENSE-FIXTURE-PRIMARY', 'lki_fixture_active'), 'idem-license-validate');
 
     expect($validated->activation)->toBe(1);
     $this->assertRequest(
@@ -59,7 +74,7 @@ test('licenses resource activates deactivates and validates licenses', function 
         Method::POST,
         '/v1/licenses/validate',
         [],
-        ['key' => 'license_fixture_key_primary', 'instance_id' => 'ins_fixture_macbook'],
+        ['key' => 'LICENSE-FIXTURE-PRIMARY', 'instance_id' => 'lki_fixture_active'],
         ['Idempotency-Key' => 'idem-license-validate'],
     );
 });

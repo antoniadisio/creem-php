@@ -1,26 +1,18 @@
 {
-    "id": "prod_fixture_starter",
+    "id": "prod_fixture_catalog",
     "mode": "test",
     "object": "product",
-    "name": "Starter Fixture",
-    "description": "Starter plan placeholder",
-    "image_url": "https://assets.example/products/starter-fixture.png",
-    "features": [
-        {
-            "id": "feat_fixture_license_access",
-            "type": "licenseKey",
-            "description": "License access"
-        }
-    ],
-    "price": 1900,
+    "name": "sdk-live-capture-product",
+    "description": "SDK flow product",
+    "price": 4900,
     "currency": "USD",
     "billing_type": "recurring",
     "billing_period": "every-month",
     "status": "active",
     "tax_mode": "inclusive",
     "tax_category": "saas",
-    "product_url": "https://product.example/catalog/starter-fixture",
-    "default_success_url": "https://merchant.example/checkout/success",
-    "created_at": "2025-01-15T10:00:00Z",
-    "updated_at": "2025-01-15T10:05:00Z"
+    "product_url": "https://creem.io/test/product/prod_fixture_catalog",
+    "default_success_url": null,
+    "created_at": "2026-03-07T06:35:41.762Z",
+    "updated_at": "2026-03-07T06:35:41.762Z"
 }

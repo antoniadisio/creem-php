@@ -29,12 +29,14 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
         MockResponse::make($this->responseFixture('subscription.json')),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'canceled'])),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'active', 'items' => [[
-            'id' => 'item_2',
+            'id' => 'sitem_fixture_updated',
             'mode' => 'test',
-            'object' => 'subscription-item',
-            'product_id' => 'prod_fixture_starter',
-            'price_id' => 'price_fixture_monthly',
+            'object' => 'subscription_item',
+            'product_id' => 'prod_fixture_subscription',
+            'price_id' => 'pprice_fixture_monthly',
             'units' => 4,
+            'created_at' => '2026-03-07T06:50:41.467Z',
+            'updated_at' => '2026-03-07T06:50:46.748Z',
         ]]])),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'active', 'product' => 'prod_fixture_growth'])),
         MockResponse::make($this->responseFixture('subscription.json', ['status' => 'paused'])),
@@ -45,13 +47,17 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
     $subscription = $resource->get('sub_fixture_active');
 
     expect($subscription->product)->toBeInstanceOf(ExpandableResource::class)
-        ->and($subscription->product?->id())->toBe('prod_fixture_starter')
+        ->and($subscription->product?->id())->toBe('prod_fixture_subscription')
         ->and($subscription->product?->isExpanded())->toBeTrue()
         ->and($subscription->customer)->toBeInstanceOf(ExpandableResource::class)
-        ->and($subscription->customer?->isExpanded())->toBeFalse()
+        ->and($subscription->customer?->isExpanded())->toBeTrue()
+        ->and($subscription->customer?->id())->toBe('cust_fixture_primary')
         ->and($subscription->collectionMethod)->toBe(SubscriptionCollectionMethod::ChargeAutomatically)
+        ->and($subscription->items[0]->object)->toBe('subscription_item')
         ->and($subscription->lastTransaction?->status)->toBe(TransactionStatus::Paid)
-        ->and($subscription->lastTransactionDate?->format(DATE_ATOM))->toBe('2025-01-15T12:00:00+00:00')
+        ->and($subscription->lastTransaction?->customer)->toBeNull()
+        ->and($subscription->lastTransactionDate?->format(DATE_ATOM))->toBe('2026-03-07T06:50:38+00:00')
+        ->and($subscription->discount)->toBeNull()
         ->and($subscription->status)->toBe(SubscriptionStatus::Active);
     $this->assertRequest($mockClient, Method::GET, '/v1/subscriptions', ['subscription_id' => 'sub_fixture_active']);
 
@@ -74,7 +80,7 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
     $updated = $resource->update(
         'sub_fixture_active',
         new UpdateSubscriptionRequest(
-            [new UpsertSubscriptionItem(productId: 'prod_fixture_starter', units: 4)],
+            [new UpsertSubscriptionItem(productId: 'prod_fixture_subscription', units: 4)],
             SubscriptionUpdateBehavior::ProrationCharge,
         ),
         'idem-subscription-update',
@@ -87,7 +93,7 @@ test('subscriptions resource gets mutates and resumes subscriptions', function (
         Method::POST,
         '/v1/subscriptions/sub_fixture_active',
         [],
-        ['items' => [['product_id' => 'prod_fixture_starter', 'units' => 4]], 'update_behavior' => 'proration-charge'],
+        ['items' => [['product_id' => 'prod_fixture_subscription', 'units' => 4]], 'update_behavior' => 'proration-charge'],
         ['Idempotency-Key' => 'idem-subscription-update'],
     );
 
@@ -158,9 +164,9 @@ test('subscriptions resource normalizes mutating identifiers before endpoint res
 
     $resource->update(
         '  sub_fixture_active  ',
-        new UpdateSubscriptionRequest([new UpsertSubscriptionItem(productId: 'prod_fixture_starter', units: 1)]),
+        new UpdateSubscriptionRequest([new UpsertSubscriptionItem(productId: 'prod_fixture_subscription', units: 1)]),
     );
-    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active', [], ['items' => [['product_id' => 'prod_fixture_starter', 'units' => 1]]]);
+    $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active', [], ['items' => [['product_id' => 'prod_fixture_subscription', 'units' => 1]]]);
 
     $resource->upgrade('  sub_fixture_active  ', new UpgradeSubscriptionRequest('prod_fixture_growth'));
     $this->assertRequest($mockClient, Method::POST, '/v1/subscriptions/sub_fixture_active/upgrade', [], ['product_id' => 'prod_fixture_growth']);

@@ -51,9 +51,9 @@ function assertSanitizedFixtureValue(TestCase $testCase, string $fixture, mixed 
             $testCase->fail(sprintf('%s contains a live-looking secret at %s.', $fixture, $path));
         }
 
-        if (preg_match('/^(chk|cus|disc|feat|file|ins|item|lic|ord|price|prod|req|sub|txn)_/', $value) === 1) {
+        if (preg_match('/^(ch|cust|dis|lk|lki|ord|pprice|prod|sitem|sto|sub|tran)_/', $value) === 1) {
             $testCase->assertMatchesRegularExpression(
-                '/^(chk|cus|disc|feat|file|ins|item|lic|ord|price|prod|req|sub|txn)_fixture_[a-z0-9_]+$/',
+                '/^(ch|cust|dis|lk|lki|ord|pprice|prod|sitem|sto|sub|tran)_fixture_[a-z0-9_]+$/',
                 $value,
                 sprintf('%s contains a non-placeholder fixture identifier at %s.', $fixture, $path),
             );
@@ -72,7 +72,7 @@ function assertSanitizedFixtureValue(TestCase $testCase, string $fixture, mixed 
 
             $testCase->assertIsString($host, sprintf('%s contains an invalid URL at %s.', $fixture, $path));
             $testCase->assertTrue(
-                str_ends_with($host, '.example'),
+                $host === 'creem.io' || str_ends_with($host, '.example'),
                 sprintf('%s contains a non-placeholder URL host at %s.', $fixture, $path),
             );
         }
@@ -120,12 +120,19 @@ function isCanonicalTimestampPath(string $path): bool
 function canonicalIsoTimestamps(): array
 {
     return [
-        '2025-01-15T10:00:00Z',
-        '2025-01-15T10:05:00Z',
-        '2025-01-15T12:00:00Z',
-        '2025-02-15T10:00:00Z',
-        '2025-12-31T23:59:59Z',
-        '2026-01-15T10:00:00Z',
+        '2026-03-07T06:35:39.943Z',
+        '2026-03-07T06:35:41.762Z',
+        '2026-03-07T06:49:22.500Z',
+        '2026-03-07T06:49:26.257Z',
+        '2026-03-07T06:50:38.000Z',
+        '2026-03-07T06:50:41.456Z',
+        '2026-03-07T06:50:41.467Z',
+        '2026-03-07T06:50:46.748Z',
+        '2026-03-07T06:51:33.311Z',
+        '2026-03-07T06:51:33.586Z',
+        '2026-03-10T08:08:03.048Z',
+        '2026-03-10T08:43:11.285Z',
+        '2026-04-07T06:50:38.000Z',
     ];
 }
 
@@ -135,17 +142,9 @@ function canonicalIsoTimestamps(): array
 function canonicalUnixTimestamps(): array
 {
     return [
-        1736935200,
-        1736935200000,
-        1736935500,
-        1736935500000,
-        1736942400,
-        1736942400000,
-        1739613600,
-        1739613600000,
-        1767225599,
-        1767225599000,
-        1768471200,
-        1768471200000,
+        1763337600000,
+        1772866238000,
+        1772866243426,
+        1775544638000,
     ];
 }

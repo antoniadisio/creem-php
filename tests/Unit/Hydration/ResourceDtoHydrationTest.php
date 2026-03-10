@@ -45,7 +45,7 @@ test('product feature hydration supports license key variants', function (): voi
     ]);
 
     expect($feature->type)->toBe(ProductFeatureType::LicenseKey)
-        ->and($feature->licenseKey?->id)->toBe('lic_fixture_primary')
+        ->and($feature->licenseKey?->id)->toBe('lk_fixture_primary')
         ->and($feature->license)->toBeNull();
 });
 
@@ -58,7 +58,7 @@ test('product feature hydration supports license variants', function (): void {
     ]);
 
     expect($feature->type)->toBeNull()
-        ->and($feature->license?->id)->toBe('lic_fixture_primary')
+        ->and($feature->license?->id)->toBe('lk_fixture_primary')
         ->and($feature->licenseKey)->toBeNull();
 });
 

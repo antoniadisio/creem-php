@@ -20,7 +20,7 @@ test('customers resource lists retrieves and finds customers by email', function
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('customer_page.json')),
         MockResponse::make($this->responseFixture('customer.json')),
-        MockResponse::make($this->responseFixture('customer.json', ['id' => 'cus_fixture_billing', 'email' => 'billing.fixture@example.test'])),
+        MockResponse::make($this->responseFixture('customer.json', ['id' => 'cust_fixture_billing', 'email' => 'billing.fixture@example.test'])),
         MockResponse::make($this->responseFixture('customer_links.json')),
     ]);
     $resource = new CustomersResource($this->connector($mockClient));
@@ -31,27 +31,27 @@ test('customers resource lists retrieves and finds customers by email', function
         ->and($page->get(0))->toBeInstanceOf(Customer::class);
     $this->assertRequest($mockClient, Method::GET, '/v1/customers/list', ['page_number' => '1', 'page_size' => '20']);
 
-    $customer = $resource->get('cus_fixture_taylor');
+    $customer = $resource->get('cust_fixture_primary');
 
-    expect($customer->id)->toBe('cus_fixture_taylor')
+    expect($customer->id)->toBe('cust_fixture_primary')
         ->and($customer->mode)->toBe(ApiMode::Test)
         ->and($customer->createdAt)->toBeInstanceOf(DateTimeImmutable::class);
-    $this->assertRequest($mockClient, Method::GET, '/v1/customers', ['customer_id' => 'cus_fixture_taylor']);
+    $this->assertRequest($mockClient, Method::GET, '/v1/customers', ['customer_id' => 'cust_fixture_primary']);
 
     $customerByEmail = $resource->findByEmail('billing.fixture@example.test');
 
     expect($customerByEmail->email)->toBe('billing.fixture@example.test');
     $this->assertRequest($mockClient, Method::GET, '/v1/customers', ['email' => 'billing.fixture@example.test']);
 
-    $links = $resource->createBillingPortalLink(new CreateCustomerBillingPortalLinkRequest('cus_fixture_taylor'), 'idem-customer-links');
+    $links = $resource->createBillingPortalLink(new CreateCustomerBillingPortalLinkRequest('cust_fixture_primary'), 'idem-customer-links');
 
-    expect($links->customerPortalLink)->toBe('https://billing.example/portal/session/cus_fixture_taylor');
+    expect($links->customerPortalLink)->toBe('https://creem.io/test/my-orders/login/portal_fixture_customer');
     $this->assertRequest(
         $mockClient,
         Method::POST,
         '/v1/customers/billing',
         [],
-        ['customer_id' => 'cus_fixture_taylor'],
+        ['customer_id' => 'cust_fixture_primary'],
         ['Idempotency-Key' => 'idem-customer-links'],
     );
 });

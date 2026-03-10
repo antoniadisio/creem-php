@@ -132,7 +132,7 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/checkouts',
                 'resource' => CheckoutsResource::class,
                 'sdk_methods' => ['create'],
-                'fixtures' => ['checkout.json'],
+                'fixtures' => ['checkout_create.json'],
             ],
             'createDiscount' => [
                 'method' => 'POST',
@@ -160,7 +160,7 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/discounts/{id}/delete',
                 'resource' => DiscountsResource::class,
                 'sdk_methods' => ['delete'],
-                'fixtures' => ['discount.json'],
+                'fixtures' => ['discount_deleted.json'],
             ],
             'generateCustomerLinks' => [
                 'method' => 'POST',
@@ -174,7 +174,7 @@ trait InteractsWithOpenApiSpec
                 'path' => '/v1/stats/summary',
                 'resource' => StatsResource::class,
                 'sdk_methods' => ['summary'],
-                'fixtures' => ['stats_summary.json'],
+                'fixtures' => ['stats_summary.json', 'stats_summary_populated.json'],
             ],
             'getTransactionById' => [
                 'method' => 'GET',

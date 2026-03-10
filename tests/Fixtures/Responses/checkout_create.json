@@ -4,6 +4,6 @@
     "object": "checkout",
     "product": "prod_fixture_catalog",
     "units": 1,
-    "custom_fields": [],
-    "status": "pending"
+    "status": "pending",
+    "checkout_url": "https://creem.io/test/checkout/prod_fixture_catalog/ch_fixture_pending"
 }
