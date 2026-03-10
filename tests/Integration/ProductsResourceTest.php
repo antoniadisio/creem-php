@@ -12,6 +12,7 @@ use Creem\Enum\ApiMode;
 use Creem\Enum\BillingPeriod;
 use Creem\Enum\BillingType;
 use Creem\Enum\CurrencyCode;
+use Creem\Enum\ProductFeatureType;
 use Creem\Resource\ProductsResource;
 use Creem\Tests\IntegrationTestCase;
 use Saloon\Enums\Method;
@@ -35,7 +36,10 @@ test('products resource gets creates and searches products', function (): void {
         ->and($product->billingPeriod)->toBe(BillingPeriod::EveryMonth)
         ->and($product->createdAt?->format(DATE_ATOM))->toBe('2026-03-07T06:35:41+00:00')
         ->and($product->imageUrl)->toBeNull()
-        ->and($product->features)->toBe([])
+        ->and($product->features)->toHaveCount(1)
+        ->and($product->features[0]->id)->toBe('feat_fixture_license_key')
+        ->and($product->features[0]->type)->toBe(ProductFeatureType::LicenseKey)
+        ->and($product->features[0]->description)->toBe('License Key')
         ->and($product->defaultSuccessUrl)->toBeNull();
     $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_fixture_catalog']);
 
@@ -56,13 +60,22 @@ test('products resource gets creates and searches products', function (): void {
 
     $page = $resource->search(new SearchProductsRequest(1, 50));
 
-    expect($page->count())->toBe(1)
+    expect($page->count())->toBe(2)
         ->and($page->pagination)->toBeInstanceOf(Pagination::class)
         ->and($page->pagination?->currentPage)->toBe(1)
         ->and($page->pagination?->nextPage)->toBe(2)
+        ->and($page->pagination?->totalPages)->toBe(56)
         ->and($page->get(0))->toBeInstanceOf(Product::class)
         ->and($page->get(0)?->id)->toBe('prod_fixture_catalog')
-        ->and($page->get(0)?->currency)->toBe(CurrencyCode::USD);
+        ->and($page->get(0)?->currency)->toBe(CurrencyCode::USD)
+        ->and($page->get(0)?->features)->toBe([])
+        ->and($page->get(1))->toBeInstanceOf(Product::class)
+        ->and($page->get(1)?->id)->toBe('prod_fixture_license')
+        ->and($page->get(1)?->billingType)->toBe(BillingType::OneTime)
+        ->and($page->get(1)?->billingPeriod)->toBe(BillingPeriod::Once)
+        ->and($page->get(1)?->features)->toHaveCount(1)
+        ->and($page->get(1)?->features[0]->type)->toBe(ProductFeatureType::LicenseKey)
+        ->and($page->get(1)?->features[0]->description)->toBe('License Key');
     $this->assertRequest($mockClient, Method::GET, '/v1/products/search', ['page_number' => '1', 'page_size' => '50']);
 });
 
@@ -75,7 +88,8 @@ test('products resource omits query parameters when search request is omitted', 
 
     $page = $resource->search();
 
-    expect($page->count())->toBe(1)
-        ->and($page->get(0))->toBeInstanceOf(Product::class);
+    expect($page->count())->toBe(2)
+        ->and($page->get(0))->toBeInstanceOf(Product::class)
+        ->and($page->get(1))->toBeInstanceOf(Product::class);
     $this->assertRequest($mockClient, Method::GET, '/v1/products/search');
 });
