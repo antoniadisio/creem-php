@@ -2,6 +2,8 @@
 
 This runbook is for maintainers validating Creem `Environment::Test` flows that intentionally mutate remote state. These checks are not part of `composer qa`, `composer qa:check`, or `composer test:smoke`.
 
+The automated smoke suite already covers the read-only baseline path with `CREEM_TEST_API_KEY` plus optional ID/code-gated retrieval checks under `tests/Smoke/`. Use this runbook only for flows that create, mutate, cancel, activate, deactivate, or otherwise change remote state.
+
 ## Guardrails
 
 - Use `Environment::Test` only.
@@ -22,6 +24,7 @@ This runbook is for maintainers validating Creem `Environment::Test` flows that 
 - Use a temporary local script, REPL session, or scratch command that is kept out of git.
 - Export `CREEM_TEST_API_KEY` before running the SDK manually.
 - Optionally set `CREEM_TEST_BASE_URL` or `CREEM_TEST_TIMEOUT` only when debugging a test-environment issue.
+- Reuse optional smoke IDs or codes as a starting point when they point at safe existing test records, but do not turn destructive runs into automated smoke coverage.
 - Record created product, checkout, subscription, discount, customer, and license identifiers in a local scratchpad so cleanup is straightforward.
 
 ## Product Creation
@@ -59,6 +62,8 @@ This runbook is for maintainers validating Creem `Environment::Test` flows that 
 - Create two recurring products: a baseline plan and a target upgrade plan.
 - Complete a recurring checkout to create a fresh test subscription.
 - Call `subscriptions()->update(...)` and verify item quantities and update behavior in the returned DTO and dashboard state.
+- For seat or quantity updates on an existing subscription item, prefer `price_id` as the item reference and include the current subscription item `id` when adjusting an existing line item. Creem's troubleshooting guidance recommends `price_id` as the most specific reference for validation.
+- When validating immediate seat changes, record the chosen `update_behavior` explicitly. `proration-charge-immediately` is the clearest setting when you expect an immediate proration charge and a new transaction.
 - Call `subscriptions()->upgrade(...)` and verify the product switch, proration behavior, and next billing state.
 - Call `subscriptions()->cancel(...)` with the intended mode/action and verify the returned status plus dashboard state.
 - Capture payloads if subscription, embedded transaction, or date fields changed relative to `subscription.json`.

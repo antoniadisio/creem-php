@@ -4,7 +4,7 @@ Handwritten PHP SDK for the Creem API.
 
 This is an independently maintained package published under the personal `antoniadisio` namespace; it is not an official Creem package.
 
-The public contract is a pre-1.0 `Creem\Client` facade for outbound API access plus a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
+The public contract centers on a typed `Creem\Client` facade for outbound API access plus a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
 
 ## Installation
 
@@ -14,7 +14,7 @@ composer require antoniadisio/creem-php-sdk
 
 Requires PHP 8.4 or newer.
 
-The current public line is a `0.x` preview release. Follow normal semver expectations for install constraints, but expect the SDK surface to keep evolving until `1.0`.
+Release history and migration notes live in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Quick Start
 
@@ -46,7 +46,7 @@ Run `composer test:smoke` for the opt-in network smoke suite against `Environmen
 - Baseline smoke coverage with only `CREEM_TEST_API_KEY` is limited to invalid-auth handling plus typed checks for stats summary, products search, customers list, and transactions search.
 - Optional retrieval checks skip cleanly with explicit messages when their corresponding ID or code env var is absent.
 - Automated smoke coverage does not include create, mutate, billing-portal-link, or license lifecycle flows.
-- Smoke tests are tagged with the Pest groups `smoke` and `network`, and page assertions stay stable when the API legitimately returns zero items.
+- Smoke files are split by concern under `tests/Smoke/`, tagged with the Pest groups `smoke` and `network`, and keep page assertions stable when the API legitimately returns zero items.
 - Destructive verification against `Environment::Test` is intentionally manual and documented in [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md).
 
 Automated test layers used in this repository:
@@ -310,9 +310,13 @@ $subscription = $client->subscriptions()->update(
     'sub_123',
     new UpdateSubscriptionRequest(
         items: [
-            new UpsertSubscriptionItem(productId: 'prod_pro', units: 2),
+            new UpsertSubscriptionItem(
+                id: 'sitem_123',
+                priceId: 'pprice_pro_monthly',
+                units: 2,
+            ),
         ],
-        updateBehavior: SubscriptionUpdateBehavior::ProrationCharge,
+        updateBehavior: SubscriptionUpdateBehavior::ProrationChargeImmediately,
     ),
 );
 
@@ -338,6 +342,8 @@ Supported methods:
 - `upgrade(string $id, UpgradeSubscriptionRequest $request)`
 - `pause(string $id)`
 - `resume(string $id)`
+
+For live seat updates, prefer `priceId` on `UpsertSubscriptionItem` and pass the current subscription item `id` when adjusting an existing line item. Creem's API troubleshooting guidance recommends `price_id` as the most specific reference for validation.
 
 ### Checkouts
 
@@ -502,6 +508,7 @@ Notes:
 - `composer test:smoke` runs Pest in verbose mode (`-v`) so skip, warning, and error lines stay readable.
 - With only `CREEM_TEST_API_KEY`, the smoke suite is intentionally limited to independent read-only checks for invalid auth, stats summary, products search, customers list, and transactions search.
 - Optional retrieval smoke checks skip intentionally when their matching ID or code env var is unset.
+- Smoke coverage is split into small concern-focused files under `tests/Smoke/` so resource ownership stays obvious.
 - Automated smoke coverage excludes create, mutate, billing-portal-link, and license lifecycle flows.
 - Destructive test-environment verification follows the maintainer runbook in [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md).
 

@@ -1,7 +1,7 @@
 # Contributing
 
 ## Scope
-This repository is a public PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the pre-1.0 `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
+This repository is a public PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the typed `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
 
 ## Local Setup
 - Run `composer install` to install PHP dependencies.
@@ -13,7 +13,7 @@ This repository is a public PHP SDK. Keep changes focused on package code and co
 - Update response fixtures in `tests/Fixtures/Responses/` when payload shapes change.
 - Keep committed response fixtures sanitized: use placeholder IDs, reserved-domain URLs, `@example.test` emails, and the canonical timestamp set already used by the fixture corpus.
 - Keep OpenAPI contract work aligned with `tests/Fixtures/OpenApi/creem-openapi.json`.
-- Do not commit local-only planning files or machine-specific files such as `.env`, `plan/`, `PROJECT_DESCRIPTION.md`, personal local workflow files, `vendor/`, or IDE settings.
+- Do not commit local-only planning files or machine-specific files such as `.env`, `spec/`, `PROJECT_DESCRIPTION.md`, personal local workflow files, `vendor/`, or IDE settings.
 - Keep destructive test-environment verification out of Pest and follow [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md) when a change must be checked against mutating live behavior.
 
 ## Validation
@@ -29,7 +29,7 @@ Run these commands locally:
 - `composer cs:fix` to apply formatting fixes.
 - `composer stan` to run static analysis on `src` and `tests`.
 
-Missing optional smoke IDs or codes should produce explicit skips, not failures. Destructive verification belongs in the manual maintainer runbook, not in automated tests or default contributor workflows.
+Missing optional smoke IDs or codes should produce explicit skips, not failures. Keep smoke coverage split by concern under `tests/Smoke/`, and keep destructive verification in the manual maintainer runbook rather than automated tests or default contributor workflows.
 
 Pull requests should be opened only after `composer qa:check` is green.
 
@@ -55,7 +55,7 @@ Pull requests should be opened only after `composer qa:check` is green.
 - Run `composer validate --strict`.
 - Run `composer qa:check`.
 - Update `CHANGELOG.md` with the exact release version and date.
-- Create an annotated Git tag for that version (for example `git tag -a v0.1.0 -m "Release v0.1.0"`).
+- Create an annotated Git tag for that version (for example `git tag -a v1.0.0 -m "Release v1.0.0"`).
 - Push the tag and publish matching GitHub release notes.
 - Keep the Git tag, GitHub release title, and `CHANGELOG.md` entry identical.
 

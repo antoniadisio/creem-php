@@ -54,6 +54,30 @@ test('subscription update and upgrade requests keep their payloads distinct', fu
         ]);
 });
 
+test('subscription update requests support price based seat updates with explicit proration behavior', function (): void {
+    $request = new UpdateSubscriptionRequest(
+        [
+            new UpsertSubscriptionItem(
+                id: 'sitem_123',
+                priceId: 'pprice_123',
+                units: 2,
+            ),
+        ],
+        SubscriptionUpdateBehavior::ProrationChargeImmediately,
+    );
+
+    expect($request->toArray())->toBe([
+        'items' => [
+            [
+                'id' => 'sitem_123',
+                'price_id' => 'pprice_123',
+                'units' => 2,
+            ],
+        ],
+        'update_behavior' => 'proration-charge-immediately',
+    ]);
+});
+
 foreach (invalidSubscriptionRequestInputs() as $dataset => [$factory, $message]) {
     test("subscription request dtos reject invalid input ({$dataset})", function () use ($factory, $message): void {
         expect($factory)->toThrow(InvalidArgumentException::class, $message);
