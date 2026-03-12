@@ -1,7 +1,8 @@
 # Contributing
 
 ## Scope
-This repository is a public PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the typed `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
+This repository is a public PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the pre-1.0 typed `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
+The public repo intentionally keeps maintainer QA files such as `rector.php`, `phpstan.neon.dist`, `phpunit.xml.dist`, and `composer.lock` committed at the root. Lean package archives for SDK consumers are handled with `.gitattributes export-ignore`, not by removing those repo files from git.
 
 ## Local Setup
 - Run `composer install` to install PHP dependencies.
@@ -13,7 +14,8 @@ This repository is a public PHP SDK. Keep changes focused on package code and co
 - Update response fixtures in `tests/Fixtures/Responses/` when payload shapes change.
 - Keep committed response fixtures sanitized: use placeholder IDs, reserved-domain URLs, `@example.test` emails, and the canonical timestamp set already used by the fixture corpus.
 - Keep OpenAPI contract work aligned with `tests/Fixtures/OpenApi/creem-openapi.json`.
-- Do not commit local-only planning files or machine-specific files such as `.env`, `spec/`, `PROJECT_DESCRIPTION.md`, personal local workflow files, `vendor/`, or IDE settings.
+- Do not commit local-only planning files or machine-specific files such as `.env`, `.test-state/`, `.spec/`, `spec/`, `PROJECT_DESCRIPTION.md`, personal local workflow files, `vendor/`, or IDE settings.
+- Keep maintainer-only repo files committed only when they support contributor workflows or CI, and mark files that installed SDK consumers do not need with `.gitattributes export-ignore`.
 - Keep destructive test-environment verification out of Pest and follow [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md) when a change must be checked against mutating live behavior.
 
 ## Validation

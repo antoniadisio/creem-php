@@ -18,6 +18,8 @@ phpstan.neon
 # Maintainer-only planning notes
 IMPLEMENTATION_PLAN.md
 PROJECT_DESCRIPTION.md
+plan/
+.spec/
 spec/
 AGENTS.md
 .gitmessage.txt

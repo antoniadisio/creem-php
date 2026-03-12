@@ -502,6 +502,7 @@ Notes:
 - The committed Rector config intentionally skips automatic type-declaration inference on `Creem\Client`, `Creem\Config`, and `Creem\Resource\*` so public signatures stay under manual review.
 - `composer stan` uses the committed `phpstan.neon.dist` configuration and the repository-defined memory limit.
 - `composer install` and `composer update` use the committed Composer platform pin (`php: 8.4.0`) so the lockfile stays aligned with the PHP 8.4 CI target.
+- The public repository intentionally keeps maintainer QA files such as `rector.php`, `phpstan.neon.dist`, `phpunit.xml.dist`, and `composer.lock` committed. Installed package archives stay lean through `.gitattributes export-ignore`.
 - `composer test:smoke` requires `CREEM_TEST_API_KEY`.
 - `CREEM_TEST_BASE_URL` and `CREEM_TEST_TIMEOUT` are optional smoke overrides.
 - `CREEM_TEST_PRODUCT_ID`, `CREEM_TEST_CUSTOMER_ID`, `CREEM_TEST_CUSTOMER_EMAIL`, `CREEM_TEST_TRANSACTION_ID`, `CREEM_TEST_DISCOUNT_ID`, `CREEM_TEST_DISCOUNT_CODE`, `CREEM_TEST_SUBSCRIPTION_ID`, and `CREEM_TEST_CHECKOUT_ID` enable optional read-only retrieval smoke checks.
