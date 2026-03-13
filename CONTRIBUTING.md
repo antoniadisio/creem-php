@@ -14,10 +14,11 @@ The public repo intentionally keeps maintainer QA files such as `rector.php`, `p
 - Update response fixtures in `tests/Fixtures/Responses/` when payload shapes change.
 - Keep committed response fixtures sanitized: use placeholder IDs, reserved-domain URLs, `@example.test` emails, and the canonical timestamp set already used by the fixture corpus.
 - Keep OpenAPI contract work aligned with `tests/Fixtures/OpenApi/creem-openapi.json`.
+- Keep the committed OpenAPI fixture aligned with the SDK surface the package intentionally supports; when upstream wording or enum values drift from live behavior, normalize the fixture deliberately instead of preserving stale aliases in the public SDK.
 - Do not commit local-only planning files or machine-specific files such as `.env`, `.playground/`, `.spec/`, `spec/`, `PROJECT_DESCRIPTION.md`, personal local workflow files, `vendor/`, or IDE settings.
 - Keep maintainer-only repo files committed only when they support contributor workflows or CI, and mark files that installed SDK consumers do not need with `.gitattributes export-ignore`.
 - Keep destructive test-environment verification out of Pest and follow [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md) when a change must be checked against mutating live behavior.
-- Maintainers can use the local-only `.playground/` workspace for manual live calls against `Environment::Test`; its operator guide lives in `.playground/README.md`.
+- Maintainers can use the local-only `.playground/` workspace for manual live calls against `Environment::Test`; its operator guide lives in `.playground/README.md` and covers named outbound credential profiles plus route-based webhook capture/inspection with per-profile secret env vars.
 
 ## Validation
 Run these commands locally:

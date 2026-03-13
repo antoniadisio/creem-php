@@ -44,6 +44,16 @@ test('webhook event parsing keeps unknown event types as raw strings', function 
     expect($event->eventType())->toBe('license.created.partner_sync');
 });
 
+test('webhook event parsing accepts epoch timestamps from live deliveries', function (): void {
+    $payload = WebhookTestSupport::eventPayload([
+        'created_at' => 1773422218069,
+    ]);
+
+    $event = Webhook::parseEvent($payload);
+
+    expect($event->createdAt()->format('Y-m-d\\TH:i:s.vP'))->toBe('2026-03-13T17:16:58.000+00:00');
+});
+
 test('webhook event parsing throws payload exceptions for malformed json instead of transport exceptions', function (): void {
     $thrown = null;
 
@@ -101,7 +111,7 @@ test('webhook event parsing preserves hydration failures for malformed envelope 
 
 test('webhook construction verifies signatures before parsing events', function (): void {
     $payload = '{"id":';
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload, signature: 'invalid');
+    $signature = WebhookTestSupport::signatureHeader($payload, signature: 'invalid');
 
     expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
         ->toThrow(InvalidWebhookSignatureException::class);
@@ -109,7 +119,7 @@ test('webhook construction verifies signatures before parsing events', function 
 
 test('webhook construction throws payload exceptions for malformed verified payloads', function (): void {
     $payload = '{"id":';
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload);
+    $signature = WebhookTestSupport::signatureHeader($payload);
 
     expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
         ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload is not valid JSON.');
@@ -117,7 +127,7 @@ test('webhook construction throws payload exceptions for malformed verified payl
 
 test('webhook construction builds verified events without a client instance', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload);
+    $signature = WebhookTestSupport::signatureHeader($payload);
 
     $event = Webhook::constructEvent($payload, $signature, 'whsec_test_secret');
 
@@ -128,7 +138,7 @@ test('webhook construction builds verified events without a client instance', fu
 
 test('webhook construction rejects replayed events when the replay callback returns true', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload);
+    $signature = WebhookTestSupport::signatureHeader($payload);
     $receivedEventId = null;
 
     expect(static function () use ($payload, $signature, &$receivedEventId): void {

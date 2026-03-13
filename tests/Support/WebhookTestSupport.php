@@ -11,8 +11,6 @@ use JsonException;
 
 use function array_replace_recursive;
 use function json_encode;
-use function sprintf;
-use function time;
 
 final class WebhookTestSupport
 {
@@ -57,16 +55,12 @@ final class WebhookTestSupport
         return json_encode($payload, JSON_THROW_ON_ERROR);
     }
 
-    public static function timestampedSignatureHeader(
+    public static function signatureHeader(
         string $payload,
         #[\SensitiveParameter]
         string $secret = 'whsec_test_secret',
-        ?int $timestamp = null,
         ?string $signature = null,
     ): string {
-        $timestamp ??= time();
-        $signature ??= Signature::compute($payload, $secret, $timestamp);
-
-        return sprintf('t=%d,v1=%s', $timestamp, $signature);
+        return $signature ?? Signature::compute($payload, $secret);
     }
 }

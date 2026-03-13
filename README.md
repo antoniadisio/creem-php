@@ -4,7 +4,7 @@ Handwritten PHP SDK for the Creem API.
 
 This is an independently maintained package published under the personal `antoniadisio` namespace; it is not an official Creem package.
 
-The public contract centers on a typed `Creem\Client` facade for outbound API access plus a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
+The public contract centers on a typed `Creem\Client` facade for outbound API access, named credential profile helpers for multi-account integrations, and a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
 
 ## Installation
 
@@ -33,7 +33,7 @@ $client = new Client(new Config(
 $product = $client->products()->get('prod_123');
 ```
 
-`Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly.
+`Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly. Creem's marketing/docs may also call the test environment "sandbox", but the SDK does not expose a separate sandbox environment.
 
 ## Smoke Suite
 
@@ -55,7 +55,7 @@ Automated test layers used in this repository:
 - `Smoke`: opt-in read-only checks against `https://test-api.creem.io`.
 
 Local deterministic coverage is organized around resource-owned integration files and subsystem-focused unit files so contract changes stay easy to trace.
-Maintainers also have a local-only `.playground/` workspace for live calls against `Environment::Test`; it reads `CREEM_TEST_API_KEY` from the local environment, keeps reusable non-sensitive runtime state in `.playground/state.json`, keeps per-operation defaults beside each action file, supports `--set` / `--overrides-file` for ephemeral agent inputs, and can audit harness parity against the SDK surface with `php .playground/run.php --audit`. The harness still drives the real `Creem\Client` resource methods and uses Saloon middleware only to capture redacted transport traces for debugging. See `.playground/README.md` in the repository checkout.
+Maintainers also have a local-only `.playground/` workspace for live calls against `Environment::Test`; it keeps non-sensitive runtime state and named credential profile metadata in `.playground/state.json`, resolves actual API keys and webhook secrets from env vars, supports `--profile` plus `--set` / `--overrides-file` for ephemeral agent inputs, can audit harness parity against the SDK surface with `php .playground/run.php --audit`, and also includes local-only webhook receiver/inspection helpers for route-based webhook profile verification. The harness still drives the real `Creem\Client` resource methods and uses Saloon middleware only to capture redacted transport traces for debugging. See `.playground/README.md` in the repository checkout.
 
 ## Configuration
 
@@ -104,6 +104,41 @@ $config = new Config(
 
 Transport defaults are hardened: redirects are disabled, TLS certificate verification is always enabled, TLS 1.2 is enforced as the minimum protocol, and request/connect/read timeouts all use the configured SDK timeout (or the 30-second default).
 
+## Credential Profiles
+
+For first-class multi-account integrations, use named credential profiles instead of trying to overload one `Config` with multiple API keys or webhook secrets.
+
+`Creem\CredentialProfile` mirrors the `Config` inputs for one concrete credential set and adds an optional `webhookSecret`. `Creem\CredentialProfiles` stores named profiles, and `Creem\ClientFactory` lazily builds one `Client` per profile.
+
+```php
+<?php
+
+use Creem\ClientFactory;
+use Creem\CredentialProfile;
+use Creem\CredentialProfiles;
+use Creem\Enum\Environment;
+
+$profiles = new CredentialProfiles([
+    'default' => new CredentialProfile(
+        apiKey: $_ENV['CREEM_API_KEY'],
+        environment: Environment::Test,
+        webhookSecret: $_ENV['CREEM_WEBHOOK_SECRET'],
+    ),
+    'cashier' => new CredentialProfile(
+        apiKey: $_ENV['CREEM_CASHIER_API_KEY'],
+        environment: Environment::Test,
+        webhookSecret: $_ENV['CREEM_CASHIER_WEBHOOK_SECRET'],
+    ),
+]);
+
+$factory = new ClientFactory($profiles);
+
+$merchantClient = $factory->forProfile('cashier');
+$product = $merchantClient->products()->get('prod_123');
+```
+
+The low-level single-key API remains available when you only need one credential set. The multi-profile layer is the recommended SDK path when you need to route requests or webhooks across multiple Creem accounts or app surfaces.
+
 ## Error Handling
 
 All SDK exceptions extend `Creem\Exception\CreemException`.
@@ -139,7 +174,7 @@ try {
 ## Webhooks
 
 `Creem\Webhook` verifies the incoming `creem-signature` header against the raw request body and parses the JSON payload without requiring a `Client` instance.
-The signature header must include a Unix timestamp and signature pair such as `t=1700000000,v1=...`. The SDK signs `timestamp.payload`, rejects blank webhook secrets, and rejects timestamps outside a 5-minute tolerance window.
+Creem currently sends `creem-signature` as the raw HMAC digest of the payload, for example `63dcbb00f44e82ac158edfb75fd745286f99e9bcebed04dbc0133bb20d15d09c`.
 
 ```php
 <?php
@@ -178,6 +213,41 @@ $event = Webhook::constructEvent(
 
 Always verify the exact raw request body. Do not `json_decode()`, re-encode, trim, or otherwise mutate the payload before calling `Webhook::verifySignature()` or `Webhook::constructEvent()`, or the HMAC check will fail. The SDK also rejects webhook payloads larger than 1 MiB before decoding.
 
+When multiple webhook secrets exist, resolve the intended named profile first and use the profile-aware helpers instead of trying every secret blindly:
+
+```php
+<?php
+
+use Creem\CredentialProfile;
+use Creem\CredentialProfiles;
+use Creem\Enum\Environment;
+use Creem\Webhook;
+
+$profiles = new CredentialProfiles([
+    'default' => new CredentialProfile(
+        apiKey: $_ENV['CREEM_API_KEY'],
+        environment: Environment::Test,
+        webhookSecret: $_ENV['CREEM_WEBHOOK_SECRET'],
+    ),
+    'cashier' => new CredentialProfile(
+        apiKey: $_ENV['CREEM_CASHIER_API_KEY'],
+        environment: Environment::Test,
+        webhookSecret: $_ENV['CREEM_CASHIER_WEBHOOK_SECRET'],
+    ),
+]);
+
+$profile = $request->is('creem/webhook') ? 'cashier' : 'default';
+
+$event = Webhook::constructEventForProfile(
+    $payload,
+    $signature,
+    $profile,
+    $profiles,
+);
+```
+
+`Webhook::verifySignatureForProfile(...)` and `Webhook::constructEventForProfile(...)` resolve exactly one secret from the named profile. The SDK does not iterate across every configured secret for you.
+
 For Laravel-style controllers, use the raw request content instead of decoded request input:
 
 ```php
@@ -215,7 +285,7 @@ final class CreemWebhookController
 }
 ```
 
-The returned `WebhookEvent` exposes `id()`, `eventType()`, `createdAt()`, `object()`, `payload()`, and `toArray()`. `object()` returns a `StructuredObject`, so consumers can read nested webhook data without decoding JSON again.
+The returned `WebhookEvent` exposes `id()`, `eventType()`, `createdAt()`, `object()`, `payload()`, and `toArray()`. `object()` returns a `StructuredObject`, so consumers can read nested webhook data without decoding JSON again. Live Creem deliveries currently send `created_at` as a Unix epoch timestamp; the SDK normalizes that to `DateTimeImmutable` for you.
 
 ## Resources
 

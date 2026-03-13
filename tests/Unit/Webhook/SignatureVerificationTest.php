@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Creem\Tests\Unit;
 
 use Creem\Exception\InvalidWebhookSignatureException;
-use Creem\Internal\Webhook\Signature;
 use Creem\Tests\Support\WebhookTestSupport;
 use Creem\Webhook;
 
-use function time;
-
 test('webhook signature verification accepts a known signature after trimming header whitespace', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload);
+    $signature = WebhookTestSupport::signatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, "  {$signature} \n", 'whsec_test_secret');
@@ -22,7 +19,7 @@ test('webhook signature verification accepts a known signature after trimming he
 
 test('webhook signature verification rejects invalid signatures', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload, signature: 'not-a-valid-signature');
+    $signature = WebhookTestSupport::signatureHeader($payload, signature: 'not-a-valid-signature');
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, $signature, 'whsec_test_secret');
@@ -32,7 +29,7 @@ test('webhook signature verification rejects invalid signatures', function (): v
 
 test('webhook signature verification rejects mismatched secrets', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload);
+    $signature = WebhookTestSupport::signatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, $signature, 'whsec_wrong_secret');
@@ -42,7 +39,7 @@ test('webhook signature verification rejects mismatched secrets', function (): v
 
 test('webhook signature verification rejects blank secrets', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload);
+    $signature = WebhookTestSupport::signatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, $signature, '   ');
@@ -50,14 +47,14 @@ test('webhook signature verification rejects blank secrets', function (): void {
         ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook secret is missing or blank.');
 });
 
-test('webhook signature verification rejects timestamps outside the allowed tolerance', function (): void {
+test('webhook signature verification rejects legacy timestamped headers', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = WebhookTestSupport::timestampedSignatureHeader($payload, timestamp: time() - 301);
+    $signature = 't=1700000000,v1='.WebhookTestSupport::signatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, $signature, 'whsec_test_secret');
     })
-        ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature timestamp is outside the allowed tolerance.');
+        ->toThrow(InvalidWebhookSignatureException::class, 'The Creem webhook signature is invalid.');
 });
 
 foreach (invalidWebhookSignatureHeaders() as $dataset => [$signature, $secret, $message]) {
@@ -82,15 +79,10 @@ function invalidWebhookSignatureHeaders(): array
             'whsec_test_secret',
             'The Creem webhook signature header is missing or blank.',
         ],
-        'missing timestamp' => [
-            Signature::compute(WebhookTestSupport::eventPayload(), 'whsec_test_secret'),
-            'whsec_test_secret',
-            'The Creem webhook signature timestamp is missing.',
-        ],
-        'invalid timestamp' => [
+        'legacy header with invalid digest' => [
             't=invalid,v1=abc123',
             'whsec_test_secret',
-            'The Creem webhook signature timestamp is invalid.',
+            'The Creem webhook signature is invalid.',
         ],
     ];
 }

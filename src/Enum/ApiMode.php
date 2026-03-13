@@ -8,5 +8,4 @@ enum ApiMode: string
 {
     case Test = 'test';
     case Production = 'prod';
-    case Sandbox = 'sandbox';
 }
