@@ -1,7 +1,7 @@
 # Contributing
 
 ## Scope
-This repository is a public unofficial PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the stable typed `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
+This repository is a public unofficial PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the stable typed `Antoniadisio\Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
 The public repo intentionally keeps maintainer QA files such as `rector.php`, `phpstan.neon.dist`, `phpunit.xml.dist`, and `composer.lock` committed at the root. Lean package archives for SDK consumers are handled with `.gitattributes export-ignore`, not by removing those repo files from git.
 
 ## Local Setup
@@ -47,7 +47,7 @@ Pull requests should be opened only after `composer qa:check` is green.
 - Use enums for closed-set API fields and keep enum-to-string normalization inside the internal request serialization layer.
 - Use `DateTimeImmutable` for spec-defined `format: date-time` fields and for millisecond timestamps only when the contract explicitly documents that unit.
 - Keep public response DTOs concrete: use nested DTOs, typed lists, and `ExpandableResource<T>` instead of `StructuredObject`, `StructuredList`, `ExpandableValue`, or `int|float` unions.
-- Contract violations on required response fields should fail fast with `Creem\Exception\HydrationException`; do not silently coerce malformed required values to `null`.
+- Contract violations on required response fields should fail fast with `Antoniadisio\Creem\Exception\HydrationException`; do not silently coerce malformed required values to `null`.
 
 ## Commits And Pull Requests
 - Write commit subjects in an imperative, outcome-focused style, 72 characters or fewer, with no trailing period.
@@ -59,7 +59,8 @@ Pull requests should be opened only after `composer qa:check` is green.
 - Run `composer validate --strict`.
 - Run `composer qa:check`.
 - Update `CHANGELOG.md` with the exact release version and date.
-- Create an annotated Git tag for that version (for example `git tag -a v1.0.0 -m "Release v1.0.0"`).
+- Keep release notes and installation guidance aligned with the unofficial `antoniadisio/creem-php` package identity.
+- Create an annotated Git tag for that version (for example `git tag -a v0.3.0 -m "Release v0.3.0"`).
 - Push the tag and publish matching GitHub release notes.
 - Keep the Git tag, GitHub release title, and `CHANGELOG.md` entry identical.
 

@@ -1,10 +1,10 @@
-# Creem PHP
+# Creem PHP SDK
 
-Unofficial PHP SDK for the Creem API.
+Unofficial but passionate PHP SDK for Creem, with a typed client facade, resource DTOs, credential profiles, and webhook verification helpers.
 
 This is an independently maintained personal package published under the `antoniadisio` namespace. It is not an official Creem package and is not distributed by Creem.
 
-The public contract centers on a typed `Creem\Client` facade for outbound API access, named credential profile helpers for multi-account integrations, and a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
+The public contract centers on a typed `Antoniadisio\Creem\Client` facade for outbound API access, named credential profile helpers for multi-account integrations, and a stateless `Antoniadisio\Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
 
 ## Installation
 
@@ -13,6 +13,7 @@ composer require antoniadisio/creem-php
 ```
 
 Requires PHP 8.4 or newer.
+The runtime namespace is `Antoniadisio\Creem\`.
 
 Release history and migration notes live in [`CHANGELOG.md`](CHANGELOG.md).
 
@@ -21,9 +22,9 @@ Release history and migration notes live in [`CHANGELOG.md`](CHANGELOG.md).
 ```php
 <?php
 
-use Creem\Client;
-use Creem\Config;
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Client;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Enum\Environment;
 
 $client = new Client(new Config(
     apiKey: $_ENV['CREEM_API_KEY'],
@@ -33,9 +34,9 @@ $client = new Client(new Config(
 $product = $client->products()->get('prod_123');
 ```
 
-Product responses expose `custom_fields` as typed `Creem\Dto\Common\CustomField` objects via `$product->customFields`.
+Product responses expose `custom_fields` as typed `Antoniadisio\Creem\Dto\Common\CustomField` objects via `$product->customFields`.
 
-`Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly. Creem's marketing/docs may also call the test environment "sandbox", but the SDK does not expose a separate sandbox environment.
+`Antoniadisio\Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly. Creem's marketing/docs may also call the test environment "sandbox", but the SDK does not expose a separate sandbox environment.
 
 ## Smoke Suite
 
@@ -57,14 +58,14 @@ Automated test layers used in this repository:
 - `Smoke`: opt-in read-only checks against `https://test-api.creem.io`.
 
 Local deterministic coverage is organized around resource-owned integration files and subsystem-focused unit files so contract changes stay easy to trace.
-Maintainers also have a local-only `.playground/` workspace for live calls against `Environment::Test`; it keeps non-sensitive runtime state and named credential profile metadata in `.playground/state.json`, resolves actual API keys and webhook secrets from env vars, supports `--profile` plus `--set` / `--overrides-file` for ephemeral agent inputs, can audit harness parity against the SDK surface with `php .playground/run.php --audit`, and also includes local-only webhook receiver/inspection helpers for route-based webhook profile verification. The harness still drives the real `Creem\Client` resource methods and uses Saloon middleware only to capture redacted transport traces for debugging. See `.playground/README.md` in the repository checkout.
+Maintainers also have a local-only `.playground/` workspace for live calls against `Environment::Test`; it keeps non-sensitive runtime state and named credential profile metadata in `.playground/state.json`, resolves actual API keys and webhook secrets from env vars, supports `--profile` plus `--set` / `--overrides-file` for ephemeral agent inputs, can audit harness parity against the SDK surface with `php .playground/run.php --audit`, and also includes local-only webhook receiver/inspection helpers for route-based webhook profile verification. The harness still drives the real `Antoniadisio\Creem\Client` resource methods and uses Saloon middleware only to capture redacted transport traces for debugging. See `.playground/README.md` in the repository checkout.
 
 ## Configuration
 
-`Creem\Config` is immutable and accepts:
+`Antoniadisio\Creem\Config` is immutable and accepts:
 
 - `apiKey` (required, must start with `sk_` or `creem_`)
-- `environment` (`Creem\Enum\Environment::Production` by default)
+- `environment` (`Antoniadisio\Creem\Enum\Environment::Production` by default)
 - `baseUrl` (optional override, must be a valid `https://` URL)
 - `timeout` (optional request timeout in seconds, defaults to `30`)
 - `userAgentSuffix` (optional suffix appended to the SDK user agent)
@@ -73,9 +74,9 @@ Maintainers also have a local-only `.playground/` workspace for live calls again
 ```php
 <?php
 
-use Creem\Client;
-use Creem\Config;
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Client;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Enum\Environment;
 
 $client = new Client(new Config(
     apiKey: $_ENV['CREEM_API_KEY'],
@@ -110,15 +111,15 @@ Transport defaults are hardened: redirects are disabled, TLS certificate verific
 
 For first-class multi-account integrations, use named credential profiles instead of trying to overload one `Config` with multiple API keys or webhook secrets.
 
-`Creem\CredentialProfile` mirrors the `Config` inputs for one concrete credential set and adds an optional `webhookSecret`. `Creem\CredentialProfiles` stores named profiles, and `Creem\ClientFactory` lazily builds one `Client` per profile.
+`Antoniadisio\Creem\CredentialProfile` mirrors the `Config` inputs for one concrete credential set and adds an optional `webhookSecret`. `Antoniadisio\Creem\CredentialProfiles` stores named profiles, and `Antoniadisio\Creem\ClientFactory` lazily builds one `Client` per profile.
 
 ```php
 <?php
 
-use Creem\ClientFactory;
-use Creem\CredentialProfile;
-use Creem\CredentialProfiles;
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\ClientFactory;
+use Antoniadisio\Creem\CredentialProfile;
+use Antoniadisio\Creem\CredentialProfiles;
+use Antoniadisio\Creem\Enum\Environment;
 
 $profiles = new CredentialProfiles([
     'default' => new CredentialProfile(
@@ -143,7 +144,7 @@ The low-level single-key API remains available when you only need one credential
 
 ## Error Handling
 
-All SDK exceptions extend `Creem\Exception\CreemException`.
+All SDK exceptions extend `Antoniadisio\Creem\Exception\CreemException`.
 
 - `AuthenticationException` for `401` and `403`
 - `ValidationException` for `422` and validation-style client payloads
@@ -158,9 +159,9 @@ All SDK exceptions extend `Creem\Exception\CreemException`.
 ```php
 <?php
 
-use Creem\Dto\Checkout\CreateCheckoutRequest;
-use Creem\Exception\TransportException;
-use Creem\Exception\ValidationException;
+use Antoniadisio\Creem\Dto\Checkout\CreateCheckoutRequest;
+use Antoniadisio\Creem\Exception\TransportException;
+use Antoniadisio\Creem\Exception\ValidationException;
 
 try {
     $checkout = $client->checkouts()->create(new CreateCheckoutRequest(
@@ -175,13 +176,13 @@ try {
 
 ## Webhooks
 
-`Creem\Webhook` verifies the incoming `creem-signature` header against the raw request body and parses the JSON payload without requiring a `Client` instance.
+`Antoniadisio\Creem\Webhook` verifies the incoming `creem-signature` header against the raw request body and parses the JSON payload without requiring a `Client` instance.
 Creem currently sends `creem-signature` as the raw HMAC digest of the payload, for example `63dcbb00f44e82ac158edfb75fd745286f99e9bcebed04dbc0133bb20d15d09c`.
 
 ```php
 <?php
 
-use Creem\Webhook;
+use Antoniadisio\Creem\Webhook;
 
 $payload = file_get_contents('php://input') ?: '';
 $signature = $_SERVER['HTTP_CREEM_SIGNATURE'] ?? '';
@@ -206,7 +207,7 @@ $event = Webhook::constructEvent(
     $payload,
     $signature,
     $_ENV['CREEM_WEBHOOK_SECRET'],
-    static function (\Creem\Dto\Webhook\WebhookEvent $event): bool {
+    static function (\Antoniadisio\Creem\Dto\Webhook\WebhookEvent $event): bool {
         // Persist event IDs in durable storage (Redis, DB, etc.) with a short TTL.
         return hasSeenWebhookId($event->id());
     },
@@ -220,10 +221,10 @@ When multiple webhook secrets exist, resolve the intended named profile first an
 ```php
 <?php
 
-use Creem\CredentialProfile;
-use Creem\CredentialProfiles;
-use Creem\Enum\Environment;
-use Creem\Webhook;
+use Antoniadisio\Creem\CredentialProfile;
+use Antoniadisio\Creem\CredentialProfiles;
+use Antoniadisio\Creem\Enum\Environment;
+use Antoniadisio\Creem\Webhook;
 
 $profiles = new CredentialProfiles([
     'default' => new CredentialProfile(
@@ -257,9 +258,9 @@ For Laravel-style controllers, use the raw request content instead of decoded re
 
 namespace App\Http\Controllers;
 
-use Creem\Exception\InvalidWebhookPayloadException;
-use Creem\Exception\InvalidWebhookSignatureException;
-use Creem\Webhook;
+use Antoniadisio\Creem\Exception\InvalidWebhookPayloadException;
+use Antoniadisio\Creem\Exception\InvalidWebhookSignatureException;
+use Antoniadisio\Creem\Webhook;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -291,7 +292,7 @@ The returned `WebhookEvent` exposes `id()`, `eventType()`, `createdAt()`, `objec
 
 ## Resources
 
-`Creem\Client` exposes these resource accessors:
+`Antoniadisio\Creem\Client` exposes these resource accessors:
 
 - `products()`
 - `customers()`
@@ -313,11 +314,11 @@ Mutating resource methods that interpolate IDs into path segments (`subscription
 ```php
 <?php
 
-use Creem\Dto\Product\CreateProductRequest;
-use Creem\Dto\Product\SearchProductsRequest;
-use Creem\Enum\BillingPeriod;
-use Creem\Enum\BillingType;
-use Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Dto\Product\CreateProductRequest;
+use Antoniadisio\Creem\Dto\Product\SearchProductsRequest;
+use Antoniadisio\Creem\Enum\BillingPeriod;
+use Antoniadisio\Creem\Enum\BillingType;
+use Antoniadisio\Creem\Enum\CurrencyCode;
 
 $product = $client->products()->create(new CreateProductRequest(
     name: 'Pro Plan',
@@ -344,8 +345,8 @@ Supported methods:
 ```php
 <?php
 
-use Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
-use Creem\Dto\Customer\ListCustomersRequest;
+use Antoniadisio\Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
+use Antoniadisio\Creem\Dto\Customer\ListCustomersRequest;
 
 $page = $client->customers()->list(new ListCustomersRequest(
     pageNumber: 1,
@@ -371,12 +372,12 @@ Supported methods:
 ```php
 <?php
 
-use Creem\Dto\Subscription\CancelSubscriptionRequest;
-use Creem\Dto\Subscription\UpdateSubscriptionRequest;
-use Creem\Dto\Subscription\UpgradeSubscriptionRequest;
-use Creem\Dto\Subscription\UpsertSubscriptionItem;
-use Creem\Enum\SubscriptionCancellationMode;
-use Creem\Enum\SubscriptionUpdateBehavior;
+use Antoniadisio\Creem\Dto\Subscription\CancelSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpdateSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpgradeSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpsertSubscriptionItem;
+use Antoniadisio\Creem\Enum\SubscriptionCancellationMode;
+use Antoniadisio\Creem\Enum\SubscriptionUpdateBehavior;
 
 $subscription = $client->subscriptions()->update(
     'sub_123',
@@ -422,8 +423,8 @@ For live seat updates, prefer `priceId` on `UpsertSubscriptionItem` and pass the
 ```php
 <?php
 
-use Creem\Dto\Checkout\CreateCheckoutRequest;
-use Creem\Dto\Checkout\CheckoutCustomerInput;
+use Antoniadisio\Creem\Dto\Checkout\CreateCheckoutRequest;
+use Antoniadisio\Creem\Dto\Checkout\CheckoutCustomerInput;
 
 $checkout = $client->checkouts()->create(new CreateCheckoutRequest(
     productId: 'prod_123',
@@ -442,9 +443,9 @@ Supported methods:
 ```php
 <?php
 
-use Creem\Dto\License\ActivateLicenseRequest;
-use Creem\Dto\License\DeactivateLicenseRequest;
-use Creem\Dto\License\ValidateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\ActivateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\DeactivateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\ValidateLicenseRequest;
 
 $license = $client->licenses()->activate(new ActivateLicenseRequest(
     key: 'license_key',
@@ -473,9 +474,9 @@ Supported methods:
 ```php
 <?php
 
-use Creem\Dto\Discount\CreateDiscountRequest;
-use Creem\Enum\DiscountDuration;
-use Creem\Enum\DiscountType;
+use Antoniadisio\Creem\Dto\Discount\CreateDiscountRequest;
+use Antoniadisio\Creem\Enum\DiscountDuration;
+use Antoniadisio\Creem\Enum\DiscountType;
 
 $discount = $client->discounts()->create(new CreateDiscountRequest(
     name: 'Spring Sale',
@@ -501,7 +502,7 @@ Supported methods:
 ```php
 <?php
 
-use Creem\Dto\Transaction\SearchTransactionsRequest;
+use Antoniadisio\Creem\Dto\Transaction\SearchTransactionsRequest;
 
 $page = $client->transactions()->search(new SearchTransactionsRequest(
     customerId: 'cus_123',
@@ -520,9 +521,9 @@ Supported methods:
 ```php
 <?php
 
-use Creem\Dto\Stats\GetStatsSummaryRequest;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\StatsInterval;
+use Antoniadisio\Creem\Dto\Stats\GetStatsSummaryRequest;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\StatsInterval;
 use DateTimeImmutable;
 
 $startDate = new DateTimeImmutable('-7 days');
@@ -542,9 +543,9 @@ Supported methods:
 
 ## Response Shapes
 
-Collection-style endpoints return `Creem\Dto\Common\Page`, with pagination metadata in `Creem\Dto\Common\Pagination`. Resource items are exposed through typed DTO payloads instead of raw decoded arrays.
+Collection-style endpoints return `Antoniadisio\Creem\Dto\Common\Page`, with pagination metadata in `Antoniadisio\Creem\Dto\Common\Pagination`. Resource items are exposed through typed DTO payloads instead of raw decoded arrays.
 
-Closed-set response fields are hydrated to `Creem\Enum\*` cases, spec-defined date-time fields are hydrated to `DateTimeImmutable`, and malformed required payloads now raise `Creem\Exception\HydrationException` instead of being silently coerced.
+Closed-set response fields are hydrated to `Antoniadisio\Creem\Enum\*` cases, spec-defined date-time fields are hydrated to `DateTimeImmutable`, and malformed required payloads now raise `Antoniadisio\Creem\Exception\HydrationException` instead of being silently coerced.
 
 ## Development
 
@@ -571,7 +572,7 @@ Command guide:
 
 Notes:
 
-- The committed Rector config intentionally skips automatic type-declaration inference on `Creem\Client`, `Creem\Config`, and `Creem\Resource\*` so public signatures stay under manual review.
+- The committed Rector config intentionally skips automatic type-declaration inference on `Antoniadisio\Creem\Client`, `Antoniadisio\Creem\Config`, and `Antoniadisio\Creem\Resource\*` so public signatures stay under manual review.
 - `composer stan` uses the committed `phpstan.neon.dist` configuration and the repository-defined memory limit.
 - `composer install` and `composer update` use the committed Composer platform pin (`php: 8.4.0`) so the lockfile stays aligned with the PHP 8.4 CI target.
 - The public repository intentionally keeps maintainer QA files such as `rector.php`, `phpstan.neon.dist`, `phpunit.xml.dist`, and `composer.lock` committed. Installed package archives stay lean through `.gitattributes export-ignore`.
@@ -598,5 +599,6 @@ Migration note:
 ## Contributing
 
 Contributor workflows, fixture maintenance rules, and release steps live in `CONTRIBUTING.md`. The maintainer runbook for destructive test-environment verification lives in [`docs/manual-destructive-verification.md`](docs/manual-destructive-verification.md).
+Stable releases follow a simple cutover: update `CHANGELOG.md` with the exact version/date, keep the release notes aligned with the unofficial `antoniadisio/creem-php` package identity, then create the matching annotated Git tag and GitHub release.
 
 The package metadata in `composer.json` is suitable for Packagist publication: it includes package name, description, license, keywords, support links, and PSR-4 autoload configuration.

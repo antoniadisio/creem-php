@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Common\Pagination;
-use Creem\Dto\Product\CreateProductRequest;
-use Creem\Dto\Product\Product;
-use Creem\Dto\Product\SearchProductsRequest;
-use Creem\Enum\ApiMode;
-use Creem\Enum\BillingPeriod;
-use Creem\Enum\BillingType;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\CustomFieldType;
-use Creem\Enum\ProductFeatureType;
-use Creem\Resource\ProductsResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Common\Pagination;
+use Antoniadisio\Creem\Dto\Product\CreateProductRequest;
+use Antoniadisio\Creem\Dto\Product\Product;
+use Antoniadisio\Creem\Dto\Product\SearchProductsRequest;
+use Antoniadisio\Creem\Enum\ApiMode;
+use Antoniadisio\Creem\Enum\BillingPeriod;
+use Antoniadisio\Creem\Enum\BillingType;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\CustomFieldType;
+use Antoniadisio\Creem\Enum\ProductFeatureType;
+use Antoniadisio\Creem\Resource\ProductsResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;

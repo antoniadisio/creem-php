@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem;
+namespace Antoniadisio\Creem;
 
-use Creem\Dto\Webhook\WebhookEvent;
-use Creem\Exception\HydrationException;
-use Creem\Exception\InvalidWebhookPayloadException;
-use Creem\Exception\InvalidWebhookSignatureException;
-use Creem\Internal\Webhook\PayloadDecoder;
-use Creem\Internal\Webhook\SecureComparer;
-use Creem\Internal\Webhook\Signature;
+use Antoniadisio\Creem\Dto\Webhook\WebhookEvent;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Exception\InvalidWebhookPayloadException;
+use Antoniadisio\Creem\Exception\InvalidWebhookSignatureException;
+use Antoniadisio\Creem\Internal\Webhook\PayloadDecoder;
+use Antoniadisio\Creem\Internal\Webhook\SecureComparer;
+use Antoniadisio\Creem\Internal\Webhook\Signature;
 
 use function trim;
 

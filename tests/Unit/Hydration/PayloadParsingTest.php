@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Common\ExpandableResource;
-use Creem\Dto\Common\Page;
-use Creem\Dto\Common\Pagination;
-use Creem\Dto\Common\StructuredList;
-use Creem\Dto\Common\StructuredObject;
-use Creem\Enum\CurrencyCode;
-use Creem\Internal\Hydration\Payload;
+use Antoniadisio\Creem\Dto\Common\ExpandableResource;
+use Antoniadisio\Creem\Dto\Common\Page;
+use Antoniadisio\Creem\Dto\Common\Pagination;
+use Antoniadisio\Creem\Dto\Common\StructuredList;
+use Antoniadisio\Creem\Dto\Common\StructuredObject;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Internal\Hydration\Payload;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;

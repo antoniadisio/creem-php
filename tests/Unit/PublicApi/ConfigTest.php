@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Config;
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Enum\Environment;
 use InvalidArgumentException;
 use LogicException;
 

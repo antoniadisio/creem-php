@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Stats\GetStatsSummaryRequest;
-use Creem\Dto\Transaction\SearchTransactionsRequest;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\StatsInterval;
+use Antoniadisio\Creem\Dto\Stats\GetStatsSummaryRequest;
+use Antoniadisio\Creem\Dto\Transaction\SearchTransactionsRequest;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\StatsInterval;
 use DateTimeImmutable;
 
 test('transaction search request dtos serialize pagination and filters', function (): void {

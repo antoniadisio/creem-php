@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Checkout\CreateCheckoutRequest;
-use Creem\Dto\Common\ExpandableResource;
-use Creem\Enum\CheckoutStatus;
-use Creem\Resource\CheckoutsResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Checkout\CreateCheckoutRequest;
+use Antoniadisio\Creem\Dto\Common\ExpandableResource;
+use Antoniadisio\Creem\Enum\CheckoutStatus;
+use Antoniadisio\Creem\Resource\CheckoutsResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;

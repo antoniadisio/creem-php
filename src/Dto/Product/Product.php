@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Creem\Dto\Product;
+namespace Antoniadisio\Creem\Dto\Product;
 
-use Creem\Dto\Common\CustomField;
-use Creem\Dto\Common\ProductFeature;
-use Creem\Enum\ApiMode;
-use Creem\Enum\BillingPeriod;
-use Creem\Enum\BillingType;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\ProductStatus;
-use Creem\Enum\TaxCategory;
-use Creem\Enum\TaxMode;
-use Creem\Exception\HydrationException;
-use Creem\Internal\Hydration\Payload;
+use Antoniadisio\Creem\Dto\Common\CustomField;
+use Antoniadisio\Creem\Dto\Common\ProductFeature;
+use Antoniadisio\Creem\Enum\ApiMode;
+use Antoniadisio\Creem\Enum\BillingPeriod;
+use Antoniadisio\Creem\Enum\BillingType;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\ProductStatus;
+use Antoniadisio\Creem\Enum\TaxCategory;
+use Antoniadisio\Creem\Enum\TaxMode;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Internal\Hydration\Payload;
 use DateTimeImmutable;
 
 use function array_is_list;

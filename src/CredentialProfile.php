@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Creem;
+namespace Antoniadisio\Creem;
 
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Enum\Environment;
 use LogicException;
 
 use function sprintf;

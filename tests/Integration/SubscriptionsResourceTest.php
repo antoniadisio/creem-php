@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Common\ExpandableResource;
-use Creem\Dto\Subscription\CancelSubscriptionRequest;
-use Creem\Dto\Subscription\SubscriptionItem;
-use Creem\Dto\Subscription\UpdateSubscriptionRequest;
-use Creem\Dto\Subscription\UpgradeSubscriptionRequest;
-use Creem\Dto\Subscription\UpsertSubscriptionItem;
-use Creem\Enum\SubscriptionCancellationAction;
-use Creem\Enum\SubscriptionCancellationMode;
-use Creem\Enum\SubscriptionCollectionMethod;
-use Creem\Enum\SubscriptionStatus;
-use Creem\Enum\SubscriptionUpdateBehavior;
-use Creem\Enum\TransactionStatus;
-use Creem\Resource\SubscriptionsResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Common\ExpandableResource;
+use Antoniadisio\Creem\Dto\Subscription\CancelSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\SubscriptionItem;
+use Antoniadisio\Creem\Dto\Subscription\UpdateSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpgradeSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpsertSubscriptionItem;
+use Antoniadisio\Creem\Enum\SubscriptionCancellationAction;
+use Antoniadisio\Creem\Enum\SubscriptionCancellationMode;
+use Antoniadisio\Creem\Enum\SubscriptionCollectionMethod;
+use Antoniadisio\Creem\Enum\SubscriptionStatus;
+use Antoniadisio\Creem\Enum\SubscriptionUpdateBehavior;
+use Antoniadisio\Creem\Enum\TransactionStatus;
+use Antoniadisio\Creem\Resource\SubscriptionsResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use InvalidArgumentException;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;

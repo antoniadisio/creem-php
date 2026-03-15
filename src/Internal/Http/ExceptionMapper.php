@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Creem\Internal\Http;
+namespace Antoniadisio\Creem\Internal\Http;
 
-use Creem\Exception\AuthenticationException;
-use Creem\Exception\CreemException;
-use Creem\Exception\NotFoundException;
-use Creem\Exception\RateLimitException;
-use Creem\Exception\ServerException;
-use Creem\Exception\ValidationException;
+use Antoniadisio\Creem\Exception\AuthenticationException;
+use Antoniadisio\Creem\Exception\CreemException;
+use Antoniadisio\Creem\Exception\NotFoundException;
+use Antoniadisio\Creem\Exception\RateLimitException;
+use Antoniadisio\Creem\Exception\ServerException;
+use Antoniadisio\Creem\Exception\ValidationException;
 use Saloon\Http\Response;
 
 use function array_is_list;

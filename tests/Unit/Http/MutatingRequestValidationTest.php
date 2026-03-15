@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Internal\Http\Requests\Discounts\DeleteDiscountRequest;
-use Creem\Internal\Http\Requests\Products\CreateProductRequest as CreateProductOperation;
-use Creem\Internal\Http\Requests\Subscriptions\CancelSubscriptionRequest;
-use Creem\Internal\Http\Requests\Subscriptions\PauseSubscriptionRequest;
-use Creem\Internal\Http\Requests\Subscriptions\ResumeSubscriptionRequest;
-use Creem\Internal\Http\Requests\Subscriptions\UpdateSubscriptionRequest;
-use Creem\Internal\Http\Requests\Subscriptions\UpgradeSubscriptionRequest;
+use Antoniadisio\Creem\Internal\Http\Requests\Discounts\DeleteDiscountRequest;
+use Antoniadisio\Creem\Internal\Http\Requests\Products\CreateProductRequest as CreateProductOperation;
+use Antoniadisio\Creem\Internal\Http\Requests\Subscriptions\CancelSubscriptionRequest;
+use Antoniadisio\Creem\Internal\Http\Requests\Subscriptions\PauseSubscriptionRequest;
+use Antoniadisio\Creem\Internal\Http\Requests\Subscriptions\ResumeSubscriptionRequest;
+use Antoniadisio\Creem\Internal\Http\Requests\Subscriptions\UpdateSubscriptionRequest;
+use Antoniadisio\Creem\Internal\Http\Requests\Subscriptions\UpgradeSubscriptionRequest;
 use InvalidArgumentException;
 
 test('mutating requests reject invalid idempotency keys', function (): void {

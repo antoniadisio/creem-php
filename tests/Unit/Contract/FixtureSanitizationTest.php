@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Tests\TestCase;
+use Antoniadisio\Creem\Tests\TestCase;
 
 test('response fixtures use sanitized placeholder values', function (): void {
     /** @var TestCase $testCase */

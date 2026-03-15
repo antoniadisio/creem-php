@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Creem\Dto\Checkout;
+namespace Antoniadisio\Creem\Dto\Checkout;
 
-use Creem\Dto\Common\CustomField;
-use Creem\Dto\Common\ExpandableResource;
-use Creem\Dto\Common\Order;
-use Creem\Dto\Common\ProductFeature;
-use Creem\Dto\Customer\Customer;
-use Creem\Dto\Product\Product;
-use Creem\Dto\Subscription\Subscription;
-use Creem\Enum\ApiMode;
-use Creem\Enum\CheckoutStatus;
-use Creem\Exception\HydrationException;
-use Creem\Internal\Hydration\Payload;
+use Antoniadisio\Creem\Dto\Common\CustomField;
+use Antoniadisio\Creem\Dto\Common\ExpandableResource;
+use Antoniadisio\Creem\Dto\Common\Order;
+use Antoniadisio\Creem\Dto\Common\ProductFeature;
+use Antoniadisio\Creem\Dto\Customer\Customer;
+use Antoniadisio\Creem\Dto\Product\Product;
+use Antoniadisio\Creem\Dto\Subscription\Subscription;
+use Antoniadisio\Creem\Enum\ApiMode;
+use Antoniadisio\Creem\Enum\CheckoutStatus;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Internal\Hydration\Payload;
 
 use function array_is_list;
 use function array_key_exists;

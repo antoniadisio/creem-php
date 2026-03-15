@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests;
+namespace Antoniadisio\Creem\Tests;
 
-use Creem\Client;
-use Creem\Config;
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Client;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Enum\Environment;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;

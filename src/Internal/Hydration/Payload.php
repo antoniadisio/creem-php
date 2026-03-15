@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Internal\Hydration;
+namespace Antoniadisio\Creem\Internal\Hydration;
 
+use Antoniadisio\Creem\Dto\Common\ExpandableResource;
+use Antoniadisio\Creem\Dto\Common\Page;
+use Antoniadisio\Creem\Dto\Common\Pagination;
+use Antoniadisio\Creem\Dto\Common\StructuredList;
+use Antoniadisio\Creem\Dto\Common\StructuredObject;
+use Antoniadisio\Creem\Exception\HydrationException;
 use BackedEnum;
-use Creem\Dto\Common\ExpandableResource;
-use Creem\Dto\Common\Page;
-use Creem\Dto\Common\Pagination;
-use Creem\Dto\Common\StructuredList;
-use Creem\Dto\Common\StructuredObject;
-use Creem\Exception\HydrationException;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;

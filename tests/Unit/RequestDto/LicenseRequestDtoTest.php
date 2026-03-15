@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\License\ActivateLicenseRequest;
-use Creem\Dto\License\DeactivateLicenseRequest;
-use Creem\Dto\License\ValidateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\ActivateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\DeactivateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\ValidateLicenseRequest;
 use InvalidArgumentException;
 
 test('license request dtos serialize activation deactivation and validation payloads', function (): void {

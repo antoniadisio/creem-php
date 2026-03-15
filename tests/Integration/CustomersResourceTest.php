@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
-use Creem\Dto\Customer\Customer;
-use Creem\Dto\Customer\ListCustomersRequest;
-use Creem\Enum\ApiMode;
-use Creem\Resource\CustomersResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
+use Antoniadisio\Creem\Dto\Customer\Customer;
+use Antoniadisio\Creem\Dto\Customer\ListCustomersRequest;
+use Antoniadisio\Creem\Enum\ApiMode;
+use Antoniadisio\Creem\Resource\CustomersResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use DateTimeImmutable;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;

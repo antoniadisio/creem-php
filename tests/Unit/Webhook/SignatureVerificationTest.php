@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Exception\InvalidWebhookSignatureException;
-use Creem\Tests\Support\WebhookTestSupport;
-use Creem\Webhook;
+use Antoniadisio\Creem\Exception\InvalidWebhookSignatureException;
+use Antoniadisio\Creem\Tests\Support\WebhookTestSupport;
+use Antoniadisio\Creem\Webhook;
 
 test('webhook signature verification accepts a known signature after trimming header whitespace', function (): void {
     $payload = WebhookTestSupport::eventPayload();

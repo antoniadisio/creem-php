@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Config;
-use Creem\Exception\AuthenticationException;
-use Creem\Exception\CreemException;
-use Creem\Exception\NotFoundException;
-use Creem\Exception\RateLimitException;
-use Creem\Exception\ServerException;
-use Creem\Exception\TransportException;
-use Creem\Exception\ValidationException;
-use Creem\Internal\Http\CreemConnector;
-use Creem\Tests\Support\HttpTestSupport;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Exception\AuthenticationException;
+use Antoniadisio\Creem\Exception\CreemException;
+use Antoniadisio\Creem\Exception\NotFoundException;
+use Antoniadisio\Creem\Exception\RateLimitException;
+use Antoniadisio\Creem\Exception\ServerException;
+use Antoniadisio\Creem\Exception\TransportException;
+use Antoniadisio\Creem\Exception\ValidationException;
+use Antoniadisio\Creem\Internal\Http\CreemConnector;
+use Antoniadisio\Creem\Tests\Support\HttpTestSupport;
 use RuntimeException;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Http\Faking\MockClient;

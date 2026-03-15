@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Tests\TestCase;
+use Antoniadisio\Creem\Tests\TestCase;
 use ReflectionMethod;
 
 use function array_map;

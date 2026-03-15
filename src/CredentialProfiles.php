@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Creem;
+namespace Antoniadisio\Creem;
 
 use InvalidArgumentException;
 use LogicException;

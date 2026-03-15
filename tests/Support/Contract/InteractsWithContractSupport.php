@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support\Contract;
+namespace Antoniadisio\Creem\Tests\Support\Contract;
 
 trait InteractsWithContractSupport
 {

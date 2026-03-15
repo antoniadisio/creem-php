@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Checkout\Checkout;
-use Creem\Dto\Common\CustomField;
-use Creem\Dto\Common\ProductFeature;
-use Creem\Dto\Discount\Discount;
-use Creem\Dto\Product\Product;
-use Creem\Dto\Subscription\Subscription;
-use Creem\Enum\CustomFieldType;
-use Creem\Enum\ProductFeatureType;
-use Creem\Exception\HydrationException;
-use Creem\Tests\TestCase;
+use Antoniadisio\Creem\Dto\Checkout\Checkout;
+use Antoniadisio\Creem\Dto\Common\CustomField;
+use Antoniadisio\Creem\Dto\Common\ProductFeature;
+use Antoniadisio\Creem\Dto\Discount\Discount;
+use Antoniadisio\Creem\Dto\Product\Product;
+use Antoniadisio\Creem\Dto\Subscription\Subscription;
+use Antoniadisio\Creem\Enum\CustomFieldType;
+use Antoniadisio\Creem\Enum\ProductFeatureType;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Tests\TestCase;
 
 test('custom field hydration supports checkbox variants', function (): void {
     $field = CustomField::fromPayload([

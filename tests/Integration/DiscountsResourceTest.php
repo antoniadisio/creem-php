@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Discount\CreateDiscountRequest;
-use Creem\Dto\Discount\Discount;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\DiscountDuration;
-use Creem\Enum\DiscountStatus;
-use Creem\Enum\DiscountType;
-use Creem\Resource\DiscountsResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Discount\CreateDiscountRequest;
+use Antoniadisio\Creem\Dto\Discount\Discount;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\DiscountDuration;
+use Antoniadisio\Creem\Enum\DiscountStatus;
+use Antoniadisio\Creem\Enum\DiscountType;
+use Antoniadisio\Creem\Resource\DiscountsResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use InvalidArgumentException;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;

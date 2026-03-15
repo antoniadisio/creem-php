@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Subscription\CancelSubscriptionRequest;
-use Creem\Dto\Subscription\UpdateSubscriptionRequest;
-use Creem\Dto\Subscription\UpgradeSubscriptionRequest;
-use Creem\Dto\Subscription\UpsertSubscriptionItem;
-use Creem\Enum\SubscriptionCancellationAction;
-use Creem\Enum\SubscriptionCancellationMode;
-use Creem\Enum\SubscriptionUpdateBehavior;
+use Antoniadisio\Creem\Dto\Subscription\CancelSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpdateSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpgradeSubscriptionRequest;
+use Antoniadisio\Creem\Dto\Subscription\UpsertSubscriptionItem;
+use Antoniadisio\Creem\Enum\SubscriptionCancellationAction;
+use Antoniadisio\Creem\Enum\SubscriptionCancellationMode;
+use Antoniadisio\Creem\Enum\SubscriptionUpdateBehavior;
 use InvalidArgumentException;
 
 test('subscription cancel request serializes cancellation settings', function (): void {
@@ -107,7 +107,7 @@ function invalidSubscriptionRequestInputs(): array
                 items: ['bad-item'],
                 updateBehavior: SubscriptionUpdateBehavior::ProrationNone,
             ),
-            'Subscription item at index 0 must be an instance of Creem\\Dto\\Subscription\\UpsertSubscriptionItem, string given.',
+            'Subscription item at index 0 must be an instance of Antoniadisio\\Creem\\Dto\\Subscription\\UpsertSubscriptionItem, string given.',
         ],
     ];
 }

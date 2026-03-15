@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Config;
-use Creem\Enum\Environment;
-use Creem\Internal\Http\CreemConnector;
-use Creem\Tests\Support\HttpTestSupport;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Enum\Environment;
+use Antoniadisio\Creem\Internal\Http\CreemConnector;
+use Antoniadisio\Creem\Tests\Support\HttpTestSupport;
 
 test('connector builds expected headers and hardened request configuration', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123', Environment::Test, null, 12.5, 'integration-suite'));

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support;
+namespace Antoniadisio\Creem\Tests\Support;
 
-use Creem\Tests\Support\Contract\ResponseFixtureCatalog;
+use Antoniadisio\Creem\Tests\Support\Contract\ResponseFixtureCatalog;
 use JsonException;
 
 use function array_replace;

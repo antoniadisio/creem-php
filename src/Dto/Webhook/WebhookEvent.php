@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Dto\Webhook;
+namespace Antoniadisio\Creem\Dto\Webhook;
 
-use Creem\Dto\Common\StructuredObject;
-use Creem\Exception\HydrationException;
-use Creem\Internal\Hydration\Payload;
+use Antoniadisio\Creem\Dto\Common\StructuredObject;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Internal\Hydration\Payload;
 use DateTimeImmutable;
 use DateTimeZone;
 

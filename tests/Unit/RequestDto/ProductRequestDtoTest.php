@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Common\CheckboxFieldConfigInput;
-use Creem\Dto\Common\CustomFieldInput;
-use Creem\Dto\Common\TextFieldConfigInput;
-use Creem\Dto\Product\CreateProductRequest;
-use Creem\Dto\Product\SearchProductsRequest;
-use Creem\Enum\BillingPeriod;
-use Creem\Enum\BillingType;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\CustomFieldType;
-use Creem\Enum\TaxCategory;
-use Creem\Enum\TaxMode;
+use Antoniadisio\Creem\Dto\Common\CheckboxFieldConfigInput;
+use Antoniadisio\Creem\Dto\Common\CustomFieldInput;
+use Antoniadisio\Creem\Dto\Common\TextFieldConfigInput;
+use Antoniadisio\Creem\Dto\Product\CreateProductRequest;
+use Antoniadisio\Creem\Dto\Product\SearchProductsRequest;
+use Antoniadisio\Creem\Enum\BillingPeriod;
+use Antoniadisio\Creem\Enum\BillingType;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\CustomFieldType;
+use Antoniadisio\Creem\Enum\TaxCategory;
+use Antoniadisio\Creem\Enum\TaxMode;
 use InvalidArgumentException;
 
 test('product request dtos serialize pagination and typed custom fields', function (): void {
@@ -117,7 +117,7 @@ function invalidProductRequestInputs(): array
                 BillingType::Recurring,
                 customFields: ['bad-field'],
             ),
-            'Product custom field at index 0 must be an instance of Creem\\Dto\\Common\\CustomFieldInput, string given.',
+            'Product custom field at index 0 must be an instance of Antoniadisio\\Creem\\Dto\\Common\\CustomFieldInput, string given.',
         ],
     ];
 }

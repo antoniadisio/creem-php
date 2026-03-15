@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Creem\Internal\Webhook;
+namespace Antoniadisio\Creem\Internal\Webhook;
 
-use Creem\Exception\InvalidWebhookSignatureException;
+use Antoniadisio\Creem\Exception\InvalidWebhookSignatureException;
 
 use function hash_hmac;
 use function trim;

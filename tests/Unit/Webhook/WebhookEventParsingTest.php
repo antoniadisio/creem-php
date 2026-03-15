@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Common\StructuredObject;
-use Creem\Dto\Webhook\WebhookEvent;
-use Creem\Exception\HydrationException;
-use Creem\Exception\InvalidWebhookPayloadException;
-use Creem\Exception\InvalidWebhookSignatureException;
-use Creem\Exception\TransportException;
-use Creem\Tests\Support\WebhookTestSupport;
-use Creem\Webhook;
+use Antoniadisio\Creem\Dto\Common\StructuredObject;
+use Antoniadisio\Creem\Dto\Webhook\WebhookEvent;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Exception\InvalidWebhookPayloadException;
+use Antoniadisio\Creem\Exception\InvalidWebhookSignatureException;
+use Antoniadisio\Creem\Exception\TransportException;
+use Antoniadisio\Creem\Tests\Support\WebhookTestSupport;
+use Antoniadisio\Creem\Webhook;
 
 use function str_repeat;
 

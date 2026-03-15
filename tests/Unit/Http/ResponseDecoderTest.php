@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Exception\TransportException;
-use Creem\Internal\Http\ResponseDecoder;
-use Creem\Tests\Support\HttpTestSupport;
+use Antoniadisio\Creem\Exception\TransportException;
+use Antoniadisio\Creem\Internal\Http\ResponseDecoder;
+use Antoniadisio\Creem\Tests\Support\HttpTestSupport;
 use Saloon\Http\Faking\MockResponse;
 
 foreach (blankResponseBodies() as $dataset => [$body]) {

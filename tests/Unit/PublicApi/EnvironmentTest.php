@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Enum\Environment;
 
 test('environment resolves base urls', function (): void {
     expect(Environment::Production->baseUrl())->toBe('https://api.creem.io')

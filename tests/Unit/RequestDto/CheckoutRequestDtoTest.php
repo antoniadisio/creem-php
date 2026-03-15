@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Checkout\CheckoutCustomerInput;
-use Creem\Dto\Checkout\CreateCheckoutRequest;
-use Creem\Dto\Common\CustomFieldInput;
-use Creem\Dto\Common\TextFieldConfigInput;
-use Creem\Enum\CustomFieldType;
+use Antoniadisio\Creem\Dto\Checkout\CheckoutCustomerInput;
+use Antoniadisio\Creem\Dto\Checkout\CreateCheckoutRequest;
+use Antoniadisio\Creem\Dto\Common\CustomFieldInput;
+use Antoniadisio\Creem\Dto\Common\TextFieldConfigInput;
+use Antoniadisio\Creem\Enum\CustomFieldType;
 use InvalidArgumentException;
 
 test('checkout request dtos serialize nested inputs and metadata', function (): void {
@@ -76,7 +76,7 @@ function invalidCheckoutRequestInputs(): array
                 'prod_123',
                 customFields: ['bad-field'],
             ),
-            'Checkout custom field at index 0 must be an instance of Creem\\Dto\\Common\\CustomFieldInput, string given.',
+            'Checkout custom field at index 0 must be an instance of Antoniadisio\\Creem\\Dto\\Common\\CustomFieldInput, string given.',
         ],
     ];
 }

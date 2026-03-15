@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Client;
-use Creem\Config;
-use Creem\Resource\CheckoutsResource;
-use Creem\Resource\CustomersResource;
-use Creem\Resource\DiscountsResource;
-use Creem\Resource\LicensesResource;
-use Creem\Resource\ProductsResource;
-use Creem\Resource\StatsResource;
-use Creem\Resource\SubscriptionsResource;
-use Creem\Resource\TransactionsResource;
+use Antoniadisio\Creem\Client;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Resource\CheckoutsResource;
+use Antoniadisio\Creem\Resource\CustomersResource;
+use Antoniadisio\Creem\Resource\DiscountsResource;
+use Antoniadisio\Creem\Resource\LicensesResource;
+use Antoniadisio\Creem\Resource\ProductsResource;
+use Antoniadisio\Creem\Resource\StatsResource;
+use Antoniadisio\Creem\Resource\SubscriptionsResource;
+use Antoniadisio\Creem\Resource\TransactionsResource;
 
 test('client exposes expected resource accessors', function (): void {
     $client = new Client(new Config('sk_test_123'));

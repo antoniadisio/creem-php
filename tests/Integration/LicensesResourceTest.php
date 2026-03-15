@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\License\ActivateLicenseRequest;
-use Creem\Dto\License\DeactivateLicenseRequest;
-use Creem\Dto\License\LicenseInstance;
-use Creem\Dto\License\ValidateLicenseRequest;
-use Creem\Enum\LicenseInstanceStatus;
-use Creem\Enum\LicenseStatus;
-use Creem\Resource\LicensesResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\License\ActivateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\DeactivateLicenseRequest;
+use Antoniadisio\Creem\Dto\License\LicenseInstance;
+use Antoniadisio\Creem\Dto\License\ValidateLicenseRequest;
+use Antoniadisio\Creem\Enum\LicenseInstanceStatus;
+use Antoniadisio\Creem\Enum\LicenseStatus;
+use Antoniadisio\Creem\Resource\LicensesResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;

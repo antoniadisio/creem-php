@@ -1,6 +1,6 @@
 {
     "name": "antoniadisio/creem-php",
-    "description": "Unofficial PHP SDK for the Creem API with a typed public facade and Saloon-powered transport.",
+    "description": "Unofficial but passionate typed PHP SDK for Creem with resource DTOs, webhook helpers, and Saloon-powered transport.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -36,12 +36,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Creem\\": "src/"
+            "Antoniadisio\\Creem\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Creem\\Tests\\": "tests/"
+            "Antoniadisio\\Creem\\Tests\\": "tests/"
         }
     },
     "scripts": {

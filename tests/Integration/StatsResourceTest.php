@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Stats\GetStatsSummaryRequest;
-use Creem\Dto\Stats\StatsPeriod;
-use Creem\Dto\Stats\StatsTotals;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\StatsInterval;
-use Creem\Resource\StatsResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Stats\GetStatsSummaryRequest;
+use Antoniadisio\Creem\Dto\Stats\StatsPeriod;
+use Antoniadisio\Creem\Dto\Stats\StatsTotals;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\StatsInterval;
+use Antoniadisio\Creem\Resource\StatsResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use DateTimeImmutable;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;

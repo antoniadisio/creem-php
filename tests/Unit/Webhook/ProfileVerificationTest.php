@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\CredentialProfile;
-use Creem\CredentialProfiles;
-use Creem\Dto\Webhook\WebhookEvent;
-use Creem\Exception\InvalidWebhookSignatureException;
-use Creem\Tests\Support\WebhookTestSupport;
-use Creem\Webhook;
+use Antoniadisio\Creem\CredentialProfile;
+use Antoniadisio\Creem\CredentialProfiles;
+use Antoniadisio\Creem\Dto\Webhook\WebhookEvent;
+use Antoniadisio\Creem\Exception\InvalidWebhookSignatureException;
+use Antoniadisio\Creem\Tests\Support\WebhookTestSupport;
+use Antoniadisio\Creem\Webhook;
 use InvalidArgumentException;
 
 test('webhook profile verification accepts the configured profile secret', function (): void {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Discount\CreateDiscountRequest;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\DiscountDuration;
-use Creem\Enum\DiscountType;
+use Antoniadisio\Creem\Dto\Discount\CreateDiscountRequest;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\DiscountDuration;
+use Antoniadisio\Creem\Enum\DiscountType;
 use DateTimeImmutable;
 use InvalidArgumentException;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support\Contract;
+namespace Antoniadisio\Creem\Tests\Support\Contract;
 
 use const FILTER_VALIDATE_URL;
 use const PHP_URL_HOST;
 
-use Creem\Tests\TestCase;
+use Antoniadisio\Creem\Tests\TestCase;
 
 use function array_any;
 use function filter_var;

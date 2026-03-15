@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support\Contract;
+namespace Antoniadisio\Creem\Tests\Support\Contract;
 
 use function array_map;
 use function basename;

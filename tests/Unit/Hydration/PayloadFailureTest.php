@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Common\ExpandableResource;
-use Creem\Dto\Common\Page;
-use Creem\Dto\Common\Pagination;
-use Creem\Dto\Common\StructuredObject;
-use Creem\Enum\CurrencyCode;
-use Creem\Exception\HydrationException;
-use Creem\Internal\Hydration\Payload;
+use Antoniadisio\Creem\Dto\Common\ExpandableResource;
+use Antoniadisio\Creem\Dto\Common\Page;
+use Antoniadisio\Creem\Dto\Common\Pagination;
+use Antoniadisio\Creem\Dto\Common\StructuredObject;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Exception\HydrationException;
+use Antoniadisio\Creem\Internal\Hydration\Payload;
 use DateTimeImmutable;
 
 foreach (payloadHydrationFailures() as $dataset => [$factory, $message]) {
@@ -43,7 +43,7 @@ function payloadHydrationFailures(): array
         ],
         'invalid enum value' => [
             static fn (): mixed => Payload::enum(['currency' => 'usd'], 'currency', 'StatsSummary', CurrencyCode::class, true),
-            'Hydration failed for StatsSummary.currency: expected valid Creem\Enum\CurrencyCode, got string.',
+            'Hydration failed for StatsSummary.currency: expected valid Antoniadisio\Creem\Enum\CurrencyCode, got string.',
         ],
         'malformed nested object' => [
             static fn (): ?object => Payload::typedObject(

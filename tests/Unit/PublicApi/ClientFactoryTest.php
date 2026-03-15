@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Client;
-use Creem\ClientFactory;
-use Creem\CredentialProfile;
-use Creem\CredentialProfiles;
-use Creem\Enum\Environment;
+use Antoniadisio\Creem\Client;
+use Antoniadisio\Creem\ClientFactory;
+use Antoniadisio\Creem\CredentialProfile;
+use Antoniadisio\Creem\CredentialProfiles;
+use Antoniadisio\Creem\Enum\Environment;
 
 test('client factory caches clients per profile and keeps configs distinct', function (): void {
     $profiles = new CredentialProfiles([

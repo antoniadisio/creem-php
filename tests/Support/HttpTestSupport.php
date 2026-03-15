@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support;
+namespace Antoniadisio\Creem\Tests\Support;
 
-use Creem\Config;
-use Creem\Exception\CreemException;
-use Creem\Internal\Http\CreemConnector;
+use Antoniadisio\Creem\Config;
+use Antoniadisio\Creem\Exception\CreemException;
+use Antoniadisio\Creem\Internal\Http\CreemConnector;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Unit;
+namespace Antoniadisio\Creem\Tests\Unit;
 
-use Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
-use Creem\Dto\Customer\ListCustomersRequest;
+use Antoniadisio\Creem\Dto\Customer\CreateCustomerBillingPortalLinkRequest;
+use Antoniadisio\Creem\Dto\Customer\ListCustomersRequest;
 use InvalidArgumentException;
 
 test('customer request dtos serialize customer identifiers and pagination', function (): void {

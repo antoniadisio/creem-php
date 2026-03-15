@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Smoke;
+namespace Antoniadisio\Creem\Tests\Smoke;
 
-use Creem\Dto\Stats\GetStatsSummaryRequest;
-use Creem\Dto\Stats\StatsSummary;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\StatsInterval;
-use Creem\Tests\SmokeTestCase;
+use Antoniadisio\Creem\Dto\Stats\GetStatsSummaryRequest;
+use Antoniadisio\Creem\Dto\Stats\StatsSummary;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\StatsInterval;
+use Antoniadisio\Creem\Tests\SmokeTestCase;
 
 test('smoke returns a typed stats summary', function (): void {
     /** @var SmokeTestCase $this */

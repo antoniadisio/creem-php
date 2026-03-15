@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Integration;
+namespace Antoniadisio\Creem\Tests\Integration;
 
-use Creem\Dto\Common\Pagination;
-use Creem\Dto\Transaction\SearchTransactionsRequest;
-use Creem\Dto\Transaction\Transaction;
-use Creem\Enum\CurrencyCode;
-use Creem\Enum\TransactionStatus;
-use Creem\Enum\TransactionType;
-use Creem\Resource\TransactionsResource;
-use Creem\Tests\IntegrationTestCase;
+use Antoniadisio\Creem\Dto\Common\Pagination;
+use Antoniadisio\Creem\Dto\Transaction\SearchTransactionsRequest;
+use Antoniadisio\Creem\Dto\Transaction\Transaction;
+use Antoniadisio\Creem\Enum\CurrencyCode;
+use Antoniadisio\Creem\Enum\TransactionStatus;
+use Antoniadisio\Creem\Enum\TransactionType;
+use Antoniadisio\Creem\Resource\TransactionsResource;
+use Antoniadisio\Creem\Tests\IntegrationTestCase;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;

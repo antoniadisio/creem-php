@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Creem\Tests\Support;
+namespace Antoniadisio\Creem\Tests\Support;
 
 use const JSON_THROW_ON_ERROR;
 
-use Creem\Internal\Webhook\Signature;
+use Antoniadisio\Creem\Internal\Webhook\Signature;
 use JsonException;
 
 use function array_replace_recursive;
