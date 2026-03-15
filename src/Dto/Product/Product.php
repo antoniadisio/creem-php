@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Creem\Dto\Product;
 
+use Creem\Dto\Common\CustomField;
 use Creem\Dto\Common\ProductFeature;
 use Creem\Enum\ApiMode;
 use Creem\Enum\BillingPeriod;
@@ -23,6 +24,7 @@ final readonly class Product
 {
     /**
      * @param  list<ProductFeature>  $features
+     * @param  list<CustomField>  $customFields
      */
     public function __construct(
         public ?string $id,
@@ -43,6 +45,7 @@ final readonly class Product
         public ?string $defaultSuccessUrl,
         public ?DateTimeImmutable $createdAt,
         public ?DateTimeImmutable $updatedAt,
+        public array $customFields = [],
     ) {}
 
     /**
@@ -81,6 +84,19 @@ final readonly class Product
             Payload::string($payload, 'default_success_url', self::class),
             Payload::dateTime($payload, 'created_at', self::class, true),
             Payload::dateTime($payload, 'updated_at', self::class, true),
+            Payload::typedList(
+                $payload,
+                'custom_fields',
+                self::class,
+                static function (mixed $item): CustomField {
+                    if (! is_array($item) || array_is_list($item)) {
+                        throw HydrationException::invalidField(self::class, 'custom_fields', 'object', $item);
+                    }
+
+                    /** @var array<string, mixed> $item */
+                    return CustomField::fromPayload($item);
+                },
+            ),
         );
     }
 }

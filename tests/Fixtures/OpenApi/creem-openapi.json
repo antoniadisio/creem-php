@@ -1443,6 +1443,13 @@
             "example": "https://example.com/?status=successful",
             "nullable": true
           },
+          "custom_fields": {
+            "description": "Additional information collected from your customer during checkout.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
           "created_at": {
             "format": "date-time",
             "type": "string",

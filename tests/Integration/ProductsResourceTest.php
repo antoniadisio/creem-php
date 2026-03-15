@@ -12,6 +12,7 @@ use Creem\Enum\ApiMode;
 use Creem\Enum\BillingPeriod;
 use Creem\Enum\BillingType;
 use Creem\Enum\CurrencyCode;
+use Creem\Enum\CustomFieldType;
 use Creem\Enum\ProductFeatureType;
 use Creem\Resource\ProductsResource;
 use Creem\Tests\IntegrationTestCase;
@@ -23,7 +24,7 @@ test('products resource gets creates and searches products', function (): void {
     /** @var IntegrationTestCase $this */
     $mockClient = new MockClient([
         MockResponse::make($this->responseFixture('product.json')),
-        MockResponse::make($this->responseFixture('product.json', ['id' => 'prod_fixture_enterprise', 'name' => 'Enterprise Fixture'])),
+        MockResponse::make($this->responseFixture('product.json', ['id' => 'prod_fixture_enterprise', 'name' => 'Enterprise Fixture', 'custom_fields' => []])),
         MockResponse::make($this->responseFixture('product_page.json')),
     ]);
     $resource = new ProductsResource($this->connector($mockClient));
@@ -40,6 +41,12 @@ test('products resource gets creates and searches products', function (): void {
         ->and($product->features[0]->id)->toBe('feat_fixture_license_key')
         ->and($product->features[0]->type)->toBe(ProductFeatureType::LicenseKey)
         ->and($product->features[0]->description)->toBe('License Key')
+        ->and($product->customFields)->toHaveCount(2)
+        ->and($product->customFields[0]->type)->toBe(CustomFieldType::Text)
+        ->and($product->customFields[0]->key)->toBe('company_name')
+        ->and($product->customFields[0]->text?->value)->toBe('Example Company')
+        ->and($product->customFields[1]->type)->toBe(CustomFieldType::Checkbox)
+        ->and($product->customFields[1]->checkbox?->value)->toBeTrue()
         ->and($product->defaultSuccessUrl)->toBeNull();
     $this->assertRequest($mockClient, Method::GET, '/v1/products', ['product_id' => 'prod_fixture_catalog']);
 
@@ -69,13 +76,19 @@ test('products resource gets creates and searches products', function (): void {
         ->and($page->get(0)?->id)->toBe('prod_fixture_catalog')
         ->and($page->get(0)?->currency)->toBe(CurrencyCode::USD)
         ->and($page->get(0)?->features)->toBe([])
+        ->and($page->get(0)?->customFields)->toHaveCount(1)
+        ->and($page->get(0)?->customFields[0]->type)->toBe(CustomFieldType::Text)
+        ->and($page->get(0)?->customFields[0]->key)->toBe('team_name')
         ->and($page->get(1))->toBeInstanceOf(Product::class)
         ->and($page->get(1)?->id)->toBe('prod_fixture_license')
         ->and($page->get(1)?->billingType)->toBe(BillingType::OneTime)
         ->and($page->get(1)?->billingPeriod)->toBe(BillingPeriod::Once)
         ->and($page->get(1)?->features)->toHaveCount(1)
         ->and($page->get(1)?->features[0]->type)->toBe(ProductFeatureType::LicenseKey)
-        ->and($page->get(1)?->features[0]->description)->toBe('License Key');
+        ->and($page->get(1)?->features[0]->description)->toBe('License Key')
+        ->and($page->get(1)?->customFields)->toHaveCount(1)
+        ->and($page->get(1)?->customFields[0]->type)->toBe(CustomFieldType::Checkbox)
+        ->and($page->get(1)?->customFields[0]->checkbox?->value)->toBeFalse();
     $this->assertRequest($mockClient, Method::GET, '/v1/products/search', ['page_number' => '1', 'page_size' => '50']);
 });
 

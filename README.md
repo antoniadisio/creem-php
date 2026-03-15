@@ -33,6 +33,8 @@ $client = new Client(new Config(
 $product = $client->products()->get('prod_123');
 ```
 
+Product responses expose `custom_fields` as typed `Creem\Dto\Common\CustomField` objects via `$product->customFields`.
+
 `Creem\Config` defaults to `Environment::Production`. If you are using test API keys or test resource IDs, set `Environment::Test` explicitly. Creem's marketing/docs may also call the test environment "sandbox", but the SDK does not expose a separate sandbox environment.
 
 ## Smoke Suite

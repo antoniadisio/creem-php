@@ -8,6 +8,7 @@ use Creem\Dto\Checkout\Checkout;
 use Creem\Dto\Common\CustomField;
 use Creem\Dto\Common\ProductFeature;
 use Creem\Dto\Discount\Discount;
+use Creem\Dto\Product\Product;
 use Creem\Dto\Subscription\Subscription;
 use Creem\Enum\CustomFieldType;
 use Creem\Enum\ProductFeatureType;
@@ -81,6 +82,18 @@ test('checkout hydration supports a single feature object', function (): void {
         ->and($checkout->feature[0]->licenseKey?->id)->toBe('lk_fixture_primary');
 });
 
+test('product hydration supports custom field variants', function (): void {
+    /** @var TestCase $this */
+    $product = Product::fromPayload($this->fixture('product.json'));
+
+    expect($product->customFields)->toHaveCount(2)
+        ->and($product->customFields[0]->type)->toBe(CustomFieldType::Text)
+        ->and($product->customFields[0]->key)->toBe('company_name')
+        ->and($product->customFields[0]->text?->value)->toBe('Example Company')
+        ->and($product->customFields[1]->type)->toBe(CustomFieldType::Checkbox)
+        ->and($product->customFields[1]->checkbox?->value)->toBeTrue();
+});
+
 foreach (resourceDtoHydrationFailures() as $dataset => [$factory, $message]) {
     test("resource dto hydration rejects malformed nested payloads ({$dataset})", function () use ($factory, $message): void {
         /** @var TestCase $this */
@@ -112,6 +125,15 @@ function resourceDtoHydrationFailures(): array
                 return Checkout::fromPayload($payload);
             },
             'Hydration failed for Checkout.feature: expected object, got string.',
+        ],
+        'product custom fields' => [
+            static function (TestCase $testCase): Product {
+                $payload = $testCase->fixture('product.json');
+                $payload['custom_fields'] = ['invalid'];
+
+                return Product::fromPayload($payload);
+            },
+            'Hydration failed for Product.custom_fields: expected object, got string.',
         ],
         'subscription items' => [
             static function (TestCase $testCase): Subscription {

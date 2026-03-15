@@ -6,7 +6,6 @@ namespace Creem\Internal\Hydration;
 
 use BackedEnum;
 use Creem\Dto\Common\ExpandableResource;
-use Creem\Dto\Common\ExpandableValue;
 use Creem\Dto\Common\Page;
 use Creem\Dto\Common\Pagination;
 use Creem\Dto\Common\StructuredList;
@@ -146,14 +145,6 @@ final class Payload
         }
 
         return StructuredList::fromArray($value);
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     */
-    public static function expandable(array $payload, string $key): ?ExpandableValue
-    {
-        return ExpandableValue::fromValue($payload[$key] ?? null);
     }
 
     /**

@@ -63,6 +63,20 @@ final readonly class OpenApiSpec
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function objectAtPath(string $path): array
+    {
+        $node = $this->nodeAtPath($path);
+
+        Assert::assertIsArray($node, sprintf('Spec path %s must resolve to an object schema.', $path));
+        Assert::assertFalse(array_is_list($node), sprintf('Spec path %s must resolve to an object schema.', $path));
+
+        /** @var array<string, mixed> $node */
+        return $node;
+    }
+
+    /**
      * @return array<string, array{method: string, path: string}>
      */
     public function operations(): array

@@ -44,6 +44,24 @@ test('webhook event parsing keeps unknown event types as raw strings', function 
     expect($event->eventType())->toBe('license.created.partner_sync');
 });
 
+test('webhook event parsing accepts subscription scheduled cancel events without special cases', function (): void {
+    $payload = WebhookTestSupport::eventPayload([
+        'id' => 'evt_fixture_subscription_scheduled_cancel',
+        'eventType' => 'subscription.scheduled_cancel',
+        'object' => [
+            'id' => 'sub_fixture_primary',
+            'object' => 'subscription',
+            'status' => 'scheduled_cancel',
+        ],
+    ]);
+
+    $event = Webhook::parseEvent($payload);
+
+    expect($event->eventType())->toBe('subscription.scheduled_cancel')
+        ->and($event->object()->get('id'))->toBe('sub_fixture_primary')
+        ->and($event->object()->get('status'))->toBe('scheduled_cancel');
+});
+
 test('webhook event parsing accepts epoch timestamps from live deliveries', function (): void {
     $payload = WebhookTestSupport::eventPayload([
         'created_at' => 1773422218069,
