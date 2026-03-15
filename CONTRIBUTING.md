@@ -1,7 +1,7 @@
 # Contributing
 
 ## Scope
-This repository is a public PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the pre-1.0 typed `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
+This repository is a public unofficial PHP SDK. Keep changes focused on package code and contributor-facing documentation. The consumer entrypoint is the stable typed `Creem\Client` facade; avoid turning internal Saloon transport classes into part of the public contract.
 The public repo intentionally keeps maintainer QA files such as `rector.php`, `phpstan.neon.dist`, `phpunit.xml.dist`, and `composer.lock` committed at the root. Lean package archives for SDK consumers are handled with `.gitattributes export-ignore`, not by removing those repo files from git.
 
 ## Local Setup

@@ -19,7 +19,7 @@ test('connector builds expected headers and hardened request configuration', fun
         ->and($psrRequest->getHeaderLine('Accept'))->toBe('application/json')
         ->and($psrRequest->getHeaderLine('Content-Type'))->toBe('application/json')
         ->and($psrRequest->getHeaderLine('x-api-key'))->toBe('sk_test_123')
-        ->and($psrRequest->getHeaderLine('User-Agent'))->toStartWith('creem-php-sdk/')
+        ->and($psrRequest->getHeaderLine('User-Agent'))->toStartWith('creem-php/')
         ->and($psrRequest->getHeaderLine('User-Agent'))->toContain('integration-suite')
         ->and($requestConfig['allow_redirects'])->toBeFalse()
         ->and($requestConfig['verify'])->toBeTrue()

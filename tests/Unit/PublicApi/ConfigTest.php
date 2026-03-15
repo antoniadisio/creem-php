@@ -24,7 +24,7 @@ test('config applies overrides and normalizes inputs', function (): void {
         ->and($config->resolveBaseUrl())->toBe('https://test-api.creem.io')
         ->and($config->timeout())->toBe(15.0)
         ->and($config->userAgentSuffix())->toBe('integration-suite')
-        ->and($config->userAgent())->toStartWith('creem-php-sdk/')
+        ->and($config->userAgent())->toStartWith('creem-php/')
         ->and($config->userAgent())->toContain('php/'.PHP_VERSION)
         ->and($config->userAgent())->toEndWith('integration-suite');
 });

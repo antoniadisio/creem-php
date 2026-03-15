@@ -1,15 +1,15 @@
-# Creem PHP SDK
+# Creem PHP
 
-Handwritten PHP SDK for the Creem API.
+Unofficial PHP SDK for the Creem API.
 
-This is an independently maintained package published under the personal `antoniadisio` namespace; it is not an official Creem package.
+This is an independently maintained personal package published under the `antoniadisio` namespace. It is not an official Creem package and is not distributed by Creem.
 
 The public contract centers on a typed `Creem\Client` facade for outbound API access, named credential profile helpers for multi-account integrations, and a stateless `Creem\Webhook` helper for inbound webhook verification and parsing. `saloonphp/saloon` is used internally for transport only and is not part of the supported consumer-facing API.
 
 ## Installation
 
 ```bash
-composer require antoniadisio/creem-php-sdk
+composer require antoniadisio/creem-php
 ```
 
 Requires PHP 8.4 or newer.
