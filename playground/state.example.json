@@ -1,7 +1,7 @@
 {
     "profiles": {
         "playground": {
-            "apiKeyEnv": "CREEM_TEST_API_KEY",
+            "apiKeyEnv": "CREEM_PLAYGROUND_API_KEY",
             "environment": "test",
             "timeout": 30,
             "userAgentSuffix": "playground/secondary",

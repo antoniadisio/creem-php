@@ -112,7 +112,7 @@ If you omit input entirely, the runner uses an empty envelope and falls back to 
 Rules:
 
 - Secrets stay env-driven only. Store env var names under `profiles.<name>.apiKeyEnv` and `profiles.<name>.webhookSecretEnv`, never raw secrets.
-- The committed template maps `playground` to the same `CREEM_TEST_API_KEY` as `default`, but gives it its own `CREEM_PLAYGROUND_WEBHOOK_SECRET` so `/creem/webhook` can verify against a different secret.
+- The committed template gives `playground` its own `CREEM_PLAYGROUND_API_KEY` and `CREEM_PLAYGROUND_WEBHOOK_SECRET` so `/creem/webhook` can represent a distinct profile end to end.
 - `shared.activeProfile` is the fallback outbound profile when the input envelope omits `profile`.
 - `webhookRoutes` maps inbound webhook paths to profile names.
 - Successful runs persist only declared `persist_outputs` mappings back into `state.local.json`.

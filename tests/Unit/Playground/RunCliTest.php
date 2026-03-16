@@ -85,7 +85,7 @@ test('playground run reads JSON from --input-file and bootstraps local state', f
             ->and(playgroundStringValue($error, 'message'))->toContain('Invalid enum value for [stats.summary.currency].')
             ->and(file_exists($statePath))->toBeTrue()
             ->and(playgroundStringValue($sharedState, 'activeProfile'))->toBe('default')
-            ->and(playgroundStringValue($playgroundProfile, 'apiKeyEnv'))->toBe('CREEM_TEST_API_KEY');
+            ->and(playgroundStringValue($playgroundProfile, 'apiKeyEnv'))->toBe('CREEM_PLAYGROUND_API_KEY');
     } finally {
         playgroundRemoveDirectory($tempDir);
     }
@@ -110,7 +110,7 @@ test('playground run reads JSON from stdin and blocks writes without allow_write
             ], JSON_THROW_ON_ERROR),
             [
                 'CREEM_PLAYGROUND_STATE_PATH' => $statePath,
-                'CREEM_TEST_API_KEY' => 'sk_test_playground_placeholder',
+                'CREEM_PLAYGROUND_API_KEY' => 'sk_test_playground_placeholder',
             ],
         );
         $payload = playgroundDecodeJson($result['stdout']);
@@ -156,7 +156,7 @@ test('playground product create omits billing period for one-time payloads', fun
             ], JSON_THROW_ON_ERROR),
             [
                 'CREEM_PLAYGROUND_STATE_PATH' => $statePath,
-                'CREEM_TEST_API_KEY' => 'sk_test_playground_placeholder',
+                'CREEM_PLAYGROUND_API_KEY' => 'sk_test_playground_placeholder',
             ],
         );
         $payload = playgroundDecodeJson($result['stdout']);
