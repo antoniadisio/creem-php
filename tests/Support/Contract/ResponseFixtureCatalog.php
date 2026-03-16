@@ -14,12 +14,12 @@ final class ResponseFixtureCatalog
 {
     public function directory(): string
     {
-        return dirname(__DIR__, 2).'/Fixtures/Responses';
+        return dirname(__DIR__, 2) . '/Fixtures/Responses';
     }
 
     public function path(string $fixture): string
     {
-        return $this->directory().'/'.$fixture;
+        return $this->directory() . '/' . $fixture;
     }
 
     /**
@@ -42,7 +42,7 @@ final class ResponseFixtureCatalog
      */
     public function paths(): array
     {
-        $paths = glob($this->directory().'/*.json');
+        $paths = glob($this->directory() . '/*.json');
 
         if ($paths === false) {
             return [];

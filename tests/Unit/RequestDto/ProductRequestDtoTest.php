@@ -123,7 +123,7 @@ function invalidProductRequestInputs(): array
 {
     return [
         'non-positive price' => [
-            static fn (): CreateProductRequest => new CreateProductRequest(
+            static fn(): CreateProductRequest => new CreateProductRequest(
                 'Enterprise',
                 0,
                 CurrencyCode::USD,
@@ -132,7 +132,7 @@ function invalidProductRequestInputs(): array
             'The product price must be greater than zero.',
         ],
         'invalid custom field type' => [
-            static fn (): CreateProductRequest => new CreateProductRequest(
+            static fn(): CreateProductRequest => new CreateProductRequest(
                 'Enterprise',
                 4900,
                 CurrencyCode::USD,

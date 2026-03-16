@@ -57,13 +57,13 @@ final readonly class WebhookEvent
         if (is_int($createdAt)) {
             $epochSeconds = $createdAt > 9_999_999_999 ? intdiv($createdAt, 1000) : $createdAt;
 
-            return new DateTimeImmutable('@'.$epochSeconds)
+            return new DateTimeImmutable('@' . $epochSeconds)
                 ->setTimezone(new DateTimeZone('UTC'));
         }
 
         $parsedCreatedAt = Payload::dateTime($payload, 'created_at', self::class, true);
 
-        if (! $parsedCreatedAt instanceof \DateTimeImmutable) {
+        if (! $parsedCreatedAt instanceof DateTimeImmutable) {
             throw HydrationException::missingField(self::class, 'created_at');
         }
 

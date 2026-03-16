@@ -43,7 +43,7 @@ final readonly class License
                 $payload,
                 'instance',
                 self::class,
-                static fn (array $value): LicenseInstance => LicenseInstance::fromPayload($value),
+                static fn(array $value): LicenseInstance => LicenseInstance::fromPayload($value),
             ),
         );
     }

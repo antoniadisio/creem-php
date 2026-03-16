@@ -15,8 +15,8 @@ final class UserAgent
     public static function forConfig(Config $config): string
     {
         $segments = [
-            'creem-php/'.self::resolveSdkVersion(),
-            'php/'.PHP_VERSION,
+            'creem-php/' . self::resolveSdkVersion(),
+            'php/' . PHP_VERSION,
         ];
 
         if ($config->userAgentSuffix() !== null) {

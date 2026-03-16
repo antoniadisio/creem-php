@@ -68,11 +68,11 @@ function invalidCheckoutRequestInputs(): array
 {
     return [
         'non-positive units' => [
-            static fn (): CreateCheckoutRequest => new CreateCheckoutRequest('prod_123', units: 0),
+            static fn(): CreateCheckoutRequest => new CreateCheckoutRequest('prod_123', units: 0),
             'The checkout units must be greater than zero.',
         ],
         'invalid custom field type' => [
-            static fn (): CreateCheckoutRequest => new CreateCheckoutRequest(
+            static fn(): CreateCheckoutRequest => new CreateCheckoutRequest(
                 'prod_123',
                 customFields: ['bad-field'],
             ),

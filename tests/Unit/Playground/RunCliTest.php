@@ -45,8 +45,8 @@ test('playground describe returns operation metadata for agents', function (): v
 
 test('playground run reads JSON from --input-file and bootstraps local state', function (): void {
     $tempDir = playgroundTempDir();
-    $statePath = $tempDir.'/state.local.json';
-    $inputPath = $tempDir.'/input.json';
+    $statePath = $tempDir . '/state.local.json';
+    $inputPath = $tempDir . '/input.json';
 
     try {
         file_put_contents_or_fail($inputPath, json_encode([
@@ -93,7 +93,7 @@ test('playground run reads JSON from --input-file and bootstraps local state', f
 
 test('playground run reads JSON from stdin and blocks writes without allow_write', function (): void {
     $tempDir = playgroundTempDir();
-    $statePath = $tempDir.'/state.local.json';
+    $statePath = $tempDir . '/state.local.json';
 
     try {
         $result = playgroundRunCli(
@@ -137,7 +137,7 @@ test('playground run reads JSON from stdin and blocks writes without allow_write
 
 test('playground product create omits billing period for one-time payloads', function (): void {
     $tempDir = playgroundTempDir();
-    $statePath = $tempDir.'/state.local.json';
+    $statePath = $tempDir . '/state.local.json';
 
     try {
         $result = playgroundRunCli(
@@ -196,7 +196,7 @@ test('playground audit remains machine readable', function (): void {
 function playgroundRunCli(array $arguments, ?string $stdin = null, array $env = []): array
 {
     $repoRoot = dirname(__DIR__, 3);
-    $command = array_merge([PHP_BINARY, $repoRoot.'/playground/run.php'], $arguments);
+    $command = array_merge([PHP_BINARY, $repoRoot . '/playground/run.php'], $arguments);
     /** @var array<string, string> $environment */
     $environment = getenv();
     $process = proc_open(
@@ -313,7 +313,7 @@ function playgroundIntValue(array $payload, string $key): int
 
 function playgroundTempDir(): string
 {
-    $path = sys_get_temp_dir().'/creem-playground-'.bin2hex(random_bytes(8));
+    $path = sys_get_temp_dir() . '/creem-playground-' . bin2hex(random_bytes(8));
 
     if (! mkdir($path, 0777, true) && ! file_exists($path)) {
         throw new RuntimeException('Unable to create playground temp directory.');
@@ -339,7 +339,7 @@ function playgroundRemoveDirectory(string $path): void
             continue;
         }
 
-        $entryPath = $path.'/'.$entry;
+        $entryPath = $path . '/' . $entry;
 
         if (is_dir($entryPath)) {
             playgroundRemoveDirectory($entryPath);

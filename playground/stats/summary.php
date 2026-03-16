@@ -62,12 +62,12 @@ return [
     ],
     'idempotency_key_path' => null,
     'persist_outputs' => [],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'currency' => Playground::value($values, 'stats.summary.currency'),
         'startDate' => Playground::value($values, 'stats.summary.startDate'),
         'endDate' => Playground::value($values, 'stats.summary.endDate'),
         'interval' => Playground::value($values, 'stats.summary.interval'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toQuery(),
-    'run' => static fn (Client $client, array $values) => $client->stats()->summary($request($values)),
+    'build_request_payload' => static fn(array $values): array => $request($values)->toQuery(),
+    'run' => static fn(Client $client, array $values) => $client->stats()->summary($request($values)),
 ];

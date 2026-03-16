@@ -26,11 +26,11 @@ return [
         Playground::persist('shared.discountId', 'id'),
         Playground::persist('shared.discountCode', 'code'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'discountId' => Playground::value($values, 'shared.discountId'),
     ],
-    'build_request_payload' => static fn (array $values): null => null,
-    'run' => static fn (Client $client, array $values) => $client->discounts()->get(
+    'build_request_payload' => static fn(array $values): null => null,
+    'run' => static fn(Client $client, array $values) => $client->discounts()->get(
         Playground::stringValue(
             Playground::value($values, 'shared.discountId'),
             'shared.discountId',

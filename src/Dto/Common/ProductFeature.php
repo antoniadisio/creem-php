@@ -34,19 +34,19 @@ final readonly class ProductFeature
                 $payload,
                 'file',
                 self::class,
-                static fn (array $value): FileFeature => FileFeature::fromPayload($value),
+                static fn(array $value): FileFeature => FileFeature::fromPayload($value),
             ),
             Payload::typedObject(
                 $payload,
                 'license_key',
                 self::class,
-                static fn (array $value): License => License::fromPayload($value),
+                static fn(array $value): License => License::fromPayload($value),
             ),
             Payload::typedObject(
                 $payload,
                 'license',
                 self::class,
-                static fn (array $value): License => License::fromPayload($value),
+                static fn(array $value): License => License::fromPayload($value),
             ),
         );
     }

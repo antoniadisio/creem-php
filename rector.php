@@ -7,15 +7,15 @@ use Rector\Config\RectorConfig;
 use Rector\Php82\Rector\Param\AddSensitiveParameterAttributeRector;
 
 $publicApiTypeDeclarationSkips = array_fill_keys(TypeDeclarationLevel::RULES, [
-    __DIR__.'/src/Client.php',
-    __DIR__.'/src/Config.php',
-    __DIR__.'/src/Resource/*',
+    __DIR__ . '/src/Client.php',
+    __DIR__ . '/src/Config.php',
+    __DIR__ . '/src/Resource/*',
 ]);
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/src',
-        __DIR__.'/tests',
+        __DIR__ . '/src',
+        __DIR__ . '/tests',
     ])
     ->withoutParallel()
     ->withPhpSets(php84: true)

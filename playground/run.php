@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Playground\Support\Playground;
 use Playground\Support\PlaygroundException;
 
-$bootstrap = require __DIR__.'/bootstrap.php';
+$bootstrap = require __DIR__ . '/bootstrap.php';
 
 $operations = Playground::discoverOperations($bootstrap['operations_glob']);
 $arguments = array_slice($argv, 1);
@@ -137,7 +137,7 @@ try {
         fwrite(STDOUT, "Available operations\n");
 
         foreach (Playground::operationNames($operations) as $name) {
-            fwrite(STDOUT, $name."\n");
+            fwrite(STDOUT, $name . "\n");
         }
 
         fwrite(STDOUT, "\n");

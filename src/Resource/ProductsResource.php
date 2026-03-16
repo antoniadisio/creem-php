@@ -30,11 +30,11 @@ final class ProductsResource extends Resource
      */
     public function search(?SearchProductsRequest $request = null): Page
     {
-        $request ??= new SearchProductsRequest;
+        $request ??= new SearchProductsRequest();
 
         return Payload::page(
             $this->send(new SearchProductsOperation($request->toQuery())),
-            static fn (array $item): Product => Product::fromPayload($item),
+            static fn(array $item): Product => Product::fromPayload($item),
         );
     }
 }

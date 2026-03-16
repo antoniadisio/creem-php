@@ -100,7 +100,7 @@ function apiEnumCasesFor(string $enumClass): array
 {
     /** @var list<int|string> */
     return array_map(
-        static fn (BackedEnum $case): int|string => $case->value,
+        static fn(BackedEnum $case): int|string => $case->value,
         $enumClass::cases(),
     );
 }

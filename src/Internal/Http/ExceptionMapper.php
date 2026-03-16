@@ -347,7 +347,7 @@ final class ExceptionMapper
             return $value;
         }
 
-        return substr($value, 0, self::MAX_STRING_LENGTH).'...';
+        return substr($value, 0, self::MAX_STRING_LENGTH) . '...';
     }
 
     private static function redactSensitiveTokens(string $value): string

@@ -23,11 +23,11 @@ final class TransactionsResource extends Resource
      */
     public function search(?SearchTransactionsRequest $request = null): Page
     {
-        $request ??= new SearchTransactionsRequest;
+        $request ??= new SearchTransactionsRequest();
 
         return Payload::page(
             $this->send(new SearchTransactionsOperation($request->toQuery())),
-            static fn (array $item): Transaction => Transaction::fromPayload($item),
+            static fn(array $item): Transaction => Transaction::fromPayload($item),
         );
     }
 }

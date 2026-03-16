@@ -52,7 +52,7 @@ function invalidDiscountRequestInputs(): array
 {
     return [
         'non-positive fixed amount' => [
-            static fn (): CreateDiscountRequest => new CreateDiscountRequest(
+            static fn(): CreateDiscountRequest => new CreateDiscountRequest(
                 'Launch',
                 DiscountType::Fixed,
                 DiscountDuration::Once,
@@ -63,7 +63,7 @@ function invalidDiscountRequestInputs(): array
             'The fixed discount amount must be greater than zero.',
         ],
         'percentage above range' => [
-            static fn (): CreateDiscountRequest => new CreateDiscountRequest(
+            static fn(): CreateDiscountRequest => new CreateDiscountRequest(
                 'Launch',
                 DiscountType::Percentage,
                 DiscountDuration::Once,
@@ -73,7 +73,7 @@ function invalidDiscountRequestInputs(): array
             'The percentage discount value must be between 1 and 100.',
         ],
         'blank applies to product id' => [
-            static fn (): CreateDiscountRequest => new CreateDiscountRequest(
+            static fn(): CreateDiscountRequest => new CreateDiscountRequest(
                 'Launch',
                 DiscountType::Fixed,
                 DiscountDuration::Once,

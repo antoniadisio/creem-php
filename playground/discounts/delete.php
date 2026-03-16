@@ -26,12 +26,12 @@ return [
     'persist_outputs' => [
         Playground::persist('shared.discountId', 'id'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'discountId' => Playground::value($values, 'shared.discountId'),
         'idempotencyKey' => Playground::value($values, 'discounts.delete.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): null => null,
-    'run' => static fn (Client $client, array $values) => $client->discounts()->delete(
+    'build_request_payload' => static fn(array $values): null => null,
+    'run' => static fn(Client $client, array $values) => $client->discounts()->delete(
         Playground::stringValue(
             Playground::value($values, 'shared.discountId'),
             'shared.discountId',

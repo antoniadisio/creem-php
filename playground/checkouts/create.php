@@ -111,7 +111,7 @@ return [
     'persist_outputs' => [
         Playground::persist('shared.checkoutId', 'id'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'productId' => Playground::value($values, 'shared.productId'),
         'requestId' => Playground::value($values, 'checkouts.create.requestId'),
         'units' => Playground::value($values, 'checkouts.create.units'),
@@ -122,8 +122,8 @@ return [
         'metadata' => Playground::value($values, 'checkouts.create.metadata'),
         'idempotencyKey' => Playground::value($values, 'checkouts.create.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->checkouts()->create(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->checkouts()->create(
         $request($values),
         Playground::stringValue(
             Playground::value($values, 'checkouts.create.idempotencyKey'),

@@ -181,9 +181,9 @@ test('subscriptions resource normalizes mutating identifiers before endpoint res
 foreach (invalidSubscriptionMutatingIdentifiers() as $dataset => [$method, $identifier, $arguments, $message]) {
     test("subscriptions resource rejects invalid mutating identifiers ({$dataset})", function () use ($method, $identifier, $arguments, $message): void {
         /** @var IntegrationTestCase $this */
-        $resource = new SubscriptionsResource($this->connector(new MockClient));
+        $resource = new SubscriptionsResource($this->connector(new MockClient()));
 
-        expect(static fn (): mixed => $resource->{$method}($identifier, ...$arguments))
+        expect(static fn(): mixed => $resource->{$method}($identifier, ...$arguments))
             ->toThrow(InvalidArgumentException::class, $message);
     });
 }

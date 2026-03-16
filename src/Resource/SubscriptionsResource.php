@@ -24,7 +24,7 @@ final class SubscriptionsResource extends Resource
 
     public function cancel(string $id, ?CancelSubscriptionRequest $request = null, ?string $idempotencyKey = null): Subscription
     {
-        $request ??= new CancelSubscriptionRequest;
+        $request ??= new CancelSubscriptionRequest();
 
         return Subscription::fromPayload($this->send(new CancelSubscriptionOperation($id, $request->toArray(), $idempotencyKey)));
     }

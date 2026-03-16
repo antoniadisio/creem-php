@@ -31,7 +31,7 @@ final readonly class UpsertSubscriptionItem
 
         if ($id === null && $productId === null && $priceId === null) {
             throw new InvalidArgumentException(
-                'At least one of subscription item ID, product ID, or price ID must be provided.'
+                'At least one of subscription item ID, product ID, or price ID must be provided.',
             );
         }
 

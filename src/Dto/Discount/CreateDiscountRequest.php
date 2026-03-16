@@ -136,7 +136,7 @@ final readonly class CreateDiscountRequest
                 throw new InvalidArgumentException('The percentage discount amount must be omitted.');
             }
 
-            if ($currency instanceof \Antoniadisio\Creem\Enum\CurrencyCode) {
+            if ($currency instanceof CurrencyCode) {
                 throw new InvalidArgumentException('The percentage discount currency must be omitted.');
             }
         }

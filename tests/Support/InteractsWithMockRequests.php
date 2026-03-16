@@ -10,6 +10,7 @@ use JsonException;
 use Psr\Http\Message\RequestInterface;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
+use Saloon\Http\PendingRequest;
 
 use function is_string;
 use function json_decode;
@@ -38,7 +39,7 @@ trait InteractsWithMockRequests
     ): void {
         $pendingRequest = $mockClient->getLastPendingRequest();
 
-        $this->assertInstanceOf(\Saloon\Http\PendingRequest::class, $pendingRequest);
+        $this->assertInstanceOf(PendingRequest::class, $pendingRequest);
         $this->assertSame($expectedMethod, $pendingRequest->getMethod());
 
         $psrRequest = $pendingRequest->createPsrRequest();

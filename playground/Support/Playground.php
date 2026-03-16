@@ -80,19 +80,19 @@ final class Playground
     {
         return [
             'workspace_path' => $workspacePath,
-            'readme_path' => $workspacePath.'/README.md',
+            'readme_path' => $workspacePath . '/README.md',
             'state_path' => self::workspacePathOverride(
                 'CREEM_PLAYGROUND_STATE_PATH',
-                $workspacePath.'/state.local.json',
+                $workspacePath . '/state.local.json',
             ),
             'state_example_path' => self::workspacePathOverride(
                 'CREEM_PLAYGROUND_STATE_EXAMPLE_PATH',
-                $workspacePath.'/state.example.json',
+                $workspacePath . '/state.example.json',
             ),
-            'support_path' => $workspacePath.'/Support',
-            'schemas_path' => $workspacePath.'/schemas',
-            'fixtures_path' => dirname($workspacePath).'/tests/Fixtures/Responses',
-            'operations_glob' => $workspacePath.'/*/*.php',
+            'support_path' => $workspacePath . '/Support',
+            'schemas_path' => $workspacePath . '/schemas',
+            'fixtures_path' => dirname($workspacePath) . '/tests/Fixtures/Responses',
+            'operations_glob' => $workspacePath . '/*/*.php',
         ];
     }
 
@@ -123,7 +123,7 @@ final class Playground
 
             self::assertOperationDefinition($path, $operation);
 
-            $name = $operation['resource'].'/'.$operation['action'];
+            $name = $operation['resource'] . '/' . $operation['action'];
             $operation['_path'] = $path;
             $operation['_name'] = $name;
             $operations[$name] = $operation;
@@ -176,7 +176,7 @@ final class Playground
     {
         return self::commandEnvelope('operation_list', [
             'operations' => array_values(array_map(
-                static fn (array $operation): array => self::operationSummary($operation),
+                static fn(array $operation): array => self::operationSummary($operation),
                 $operations,
             )),
             'schemas' => self::schemaCatalog(),
@@ -443,7 +443,7 @@ final class Playground
 
         self::ensureDirectory(dirname($path));
 
-        if (file_put_contents($path, $contents."\n") === false) {
+        if (file_put_contents($path, $contents . "\n") === false) {
             throw new PlaygroundException(sprintf('Unable to write state file [%s].', $path));
         }
     }
@@ -647,7 +647,7 @@ final class Playground
             $resolvedProfile = $routes[$normalizedPath] ?? null;
 
             if ($resolvedProfile !== null) {
-                return self::stringValue($resolvedProfile, 'webhookRoutes.'.$normalizedPath);
+                return self::stringValue($resolvedProfile, 'webhookRoutes.' . $normalizedPath);
             }
         }
 
@@ -668,7 +668,7 @@ final class Playground
             $profile = self::profileDefinition($values, $profileName);
             $environmentValue = self::stringValue(
                 $profile['environment'] ?? null,
-                'profiles.'.$profileName.'.environment',
+                'profiles.' . $profileName . '.environment',
             );
 
             try {
@@ -686,7 +686,7 @@ final class Playground
 
             $apiKeyEnv = self::stringValue(
                 $profile['apiKeyEnv'] ?? null,
-                'profiles.'.$profileName.'.apiKeyEnv',
+                'profiles.' . $profileName . '.apiKeyEnv',
             );
             $apiKey = self::environmentVariableValue(
                 $apiKeyEnv,
@@ -767,13 +767,13 @@ final class Playground
      */
     public static function auditOperations(array $operations, string $repoRoot): array
     {
-        $resourceFiles = glob($repoRoot.'/src/Resource/*Resource.php') ?: [];
+        $resourceFiles = glob($repoRoot . '/src/Resource/*Resource.php') ?: [];
         sort($resourceFiles);
 
         $expected = [];
 
         foreach ($resourceFiles as $resourceFile) {
-            $class = 'Antoniadisio\\Creem\\Resource\\'.pathinfo($resourceFile, PATHINFO_FILENAME);
+            $class = 'Antoniadisio\\Creem\\Resource\\' . pathinfo($resourceFile, PATHINFO_FILENAME);
 
             if ($class === 'Antoniadisio\\Creem\\Resource\\Resource' || ! class_exists($class)) {
                 continue;
@@ -787,7 +787,7 @@ final class Playground
                     continue;
                 }
 
-                $expected[] = $resource.'/'.self::snakeCase($method->getName());
+                $expected[] = $resource . '/' . self::snakeCase($method->getName());
             }
         }
 
@@ -1134,7 +1134,7 @@ final class Playground
             throw new PlaygroundException('Unable to encode playground JSON output.', previous: $exception);
         }
 
-        fwrite($stream === 'stderr' ? STDERR : STDOUT, $output."\n");
+        fwrite($stream === 'stderr' ? STDERR : STDOUT, $output . "\n");
     }
 
     /**
@@ -1308,7 +1308,7 @@ final class Playground
         $profile = self::profileDefinition($values, $profileName);
         $apiKeyEnv = self::stringValue(
             $profile['apiKeyEnv'] ?? null,
-            'profiles.'.$profileName.'.apiKeyEnv',
+            'profiles.' . $profileName . '.apiKeyEnv',
         );
 
         $values = self::withValue($values, 'shared.activeProfile', $profileName);
@@ -1324,7 +1324,7 @@ final class Playground
         $values = self::withValue(
             $values,
             'shared.environment',
-            self::stringValue($profile['environment'] ?? null, 'profiles.'.$profileName.'.environment'),
+            self::stringValue($profile['environment'] ?? null, 'profiles.' . $profileName . '.environment'),
         );
         $values = self::withValue($values, 'shared.baseUrl', self::nullableString($profile['baseUrl'] ?? null));
         $values = self::withValue($values, 'shared.timeout', self::nullableFloat($profile['timeout'] ?? null));
@@ -1373,7 +1373,7 @@ final class Playground
         }
 
         if ($allowPlaceholder) {
-            return 'sk_test_profile_'.$profileName;
+            return 'sk_test_profile_' . $profileName;
         }
 
         throw new PlaygroundException(
@@ -1430,7 +1430,7 @@ final class Playground
             throw new PlaygroundException(sprintf('Unable to read %s [%s].', strtolower($label), $path));
         }
 
-        return self::decodeJsonObject($contents, $label.' ['.$path.']');
+        return self::decodeJsonObject($contents, $label . ' [' . $path . ']');
     }
 
     /**
@@ -1478,7 +1478,7 @@ final class Playground
         }
 
         if (! str_starts_with($path, '/')) {
-            $path = '/'.$path;
+            $path = '/' . $path;
         }
 
         $path = rtrim($path, '/');
@@ -1582,7 +1582,7 @@ final class Playground
     {
         $suffix = bin2hex(random_bytes(4));
 
-        return self::snakeCase(str_replace('/', '-', $operationName)).'-'.gmdate('Ymd\THis\Z').'-'.$suffix;
+        return self::snakeCase(str_replace('/', '-', $operationName)) . '-' . gmdate('Ymd\THis\Z') . '-' . $suffix;
     }
 
     private static function sortMapKeys(mixed $value): mixed
@@ -1763,7 +1763,7 @@ final class Playground
             throw new PlaygroundException('Fixture paths cannot be blank.');
         }
 
-        $path = $fixturesPath.'/'.$fixture;
+        $path = $fixturesPath . '/' . $fixture;
 
         if (! file_exists($path)) {
             throw new PlaygroundException(sprintf('Fixture [%s] does not exist.', $path));
@@ -1841,7 +1841,7 @@ final class PlaygroundTrace
      */
     public function __construct(array $secrets)
     {
-        $this->secrets = array_values(array_filter($secrets, static fn (?string $secret): bool => is_string($secret) && $secret !== ''));
+        $this->secrets = array_values(array_filter($secrets, static fn(?string $secret): bool => is_string($secret) && $secret !== ''));
     }
 
     public function captureRequest(PendingRequest $pendingRequest): void
@@ -1922,7 +1922,7 @@ final class PlaygroundTrace
                 continue;
             }
 
-            $redactedValues = array_map(fn (string $value): string => $this->redactString($value), $values);
+            $redactedValues = array_map(fn(string $value): string => $this->redactString($value), $values);
             $normalized[$name] = count($redactedValues) === 1 ? $redactedValues[0] : $redactedValues;
         }
 

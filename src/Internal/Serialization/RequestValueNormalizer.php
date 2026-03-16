@@ -41,7 +41,7 @@ final class RequestValueNormalizer
 
     public static function unixMilliseconds(?DateTimeInterface $value): ?int
     {
-        if (! $value instanceof \DateTimeInterface) {
+        if (! $value instanceof DateTimeInterface) {
             return null;
         }
 
@@ -93,6 +93,6 @@ final class RequestValueNormalizer
      */
     private static function filterNulls(array $values): array
     {
-        return array_filter($values, static fn (mixed $value): bool => $value !== null);
+        return array_filter($values, static fn(mixed $value): bool => $value !== null);
     }
 }

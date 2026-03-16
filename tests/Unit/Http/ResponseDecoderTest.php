@@ -21,7 +21,7 @@ foreach (nonObjectJsonPayloads() as $dataset => [$body]) {
     test("response decoder rejects non-object json payloads ({$dataset})", function () use ($body): void {
         $response = HttpTestSupport::successResponse(MockResponse::make($body, 200, ['Content-Type' => 'application/json']));
 
-        expect(static fn (): array => ResponseDecoder::decode($response))
+        expect(static fn(): array => ResponseDecoder::decode($response))
             ->toThrow(TransportException::class, 'The Creem API returned an unexpected JSON payload shape.');
     });
 }
@@ -31,7 +31,7 @@ test('response decoder normalizes invalid json to a transport exception', functi
         MockResponse::make('{"broken"', 200, ['Content-Type' => 'application/json']),
     );
 
-    expect(static fn (): array => ResponseDecoder::decode($response))
+    expect(static fn(): array => ResponseDecoder::decode($response))
         ->toThrow(TransportException::class, 'The Creem API returned an invalid JSON response.');
 });
 

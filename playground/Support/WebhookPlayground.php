@@ -32,7 +32,7 @@ final class WebhookPlayground
 {
     public static function captureDirectory(string $workspacePath): string
     {
-        return $workspacePath.'/captures/webhooks';
+        return $workspacePath . '/captures/webhooks';
     }
 
     public static function captureHealth(string $workspacePath): array
@@ -47,7 +47,7 @@ final class WebhookPlayground
             $activeProfile = Playground::activeProfileName($values);
             $secretConfigured = Playground::profileHasWebhookSecret($values, $activeProfile);
         } catch (Throwable $exception) {
-            $profileError = $exception::class.': '.$exception->getMessage();
+            $profileError = $exception::class . ': ' . $exception->getMessage();
         }
 
         return [
@@ -205,7 +205,7 @@ final class WebhookPlayground
             $values = self::playgroundValues($workspacePath, $profileName, $path);
             $resolvedProfile = Playground::activeProfileName($values);
         } catch (Throwable $exception) {
-            $verificationError = $exception::class.': '.$exception->getMessage();
+            $verificationError = $exception::class . ': ' . $exception->getMessage();
         }
 
         if (
@@ -224,7 +224,7 @@ final class WebhookPlayground
                 $eventId = $event->id();
                 $eventType = $event->eventType();
             } catch (Throwable $exception) {
-                $verificationError = $exception::class.': '.$exception->getMessage();
+                $verificationError = $exception::class . ': ' . $exception->getMessage();
             }
         }
 
@@ -234,7 +234,7 @@ final class WebhookPlayground
                 $eventId = $event->id();
                 $eventType = $event->eventType();
             } catch (Throwable $exception) {
-                $parseError = $exception::class.': '.$exception->getMessage();
+                $parseError = $exception::class . ': ' . $exception->getMessage();
             }
         }
 
@@ -255,7 +255,7 @@ final class WebhookPlayground
      */
     private static function capturePaths(string $workspacePath): array
     {
-        $paths = glob(self::captureDirectory($workspacePath).'/*.json') ?: [];
+        $paths = glob(self::captureDirectory($workspacePath) . '/*.json') ?: [];
         sort($paths);
 
         return $paths;
@@ -279,7 +279,7 @@ final class WebhookPlayground
             bin2hex(random_bytes(4)),
         );
 
-        if (file_put_contents($file, self::encode($capture)."\n") === false) {
+        if (file_put_contents($file, self::encode($capture) . "\n") === false) {
             throw new PlaygroundException(sprintf('Unable to write webhook capture file [%s].', $file));
         }
 
@@ -367,7 +367,7 @@ final class WebhookPlayground
     {
         if (array_key_exists('mode', $node) && is_scalar($node['mode'])) {
             $paths[] = [
-                'path' => $path.'.mode',
+                'path' => $path . '.mode',
                 'value' => (string) $node['mode'],
             ];
         }
@@ -377,7 +377,7 @@ final class WebhookPlayground
                 continue;
             }
 
-            $childPath = is_int($key) ? $path.'['.$key.']' : $path.'.'.$key;
+            $childPath = is_int($key) ? $path . '[' . $key . ']' : $path . '.' . $key;
             self::collectModePaths($value, $childPath, $paths);
         }
     }

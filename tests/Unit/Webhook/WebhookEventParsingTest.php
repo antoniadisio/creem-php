@@ -97,7 +97,7 @@ test('webhook event parsing throws payload exceptions for malformed json instead
 test('webhook event parsing rejects payloads that exceed the size limit before decoding', function (): void {
     $payload = str_repeat('a', 1_048_577);
 
-    expect(static fn (): WebhookEvent => Webhook::parseEvent($payload))
+    expect(static fn(): WebhookEvent => Webhook::parseEvent($payload))
         ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload exceeds the 1048576 byte limit.');
 });
 
@@ -105,7 +105,7 @@ test('webhook event parsing rejects payloads with missing envelope fields', func
     $payload = WebhookTestSupport::eventPayloadArray();
     unset($payload['eventType']);
 
-    expect(static fn (): WebhookEvent => Webhook::parseEvent(WebhookTestSupport::encodePayload($payload)))
+    expect(static fn(): WebhookEvent => Webhook::parseEvent(WebhookTestSupport::encodePayload($payload)))
         ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload is not a valid event object.');
 });
 
@@ -134,7 +134,7 @@ test('webhook construction verifies signatures before parsing events', function 
     $payload = '{"id":';
     $signature = WebhookTestSupport::signatureHeader($payload, signature: 'invalid');
 
-    expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
+    expect(static fn(): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
         ->toThrow(InvalidWebhookSignatureException::class);
 });
 
@@ -142,7 +142,7 @@ test('webhook construction throws payload exceptions for malformed verified payl
     $payload = '{"id":';
     $signature = WebhookTestSupport::signatureHeader($payload);
 
-    expect(static fn (): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
+    expect(static fn(): WebhookEvent => Webhook::constructEvent($payload, $signature, 'whsec_test_secret'))
         ->toThrow(InvalidWebhookPayloadException::class, 'The Creem webhook payload is not valid JSON.');
 });
 

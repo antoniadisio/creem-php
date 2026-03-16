@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Antoniadisio\Creem\Tests\Support;
 
-use const JSON_THROW_ON_ERROR;
-
 use Antoniadisio\Creem\Internal\Webhook\Signature;
 use JsonException;
 
 use function array_replace_recursive;
 use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
 
 final class WebhookTestSupport
 {

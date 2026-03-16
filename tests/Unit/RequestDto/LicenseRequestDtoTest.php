@@ -37,15 +37,15 @@ function invalidLicenseRequestInputs(): array
 {
     return [
         'blank license key' => [
-            static fn (): ActivateLicenseRequest => new ActivateLicenseRequest(' ', 'prod-web-1'),
+            static fn(): ActivateLicenseRequest => new ActivateLicenseRequest(' ', 'prod-web-1'),
             'The license key cannot be blank.',
         ],
         'blank deactivate instance id' => [
-            static fn (): DeactivateLicenseRequest => new DeactivateLicenseRequest('lic_key', ' '),
+            static fn(): DeactivateLicenseRequest => new DeactivateLicenseRequest('lic_key', ' '),
             'The license instance ID cannot be blank.',
         ],
         'blank validate instance id' => [
-            static fn (): ValidateLicenseRequest => new ValidateLicenseRequest('lic_key', ' '),
+            static fn(): ValidateLicenseRequest => new ValidateLicenseRequest('lic_key', ' '),
             'The license instance ID cannot be blank.',
         ],
     ];

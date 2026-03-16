@@ -31,7 +31,7 @@ function invalidCustomerRequestInputs(): array
 {
     return [
         'blank customer id' => [
-            static fn (): CreateCustomerBillingPortalLinkRequest => new CreateCustomerBillingPortalLinkRequest('   '),
+            static fn(): CreateCustomerBillingPortalLinkRequest => new CreateCustomerBillingPortalLinkRequest('   '),
             'The customer ID cannot be blank.',
         ],
     ];

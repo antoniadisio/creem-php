@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Playground\Support\Playground;
 use Playground\Support\WebhookPlayground;
 
-$bootstrap = require dirname(__DIR__).'/bootstrap.php';
+$bootstrap = require dirname(__DIR__) . '/bootstrap.php';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 

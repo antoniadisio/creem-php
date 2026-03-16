@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Playground\Support\Playground;
 use Playground\Support\WebhookPlayground;
 
-$bootstrap = require dirname(__DIR__).'/bootstrap.php';
+$bootstrap = require dirname(__DIR__) . '/bootstrap.php';
 $arguments = array_slice($argv, 1);
 $latestOnly = false;
 $limit = 10;

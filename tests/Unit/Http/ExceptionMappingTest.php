@@ -29,14 +29,14 @@ use function array_key_exists;
 test('transport failures are wrapped without leaking sender exception internals', function (): void {
     $connector = new CreemConnector(new Config('sk_test_very_secret_123'));
     $mockResponse = MockResponse::make()->throw(
-        static fn (PendingRequest $pendingRequest): FatalRequestException => new FatalRequestException(
+        static fn(PendingRequest $pendingRequest): FatalRequestException => new FatalRequestException(
             new RuntimeException('Socket closed for sk_test_very_secret_123'),
             $pendingRequest,
         ),
     );
 
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(HttpTestSupport::pingRequest(), new MockClient([$mockResponse])),
+        static fn(): Response => $connector->send(HttpTestSupport::pingRequest(), new MockClient([$mockResponse])),
     );
 
     expect($exception)->toBeInstanceOf(TransportException::class)
@@ -50,7 +50,7 @@ test('transport failures are wrapped without leaking sender exception internals'
 test('plain text error bodies redact sensitive token patterns', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123'));
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make('Rejected sk_live_secret creem_live_secret whsec_secret', 500),
@@ -70,7 +70,7 @@ test('plain text error bodies redact sensitive token patterns', function (): voi
 test('json error messages and context redact sensitive token patterns', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123'));
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make([
@@ -110,7 +110,7 @@ foreach (connectorResponseFailureMappings() as $dataset => [$response, $expected
     ): void {
         $connector = new CreemConnector(new Config('sk_test_123'));
         $exception = HttpTestSupport::captureException(
-            static fn (): Response => $connector->send(HttpTestSupport::pingRequest(), new MockClient([$response])),
+            static fn(): Response => $connector->send(HttpTestSupport::pingRequest(), new MockClient([$response])),
         );
 
         expect($exception)->toBeInstanceOf(CreemException::class)
@@ -132,7 +132,7 @@ foreach (connectorResponseFailureMappings() as $dataset => [$response, $expected
 test('synthetic unmapped client errors map to the base exception type', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123'));
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make(['detail' => "I'm a teapot"], 418),
@@ -157,7 +157,7 @@ test('synthetic unmapped client errors map to the base exception type', function
 test('documented debug metadata is preserved in exception context', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123'));
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make([
@@ -182,7 +182,7 @@ test('documented debug metadata is preserved in exception context', function ():
 test('array-based top-level messages are preserved and surfaced', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123'));
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make([
@@ -212,7 +212,7 @@ test('nested validation errors resolve useful messages', function (): void {
         ],
     ];
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make(['errors' => $errors], 400),
@@ -234,7 +234,7 @@ test('deeply nested validation errors stop traversing after the recursion guard'
     $connector = new CreemConnector(new Config('sk_test_123'));
     $errors = ['level_1' => ['level_2' => ['level_3' => ['level_4' => ['level_5' => ['level_6' => ['detail' => 'Too deep']]]]]]];
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make(['errors' => $errors], 400),
@@ -260,7 +260,7 @@ test('deeply nested validation errors stop traversing after the recursion guard'
 test('error contexts are sanitized before they are attached to exceptions', function (): void {
     $connector = new CreemConnector(new Config('sk_test_123'));
     $exception = HttpTestSupport::captureException(
-        static fn (): Response => $connector->send(
+        static fn(): Response => $connector->send(
             HttpTestSupport::pingRequest(),
             new MockClient([
                 MockResponse::make([

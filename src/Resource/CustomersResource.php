@@ -21,11 +21,11 @@ final class CustomersResource extends Resource
      */
     public function list(?ListCustomersRequest $request = null): Page
     {
-        $request ??= new ListCustomersRequest;
+        $request ??= new ListCustomersRequest();
 
         return Payload::page(
             $this->send(new ListCustomersOperation($request->toQuery())),
-            static fn (array $item): Customer => Customer::fromPayload($item),
+            static fn(array $item): Customer => Customer::fromPayload($item),
         );
     }
 

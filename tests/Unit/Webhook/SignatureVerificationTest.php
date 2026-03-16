@@ -49,7 +49,7 @@ test('webhook signature verification rejects blank secrets', function (): void {
 
 test('webhook signature verification rejects legacy timestamped headers', function (): void {
     $payload = WebhookTestSupport::eventPayload();
-    $signature = 't=1700000000,v1='.WebhookTestSupport::signatureHeader($payload);
+    $signature = 't=1700000000,v1=' . WebhookTestSupport::signatureHeader($payload);
 
     expect(static function () use ($payload, $signature): void {
         Webhook::verifySignature($payload, $signature, 'whsec_test_secret');

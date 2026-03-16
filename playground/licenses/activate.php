@@ -44,13 +44,13 @@ return [
         Playground::persist('shared.licenseInstanceId', 'instance.id'),
         Playground::persist('shared.licenseInstanceName', 'instance.name'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'licenseKey' => Playground::value($values, 'shared.licenseKey'),
         'instanceName' => Playground::value($values, 'shared.licenseInstanceName'),
         'idempotencyKey' => Playground::value($values, 'licenses.activate.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->licenses()->activate(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->licenses()->activate(
         $request($values),
         Playground::stringValue(
             Playground::value($values, 'licenses.activate.idempotencyKey'),

@@ -53,13 +53,13 @@ return [
     ],
     'idempotency_key_path' => null,
     'persist_outputs' => [],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'customerId' => Playground::value($values, 'transactions.search.customerId'),
         'orderId' => Playground::value($values, 'transactions.search.orderId'),
         'productId' => Playground::value($values, 'transactions.search.productId'),
         'pageNumber' => Playground::value($values, 'transactions.search.pageNumber'),
         'pageSize' => Playground::value($values, 'transactions.search.pageSize'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toQuery(),
-    'run' => static fn (Client $client, array $values) => $client->transactions()->search($request($values)),
+    'build_request_payload' => static fn(array $values): array => $request($values)->toQuery(),
+    'run' => static fn(Client $client, array $values) => $client->transactions()->search($request($values)),
 ];

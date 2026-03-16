@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Antoniadisio\Creem\Tests\Support\Contract;
 
-use const FILTER_VALIDATE_URL;
-use const PHP_URL_HOST;
-
 use Antoniadisio\Creem\Tests\TestCase;
 
 use function array_any;
@@ -19,6 +16,9 @@ use function sprintf;
 use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
+
+use const FILTER_VALIDATE_URL;
+use const PHP_URL_HOST;
 
 final class ResponseFixturePolicy
 {
@@ -160,17 +160,17 @@ final class ResponseFixturePolicy
     {
         return array_any(
             self::TIMESTAMP_PATH_SUFFIXES,
-            static fn (string $suffix): bool => str_ends_with($path, '.'.$suffix),
+            static fn(string $suffix): bool => str_ends_with($path, '.' . $suffix),
         );
     }
 
     private function looksLikePlaceholderIdentifier(string $value): bool
     {
-        return array_any(self::PLACEHOLDER_IDENTIFIER_PREFIXES, fn ($prefix): bool => str_starts_with($value, $prefix.'_'));
+        return array_any(self::PLACEHOLDER_IDENTIFIER_PREFIXES, fn($prefix): bool => str_starts_with($value, $prefix . '_'));
     }
 
     private function placeholderIdentifierPattern(): string
     {
-        return '/^('.implode('|', self::PLACEHOLDER_IDENTIFIER_PREFIXES).')_fixture_[a-z0-9_]+$/';
+        return '/^(' . implode('|', self::PLACEHOLDER_IDENTIFIER_PREFIXES) . ')_fixture_[a-z0-9_]+$/';
     }
 }

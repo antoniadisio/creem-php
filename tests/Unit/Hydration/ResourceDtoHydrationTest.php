@@ -97,7 +97,7 @@ test('product hydration supports custom field variants', function (): void {
 foreach (resourceDtoHydrationFailures() as $dataset => [$factory, $message]) {
     test("resource dto hydration rejects malformed nested payloads ({$dataset})", function () use ($factory, $message): void {
         /** @var TestCase $this */
-        expect(fn () => $factory($this))
+        expect(fn() => $factory($this))
             ->toThrow(HydrationException::class, $message);
     });
 }

@@ -241,6 +241,6 @@ final class CoverageManifest
     {
         $shortName = basename(str_replace('\\', '/', $resource));
 
-        return dirname(__DIR__, 2).'/Integration/'.$shortName.'Test.php';
+        return dirname(__DIR__, 2) . '/Integration/' . $shortName . 'Test.php';
     }
 }

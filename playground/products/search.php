@@ -38,10 +38,10 @@ return [
     ],
     'idempotency_key_path' => null,
     'persist_outputs' => [],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'pageNumber' => Playground::value($values, 'products.search.pageNumber'),
         'pageSize' => Playground::value($values, 'products.search.pageSize'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toQuery(),
-    'run' => static fn (Client $client, array $values) => $client->products()->search($request($values)),
+    'build_request_payload' => static fn(array $values): array => $request($values)->toQuery(),
+    'run' => static fn(Client $client, array $values) => $client->products()->search($request($values)),
 ];

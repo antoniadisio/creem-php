@@ -24,7 +24,7 @@ $productIds = static function (array $values): array {
     $resolved = [$primaryProductId];
 
     foreach ($extraProductIds as $index => $productId) {
-        $resolved[] = Playground::stringValue($productId, 'discounts.create.extraProductIds.'.$index);
+        $resolved[] = Playground::stringValue($productId, 'discounts.create.extraProductIds.' . $index);
     }
 
     return $resolved;
@@ -124,7 +124,7 @@ return [
         Playground::persist('shared.discountId', 'id'),
         Playground::persist('shared.discountCode', 'code'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'name' => Playground::value($values, 'discounts.create.name'),
         'type' => Playground::value($values, 'discounts.create.type'),
         'duration' => Playground::value($values, 'discounts.create.duration'),
@@ -139,8 +139,8 @@ return [
         'durationInMonths' => Playground::value($values, 'discounts.create.durationInMonths'),
         'idempotencyKey' => Playground::value($values, 'discounts.create.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->discounts()->create(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->discounts()->create(
         $request($values),
         Playground::stringValue(
             Playground::value($values, 'discounts.create.idempotencyKey'),

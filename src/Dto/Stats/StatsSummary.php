@@ -30,7 +30,7 @@ final readonly class StatsSummary
                 $payload,
                 'totals',
                 self::class,
-                static fn (array $value): StatsTotals => StatsTotals::fromPayload($value),
+                static fn(array $value): StatsTotals => StatsTotals::fromPayload($value),
                 true,
             ),
             Payload::typedList(

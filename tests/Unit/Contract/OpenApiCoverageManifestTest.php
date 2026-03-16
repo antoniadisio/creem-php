@@ -43,7 +43,7 @@ test('every spec operation maps to public sdk methods and a resource-owned integ
     $expectedIntegrationFiles = array_values(array_unique($expectedIntegrationFiles));
     $actualIntegrationFiles = array_map(
         basename(...),
-        glob(dirname(__DIR__, 2).'/Integration/*ResourceTest.php') ?: [],
+        glob(dirname(__DIR__, 2) . '/Integration/*ResourceTest.php') ?: [],
     );
 
     sort($expectedIntegrationFiles);

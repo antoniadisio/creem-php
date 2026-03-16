@@ -91,19 +91,19 @@ function invalidSubscriptionRequestInputs(): array
 {
     return [
         'subscription item requires one identifier' => [
-            static fn (): UpsertSubscriptionItem => new UpsertSubscriptionItem(units: 2),
+            static fn(): UpsertSubscriptionItem => new UpsertSubscriptionItem(units: 2),
             'At least one of subscription item ID, product ID, or price ID must be provided.',
         ],
         'subscription item units must be positive' => [
-            static fn (): UpsertSubscriptionItem => new UpsertSubscriptionItem(productId: 'prod_123', units: 0),
+            static fn(): UpsertSubscriptionItem => new UpsertSubscriptionItem(productId: 'prod_123', units: 0),
             'The subscription item units must be greater than zero.',
         ],
         'blank upgrade product id' => [
-            static fn (): UpgradeSubscriptionRequest => new UpgradeSubscriptionRequest('   '),
+            static fn(): UpgradeSubscriptionRequest => new UpgradeSubscriptionRequest('   '),
             'The subscription upgrade product ID cannot be blank.',
         ],
         'invalid update items list' => [
-            static fn (): UpdateSubscriptionRequest => new UpdateSubscriptionRequest(
+            static fn(): UpdateSubscriptionRequest => new UpdateSubscriptionRequest(
                 items: ['bad-item'],
                 updateBehavior: SubscriptionUpdateBehavior::ProrationNone,
             ),

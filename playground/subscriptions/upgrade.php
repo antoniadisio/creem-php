@@ -55,14 +55,14 @@ return [
         Playground::persist('shared.subscriptionItemId', 'items.0.id'),
         Playground::persist('shared.priceId', 'items.0.priceId'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'subscriptionId' => Playground::value($values, 'shared.subscriptionId'),
         'productId' => Playground::value($values, 'shared.productId'),
         'updateBehavior' => Playground::value($values, 'subscriptions.upgrade.updateBehavior'),
         'idempotencyKey' => Playground::value($values, 'subscriptions.upgrade.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->subscriptions()->upgrade(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->subscriptions()->upgrade(
         Playground::stringValue(
             Playground::value($values, 'shared.subscriptionId'),
             'shared.subscriptionId',

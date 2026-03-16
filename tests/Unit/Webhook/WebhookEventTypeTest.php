@@ -8,7 +8,7 @@ use Antoniadisio\Creem\Enum\WebhookEventType;
 
 test('webhook event enum matches documented event values', function (): void {
     expect(array_map(
-        static fn (WebhookEventType $case): string => $case->value,
+        static fn(WebhookEventType $case): string => $case->value,
         WebhookEventType::cases(),
     ))->toBe([
         'checkout.completed',

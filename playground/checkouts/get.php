@@ -27,11 +27,11 @@ return [
         Playground::persist('shared.customerId', 'customer.id'),
         Playground::persist('shared.subscriptionId', 'subscription.id'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'checkoutId' => Playground::value($values, 'shared.checkoutId'),
     ],
-    'build_request_payload' => static fn (array $values): null => null,
-    'run' => static fn (Client $client, array $values) => $client->checkouts()->get(
+    'build_request_payload' => static fn(array $values): null => null,
+    'run' => static fn(Client $client, array $values) => $client->checkouts()->get(
         Playground::stringValue(
             Playground::value($values, 'shared.checkoutId'),
             'shared.checkoutId',

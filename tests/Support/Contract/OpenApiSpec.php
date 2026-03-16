@@ -31,7 +31,7 @@ final readonly class OpenApiSpec
      */
     public static function fromFixture(): self
     {
-        $contents = file_get_contents(dirname(__DIR__, 2).'/Fixtures/OpenApi/creem-openapi.json');
+        $contents = file_get_contents(dirname(__DIR__, 2) . '/Fixtures/OpenApi/creem-openapi.json');
 
         Assert::assertNotFalse($contents, 'OpenAPI spec could not be read.');
 

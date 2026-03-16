@@ -21,7 +21,7 @@ trait InteractsWithFixtures
      */
     public function fixture(string $name): array
     {
-        $contents = file_get_contents((new ResponseFixtureCatalog)->path($name));
+        $contents = file_get_contents(new ResponseFixtureCatalog()->path($name));
 
         $this->assertNotFalse($contents, sprintf('Fixture %s could not be read.', $name));
 

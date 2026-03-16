@@ -25,11 +25,11 @@ return [
     'persist_outputs' => [
         Playground::persist('shared.productId', 'id'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'productId' => Playground::value($values, 'shared.productId'),
     ],
-    'build_request_payload' => static fn (array $values): null => null,
-    'run' => static fn (Client $client, array $values) => $client->products()->get(
+    'build_request_payload' => static fn(array $values): null => null,
+    'run' => static fn(Client $client, array $values) => $client->products()->get(
         Playground::stringValue(
             Playground::value($values, 'shared.productId'),
             'shared.productId',

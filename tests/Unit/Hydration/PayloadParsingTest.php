@@ -96,7 +96,7 @@ test('payload helpers map typed objects pages lists and pagination', function ()
         $payload,
         'totals',
         'StatsSummary',
-        static fn (array $value): StructuredObject => StructuredObject::fromArray($value),
+        static fn(array $value): StructuredObject => StructuredObject::fromArray($value),
         true,
     );
     $periods = Payload::typedList(
@@ -143,14 +143,14 @@ test('payload helpers map expandable resources from expanded objects and ids', f
         ['product' => ['id' => 'prod_123', 'name' => 'Starter']],
         'product',
         'Checkout',
-        static fn (array $value): StructuredObject => StructuredObject::fromArray($value),
+        static fn(array $value): StructuredObject => StructuredObject::fromArray($value),
         true,
     );
     $customer = Payload::expandableResource(
         ['customer' => 'cus_123'],
         'customer',
         'Checkout',
-        static fn (array $value): StructuredObject => StructuredObject::fromArray($value),
+        static fn(array $value): StructuredObject => StructuredObject::fromArray($value),
         true,
     );
 

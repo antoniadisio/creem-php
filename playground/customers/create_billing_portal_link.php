@@ -34,12 +34,12 @@ return [
     ],
     'idempotency_key_path' => 'customers.create_billing_portal_link.idempotencyKey',
     'persist_outputs' => [],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'customerId' => Playground::value($values, 'shared.customerId'),
         'idempotencyKey' => Playground::value($values, 'customers.create_billing_portal_link.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->customers()->createBillingPortalLink(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->customers()->createBillingPortalLink(
         $request($values),
         Playground::stringValue(
             Playground::value($values, 'customers.create_billing_portal_link.idempotencyKey'),

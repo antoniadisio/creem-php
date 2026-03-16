@@ -32,13 +32,13 @@ final readonly class CustomField
                 $payload,
                 'text',
                 self::class,
-                static fn (array $value): CustomFieldText => CustomFieldText::fromPayload($value),
+                static fn(array $value): CustomFieldText => CustomFieldText::fromPayload($value),
             ),
             Payload::typedObject(
                 $payload,
                 'checkbox',
                 self::class,
-                static fn (array $value): CustomFieldCheckbox => CustomFieldCheckbox::fromPayload($value),
+                static fn(array $value): CustomFieldCheckbox => CustomFieldCheckbox::fromPayload($value),
             ),
         );
     }

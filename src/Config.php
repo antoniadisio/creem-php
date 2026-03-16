@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Antoniadisio\Creem;
 
-use const FILTER_VALIDATE_URL;
-use const PHP_URL_HOST;
-use const PHP_URL_SCHEME;
-
 use Antoniadisio\Creem\Enum\Environment;
 use Antoniadisio\Creem\Internal\Http\UserAgent;
 use InvalidArgumentException;
@@ -25,6 +21,10 @@ use function strlen;
 use function strtolower;
 use function substr;
 use function trim;
+
+use const FILTER_VALIDATE_URL;
+use const PHP_URL_HOST;
+use const PHP_URL_SCHEME;
 
 final readonly class Config implements \Stringable
 {
@@ -212,10 +212,10 @@ final readonly class Config implements \Stringable
         $visibleSuffix = strlen($this->apiKey) > 7 ? substr($this->apiKey, -4) : '';
 
         if (str_starts_with($this->apiKey, 'creem_')) {
-            return 'creem_****'.$visibleSuffix;
+            return 'creem_****' . $visibleSuffix;
         }
 
-        return 'sk_****'.$visibleSuffix;
+        return 'sk_****' . $visibleSuffix;
     }
 
     private function isTrustedBaseUrlHost(string $host): bool

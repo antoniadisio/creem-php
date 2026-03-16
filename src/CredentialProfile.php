@@ -145,9 +145,9 @@ final readonly class CredentialProfile implements \Stringable
         $visibleSuffix = strlen($this->webhookSecret) > 8 ? substr($this->webhookSecret, -4) : '';
 
         if (str_starts_with($this->webhookSecret, 'whsec_')) {
-            return 'whsec_****'.$visibleSuffix;
+            return 'whsec_****' . $visibleSuffix;
         }
 
-        return '****'.$visibleSuffix;
+        return '****' . $visibleSuffix;
     }
 }

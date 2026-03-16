@@ -114,7 +114,7 @@ return [
     'persist_outputs' => [
         Playground::persist('shared.productId', 'id'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'name' => Playground::value($values, 'products.create.name'),
         'description' => Playground::value($values, 'products.create.description'),
         'imageUrl' => Playground::value($values, 'products.create.imageUrl'),
@@ -130,8 +130,8 @@ return [
         'abandonedCartRecoveryEnabled' => Playground::value($values, 'products.create.abandonedCartRecoveryEnabled'),
         'idempotencyKey' => Playground::value($values, 'products.create.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->products()->create(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->products()->create(
         $request($values),
         Playground::stringValue(
             Playground::value($values, 'products.create.idempotencyKey'),

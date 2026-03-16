@@ -25,7 +25,7 @@ test('config applies overrides and normalizes inputs', function (): void {
         ->and($config->timeout())->toBe(15.0)
         ->and($config->userAgentSuffix())->toBe('integration-suite')
         ->and($config->userAgent())->toStartWith('creem-php/')
-        ->and($config->userAgent())->toContain('php/'.PHP_VERSION)
+        ->and($config->userAgent())->toContain('php/' . PHP_VERSION)
         ->and($config->userAgent())->toEndWith('integration-suite');
 });
 
@@ -82,7 +82,7 @@ test('config uses redacted values for debug output string casts and serializatio
 test('config rejects unserialization to avoid restoring redacted credentials', function (): void {
     $config = new Config('sk_test_secret_1234');
 
-    expect(static fn (): mixed => unserialize(serialize($config)))
+    expect(static fn(): mixed => unserialize(serialize($config)))
         ->toThrow(LogicException::class, 'Unserializing Creem\\Config is not supported.');
 });
 
@@ -93,35 +93,35 @@ function invalidConfigValues(): array
 {
     return [
         'blank api key' => [
-            static fn (): Config => new Config(''),
+            static fn(): Config => new Config(''),
             'The Creem API key cannot be empty.',
         ],
         'zero timeout' => [
-            static fn (): Config => new Config('sk_test_123', timeout: 0),
+            static fn(): Config => new Config('sk_test_123', timeout: 0),
             'The Creem request timeout must be greater than zero.',
         ],
         'malformed api key' => [
-            static fn (): Config => new Config('not-a-creem-key'),
+            static fn(): Config => new Config('not-a-creem-key'),
             'The Creem API key must start with "sk_" or "creem_".',
         ],
         'negative timeout' => [
-            static fn (): Config => new Config('sk_test_123', timeout: -1),
+            static fn(): Config => new Config('sk_test_123', timeout: -1),
             'The Creem request timeout must be greater than zero.',
         ],
         'blank base url' => [
-            static fn (): Config => new Config('sk_test_123', baseUrl: '   '),
+            static fn(): Config => new Config('sk_test_123', baseUrl: '   '),
             'The Creem base URL override cannot be blank.',
         ],
         'non https base url' => [
-            static fn (): Config => new Config('sk_test_123', baseUrl: 'http://example.test'),
+            static fn(): Config => new Config('sk_test_123', baseUrl: 'http://example.test'),
             'The Creem base URL override must be a valid HTTPS URL.',
         ],
         'untrusted base url without opt in' => [
-            static fn (): Config => new Config('sk_test_123', baseUrl: 'https://example.test'),
+            static fn(): Config => new Config('sk_test_123', baseUrl: 'https://example.test'),
             'The Creem base URL override host is not trusted. Pass allowUnsafeBaseUrlOverride: true to allow non-Creem hosts.',
         ],
         'malformed base url' => [
-            static fn (): Config => new Config('sk_test_123', baseUrl: 'not a url'),
+            static fn(): Config => new Config('sk_test_123', baseUrl: 'not a url'),
             'The Creem base URL override must be a valid HTTPS URL.',
         ],
     ];

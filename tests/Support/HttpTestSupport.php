@@ -17,8 +17,7 @@ final class HttpTestSupport
 {
     public static function pingRequest(): Request
     {
-        return new class extends Request
-        {
+        return new class extends Request {
             protected Method $method = Method::GET;
 
             public function resolveEndpoint(): string

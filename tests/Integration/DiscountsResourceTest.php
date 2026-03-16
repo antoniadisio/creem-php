@@ -90,9 +90,9 @@ test('discounts resource normalizes delete identifiers before endpoint resolutio
 foreach (invalidDiscountDeleteIdentifiers() as $dataset => [$identifier, $message]) {
     test("discounts resource rejects invalid delete identifiers ({$dataset})", function () use ($identifier, $message): void {
         /** @var IntegrationTestCase $this */
-        $resource = new DiscountsResource($this->connector(new MockClient));
+        $resource = new DiscountsResource($this->connector(new MockClient()));
 
-        expect(static fn (): Discount => $resource->delete($identifier))
+        expect(static fn(): Discount => $resource->delete($identifier))
             ->toThrow(InvalidArgumentException::class, $message);
     });
 }

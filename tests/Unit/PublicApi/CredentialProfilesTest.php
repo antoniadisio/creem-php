@@ -64,7 +64,7 @@ test('credential profile rejects unserialization to avoid restoring redacted cre
         webhookSecret: 'whsec_test_secret_9876',
     );
 
-    expect(static fn (): mixed => unserialize(serialize($profile)))
+    expect(static fn(): mixed => unserialize(serialize($profile)))
         ->toThrow(LogicException::class, 'Unserializing Creem\\CredentialProfile is not supported.');
 });
 
@@ -116,7 +116,7 @@ test('credential profiles reject unserialization to avoid restoring redacted cre
         ),
     ]);
 
-    expect(static fn (): mixed => unserialize(serialize($profiles)))
+    expect(static fn(): mixed => unserialize(serialize($profiles)))
         ->toThrow(LogicException::class, 'Unserializing Creem\\CredentialProfiles is not supported.');
 });
 
@@ -133,17 +133,17 @@ function invalidCredentialProfileSets(): array
 {
     return [
         'empty profiles' => [
-            static fn (): CredentialProfiles => new CredentialProfiles([]),
+            static fn(): CredentialProfiles => new CredentialProfiles([]),
             'At least one Creem credential profile is required.',
         ],
         'blank name' => [
-            static fn (): CredentialProfiles => new CredentialProfiles([
+            static fn(): CredentialProfiles => new CredentialProfiles([
                 '   ' => new CredentialProfile('sk_test_123'),
             ]),
             'Credential profile names cannot be blank.',
         ],
         'invalid characters' => [
-            static fn (): CredentialProfiles => new CredentialProfiles([
+            static fn(): CredentialProfiles => new CredentialProfiles([
                 'merchant/main' => new CredentialProfile('sk_test_123'),
             ]),
             'Credential profile names must start with an alphanumeric character and contain only letters, numbers, dots, underscores, and dashes.',

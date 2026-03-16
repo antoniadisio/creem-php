@@ -16,7 +16,7 @@ trait InteractsWithContractSupport
 
     public function coverageManifest(): CoverageManifest
     {
-        return $this->coverageManifestHelper ??= new CoverageManifest;
+        return $this->coverageManifestHelper ??= new CoverageManifest();
     }
 
     public function openApiSpec(): OpenApiSpec
@@ -26,11 +26,11 @@ trait InteractsWithContractSupport
 
     public function responseFixtureCatalog(): ResponseFixtureCatalog
     {
-        return $this->responseFixtureCatalogHelper ??= new ResponseFixtureCatalog;
+        return $this->responseFixtureCatalogHelper ??= new ResponseFixtureCatalog();
     }
 
     public function responseFixturePolicy(): ResponseFixturePolicy
     {
-        return $this->responseFixturePolicyHelper ??= new ResponseFixturePolicy;
+        return $this->responseFixturePolicyHelper ??= new ResponseFixturePolicy();
     }
 }

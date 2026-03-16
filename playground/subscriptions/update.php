@@ -76,7 +76,7 @@ return [
         Playground::persist('shared.subscriptionItemId', 'items.0.id'),
         Playground::persist('shared.priceId', 'items.0.priceId'),
     ],
-    'build_inputs' => static fn (array $values): array => [
+    'build_inputs' => static fn(array $values): array => [
         'subscriptionId' => Playground::value($values, 'shared.subscriptionId'),
         'subscriptionItemId' => Playground::value($values, 'shared.subscriptionItemId'),
         'priceId' => Playground::value($values, 'shared.priceId'),
@@ -85,8 +85,8 @@ return [
         'updateBehavior' => Playground::value($values, 'subscriptions.update.updateBehavior'),
         'idempotencyKey' => Playground::value($values, 'subscriptions.update.idempotencyKey'),
     ],
-    'build_request_payload' => static fn (array $values): array => $request($values)->toArray(),
-    'run' => static fn (Client $client, array $values) => $client->subscriptions()->update(
+    'build_request_payload' => static fn(array $values): array => $request($values)->toArray(),
+    'run' => static fn(Client $client, array $values) => $client->subscriptions()->update(
         Playground::stringValue(
             Playground::value($values, 'shared.subscriptionId'),
             'shared.subscriptionId',
