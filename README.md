@@ -244,6 +244,8 @@ $event = Webhook::constructEventForProfile(
 
 `Webhook::verifySignatureForProfile(...)` and `Webhook::constructEventForProfile(...)` resolve exactly one secret from the named profile. The SDK does not iterate across every configured secret for you.
 
+For local webhook development and manual dashboard test sends, the maintainer runbook in [`playground/README.md`](playground/README.md) documents the `php -S` plus `ngrok` flow and the per-route/profile verification checklist.
+
 For Laravel-style controllers, use the raw request content instead of decoded request input:
 
 ```php

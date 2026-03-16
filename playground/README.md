@@ -173,6 +173,12 @@ Start the local receiver:
 php -S 127.0.0.1:8765 playground/webhooks/receive.php
 ```
 
+Expose it with `ngrok`:
+
+```bash
+ngrok http 8765
+```
+
 Check health:
 
 ```bash
@@ -198,6 +204,23 @@ php playground/webhooks/inspect.php --latest --profile cashier
 ```
 
 Captured webhook payloads stay ignored under `playground/captures/webhooks/`.
+For isolated local runs or deterministic script tests, set `CREEM_PLAYGROUND_WEBHOOK_CAPTURE_PATH` to redirect captures to a temp directory instead of the default ignored path.
+
+## Live Webhook Verification
+
+Use the Creem dashboard test-send flow through `ngrok` for manual webhook verification. The selected dashboard event type is input, not a hardcoded expected value.
+
+Suggested flow:
+
+1. Start the local receiver with `php -S 127.0.0.1:8765 playground/webhooks/receive.php`.
+2. Start `ngrok http 8765` and copy the public HTTPS base URL.
+3. Configure each dashboard webhook endpoint against the matching public route:
+   - default profile: `<ngrok-url>/`
+   - cashier profile from the committed template: `<ngrok-url>/creem/webhook`
+4. In the Creem dashboard, send one test webhook for each configured route/profile using any event type the dashboard currently offers.
+5. After each send, inspect the latest capture with `php playground/webhooks/inspect.php --latest` or force a profile with `--profile <name>` when you need to re-evaluate one capture against a specific secret.
+6. Confirm the capture reports the expected route, resolved profile, `verified: true`, and the exact selected `event_type`.
+7. Record the route, profile, date, and selected event type in task or PR notes instead of committing captured payloads.
 
 ## Destructive Verification
 
