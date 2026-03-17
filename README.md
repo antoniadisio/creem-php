@@ -21,9 +21,9 @@ Release history and migration notes live in [the GitHub changelog](https://githu
 
 - Integrators: use this README and the supported public API in `Antoniadisio\Creem\Client`, `Config`, `Webhook`, `Resource\*`, `Dto\*`, `Enum\*`, and `Exception\*`.
 - Contributors: use [the GitHub contributor guide](https://github.com/antoniadisio/creem-php/blob/main/CONTRIBUTING.md).
-- Maintainers: use [the maintainer docs](https://github.com/antoniadisio/creem-php/blob/main/docs/maintainers/README.md) and the [live playground runbook](https://github.com/antoniadisio/creem-php/blob/main/playground/README.md).
+- Repository workflow and releases: use [the GitHub contributor guide](https://github.com/antoniadisio/creem-php/blob/main/CONTRIBUTING.md), [the release guide](https://github.com/antoniadisio/creem-php/blob/main/RELEASING.md), and the [live playground runbook](https://github.com/antoniadisio/creem-php/blob/main/playground/README.md).
 
-This README stays consumer-focused. Contributor workflow, QA commands, and live verification procedures live in the linked repo docs.
+This README stays consumer-focused. Repository workflow, releases, and live verification procedures live in the linked repo docs.
 
 Everything under `Antoniadisio\Creem\Internal\*` is shipped for runtime support only and is not part of the supported consumer-facing API.
 
