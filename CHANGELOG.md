@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.6 - 2026-03-17
+
+- Documentation-only patch release.
+- Simplifies the repository workflow docs around the real solo-maintainer flow while keeping pull requests required for all changes.
+- Replaces the `docs/maintainers/` structure with a single root `RELEASING.md` guide and keeps `CONTRIBUTING.md` as the tracked source of truth for normal branch, pull request, and validation flow.
+- Keeps `README.md` consumer-focused while updating repo-documentation links to the new structure.
+- No runtime API changes are included in this release.
+- No code changes are required for existing SDK consumers.
+
 ## 1.0.5 - 2026-03-17
 
 - Release-process patch release.
